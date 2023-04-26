@@ -133,3 +133,7 @@ body {
   color: red;
   font-weight: bold;
 }
+
+.modalAtencao{
+  margin-bottom: 20px;
+}
