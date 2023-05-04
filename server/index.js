@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const mysql = require('mysql')
 const cors = require('cors')
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 
 //npm run devStart
 const db = mysql.createPool({
@@ -28,11 +28,11 @@ app.post('/login', (req, res) => {
   const senha = req.body.senha
 
   db.query(
-    'SELECT * FROM usuarios where email = ? AND senha = ?',
-    [email, senha],
+    'SELECT * FROM professores where email = ? AND senha = ? AND id_tipo_usuario = ?',
+    [email, senha, 1],
     (err, result) => {
       if (err) {
-        req.send(err)
+        res.send(err)
       }
       if (result.length > 0) {
         res.send({ msg: 'OK' })

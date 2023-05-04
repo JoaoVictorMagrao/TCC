@@ -1,28 +1,44 @@
-import '../styles/login.css'
-import React from 'react'
-import { useState } from 'react'
-import logo from '../img/logo.svg'
-import olhoOculto from '../img/olho-oculto.svg'
-import olho from '../img/olho.svg'
-import setaLogin from '../img/seta-loginsvg.svg'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as yup from 'yup'
-import Axios from 'axios'
+import '../styles/login.css';
+import React from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from '../img/logo.svg';
+import olhoOculto from '../img/olho-oculto.svg';
+import olho from '../img/olho.svg';
+import setaLogin from '../img/seta-loginsvg.svg';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
+import Axios from 'axios';
 
 function Login() {
-  const [senhaVisivel, setSenhaVisivel] = useState(false)
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState('Email ou senha incorretos.');
+  const navigate = useNavigate();
 
   function mostrarSenha() {
     setSenhaVisivel(!senhaVisivel)
   }
 
+  /*----- API para verificar se o login do usuário existe -----*/
   const handleClickLogin = (values) => {
     Axios.post('http://localhost:3001/login', {
       email: values.email,
       senha: values.senha,
-    }).then((response) => {
-      console.log(response)
     })
+      .then((response) => {
+        console.log(response.data.msg);
+        if (response.data.msg === 'OK') {
+          setShowAlert(false);
+           navigate('/home')
+        } else {
+          setShowAlert(true);
+        }
+      })
+      .catch((error) => {
+        setAlertText('Erro ao conectar com o servidor, tente novamente mais tarde...');
+        setShowAlert(true);
+      })
   }
 
   const validationLogin = yup.object().shape({
