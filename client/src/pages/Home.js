@@ -1,22 +1,32 @@
 import "../styles/login.css";
-import Header from '../components/Header'
+import Header from '../components/Header';
+import ModalEditarAluno from '../components/ModalEditarAluno';
 import React, { useState, useEffect } from "react";
 import Axios from 'axios';
-//import { BiEdit } from 'react-icons/fa';
+import { BiEdit } from 'react-icons/bi';
 
-function Home() {
+export const useModalEditarAluno  = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleEditClick = () => {
+    setShowModal(true);
+  };
+  return { showModal, handleEditClick };
+};
+
+function Home() { 
   const [data, setData] = useState([]);
+  const { showModal, handleEditClick } = useModalEditarAluno();
 
   useEffect(() => {
     Axios.get("http://localhost:3001/listaAlunos")
       .then((response) => setData(response.data))
       .catch((error) => console.log(error));
   }, []);
-
+ 
   return (
     <div>
       <Header />
-
       <div className="flex flex-col overflow-x-auto w-4/5 mx-auto">
         <div className="sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
@@ -64,11 +74,13 @@ function Home() {
                         {row.whatsapp}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                      <span className={row.ativo == 1 ? 'bg-green-500 rounded-full inline-block w-3 h-3 mr-2' : 'bg-red-500 rounded-full inline-block w-3 h-3 mr-2'}></span>
-                        {row.ativo == 1 ? 'Ativo' : 'Inativo' }
+                      <span className={row.ativo === 1 ? 'bg-green-500 rounded-full inline-block w-3 h-3 mr-2' : 'bg-red-500 rounded-full inline-block w-3 h-3 mr-2'}></span>
+                        {row.ativo === 1 ? 'Ativo' : 'Inativo' }
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {/* <BiEdit />   */}
+                      {/* <BiEdit size={32}/> */}
+                        <BiEdit size={32} onClick={handleEditClick} />
+                        
                       </td>
                     </tr>
                   ))}
@@ -78,6 +90,7 @@ function Home() {
           </div>
         </div>
       </div>
+      {showModal && <ModalEditarAluno />} 
     </div>
   );
 }

@@ -1603,6 +1603,11 @@
     "schema-utils" "^3.0.0"
     "source-map" "^0.7.3"
 
+"@popperjs/core@^2.6.0":
+  "integrity" "sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw=="
+  "resolved" "https://registry.npmjs.org/@popperjs/core/-/core-2.11.7.tgz"
+  "version" "2.11.7"
+
 "@remix-run/router@1.6.0":
   "integrity" "sha512-N13NRw3T2+6Xi9J//3CGLsK2OqC8NMme3d/YX+nh05K9YHWGcv8DycHJrqGScSP4T75o8IN6nqIMhVFU8ohg8w=="
   "resolved" "https://registry.npmjs.org/@remix-run/router/-/router-1.6.0.tgz"
@@ -3127,6 +3132,16 @@
   "resolved" "https://registry.npmjs.org/char-regex/-/char-regex-2.0.1.tgz"
   "version" "2.0.1"
 
+"chart.js@^3.7.1", "chart.js@>=3.0.0":
+  "integrity" "sha512-Ro2JbLmvg83gXF5F4sniaQ+lTbSv18E+TIf2cOeiH1Iqd2PGFOtem+DUufMZsCJwFE7ywPOpfXFBwRTGq7dh6w=="
+  "resolved" "https://registry.npmjs.org/chart.js/-/chart.js-3.9.1.tgz"
+  "version" "3.9.1"
+
+"chartjs-plugin-datalabels@^2.0.0":
+  "integrity" "sha512-14ZU30lH7n89oq+A4bWaJPnAG8a7ZTk7dKf48YAzMvJjQtjrgg5Dpk9f+LbjCF6bpx3RAGTeL13IXpKQYyRvlw=="
+  "resolved" "https://registry.npmjs.org/chartjs-plugin-datalabels/-/chartjs-plugin-datalabels-2.2.0.tgz"
+  "version" "2.2.0"
+
 "check-types@^11.1.1":
   "integrity" "sha512-HBiYvXvn9Z70Z88XKjz3AEKd4HJhBXsa3j7xFnITAzoS8+q6eIGi8qDB8FKPBAjtuxjI/zFpwuiCb8oDtKOYrA=="
   "resolved" "https://registry.npmjs.org/check-types/-/check-types-11.2.2.tgz"
@@ -3601,6 +3616,11 @@
   "resolved" "https://registry.npmjs.org/csstype/-/csstype-3.1.1.tgz"
   "version" "3.1.1"
 
+"custom-event-polyfill@^1.0.7":
+  "integrity" "sha512-TDDkd5DkaZxZFM8p+1I3yAlvM3rSr1wbrOliG4yJiwinMZN8z/iGL7BTlDkrJcYTmgUSb4ywVCc3ZaUtOtC76w=="
+  "resolved" "https://registry.npmjs.org/custom-event-polyfill/-/custom-event-polyfill-1.0.7.tgz"
+  "version" "1.0.7"
+
 "damerau-levenshtein@^1.0.8":
   "integrity" "sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA=="
   "resolved" "https://registry.npmjs.org/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz"
@@ -3730,6 +3750,13 @@
   "integrity" "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg=="
   "resolved" "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz"
   "version" "1.2.0"
+
+"detect-autofill@^1.1.3":
+  "integrity" "sha512-utCBQwCR/beSnADQmBC7C4tTueBBkYCl6WSpfGUkYKO/+MzPxqYGj6G4MvHzcKmH1gCTK+VunX2vaagvkRXPvA=="
+  "resolved" "https://registry.npmjs.org/detect-autofill/-/detect-autofill-1.1.4.tgz"
+  "version" "1.1.4"
+  dependencies:
+    "custom-event-polyfill" "^1.0.7"
 
 "detect-newline@^3.0.0":
   "integrity" "sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA=="
@@ -6891,6 +6918,11 @@
   "resolved" "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   "version" "4.0.0"
 
+"perfect-scrollbar@^1.5.5":
+  "integrity" "sha512-dzalfutyP3e/FOpdlhVryN4AJ5XDVauVWxybSkLZmakFE2sS3y3pc4JnSprw8tGmHvkaG5Edr5T7LBTZ+WWU2g=="
+  "resolved" "https://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-1.5.5.tgz"
+  "version" "1.5.5"
+
 "performance-now@^2.1.0":
   "integrity" "sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow=="
   "resolved" "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
@@ -8711,6 +8743,36 @@
     "resolve" "^1.22.1"
     "sucrase" "^3.29.0"
 
+"tailwindcss@3.3.0":
+  "integrity" "sha512-hOXlFx+YcklJ8kXiCAfk/FMyr4Pm9ck477G0m/us2344Vuj355IpoEDB5UmGAsSpTBmr+4ZhjzW04JuFXkb/fw=="
+  "resolved" "https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.3.0.tgz"
+  "version" "3.3.0"
+  dependencies:
+    "arg" "^5.0.2"
+    "chokidar" "^3.5.3"
+    "color-name" "^1.1.4"
+    "didyoumean" "^1.2.2"
+    "dlv" "^1.1.3"
+    "fast-glob" "^3.2.12"
+    "glob-parent" "^6.0.2"
+    "is-glob" "^4.0.3"
+    "jiti" "^1.17.2"
+    "lilconfig" "^2.0.6"
+    "micromatch" "^4.0.5"
+    "normalize-path" "^3.0.0"
+    "object-hash" "^3.0.0"
+    "picocolors" "^1.0.0"
+    "postcss" "^8.0.9"
+    "postcss-import" "^14.1.0"
+    "postcss-js" "^4.0.0"
+    "postcss-load-config" "^3.1.4"
+    "postcss-nested" "6.0.0"
+    "postcss-selector-parser" "^6.0.11"
+    "postcss-value-parser" "^4.2.0"
+    "quick-lru" "^5.1.1"
+    "resolve" "^1.22.1"
+    "sucrase" "^3.29.0"
+
 "tapable@^1.0.0":
   "integrity" "sha512-4WK/bYZmj8xLr+HUCODHGF1ZFzsYffasLUgEiMBY4fgtltdO6B4WJtlSbPaDTLpYTcGVwM2qLnFTICEcNxs3kA=="
   "resolved" "https://registry.npmjs.org/tapable/-/tapable-1.1.3.tgz"
@@ -8905,6 +8967,19 @@
   "version" "3.21.0"
   dependencies:
     "tslib" "^1.8.1"
+
+"tw-elements@^1.0.0-beta2":
+  "integrity" "sha512-0DAm5i7OSk1NCW9i/JotHZOWG0NIuCBr5S0t1h66rDgH1M2fxCQvvQw3AxK0fVaCJG0jk82UhAsI7PCEMoq6Xw=="
+  "resolved" "https://registry.npmjs.org/tw-elements/-/tw-elements-1.0.0-beta2.tgz"
+  "version" "1.0.0-beta2"
+  dependencies:
+    "@popperjs/core" "^2.6.0"
+    "chart.js" "^3.7.1"
+    "chartjs-plugin-datalabels" "^2.0.0"
+    "deepmerge" "^4.2.2"
+    "detect-autofill" "^1.1.3"
+    "perfect-scrollbar" "^1.5.5"
+    "tailwindcss" "3.3.0"
 
 "type-check@^0.4.0", "type-check@~0.4.0":
   "integrity" "sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew=="
