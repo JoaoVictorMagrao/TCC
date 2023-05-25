@@ -67,7 +67,7 @@ function Home() {
                       {new Date(row.data_vencimento).toLocaleDateString('pt-BR')}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {row.whatsapp}
+                        {row.whatsapp_formatado}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                       <span className={row.ativo === 1 ? 'bg-green-500 rounded-full inline-block w-3 h-3 mr-2' : 'bg-red-500 rounded-full inline-block w-3 h-3 mr-2'}></span>
