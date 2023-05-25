@@ -31,7 +31,7 @@ function Login() {
       .then((response) => {
         if (response.data.msg === 'OK') {
           setShowAlert(false);
-           navigate('/home')
+           navigate('/home');
         } else {
           setShowAlert(true);
         }

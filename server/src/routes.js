@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const professorController = require('./controller/professores/index');
-const alunosController = require('./controller/alunos/index');
+const professorController = require('./controller/teachers/index');
+const alunosController = require('./controller/students/index');
 
 router.post('/login', (req, res) => {
   professorController.login(req, res)
