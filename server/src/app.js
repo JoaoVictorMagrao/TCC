@@ -8,4 +8,5 @@ app.use(express.json())
 app.use(cors())
 
 app.post('/login', login)
+
 module.exports = app;

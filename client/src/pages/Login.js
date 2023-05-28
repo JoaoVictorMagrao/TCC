@@ -7,7 +7,7 @@ import logo from '../img/logo.svg';
 import olhoOculto from '../img/olho-oculto.svg';
 import olho from '../img/olho.svg';
 import setaLogin from '../img/seta-loginsvg.svg';
-/*----- Imagens -----*/
+
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import Axios from 'axios';

@@ -15,11 +15,11 @@ const controller = {
       )
     });
   },
-  cadastrarAluno: function (aluno) {
+  adicionarAluno: function (aluno) {
     return new Promise((resolve, reject) => {
       db.query(
         'INSERT INTO alunos (nome, senha, cpf, email, whatsapp, valor_mensal, id_professor, id_tipo_usuario, ativo, data_vencimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [aluno.nome, '1234567', '461.999.454-45', aluno.email, aluno.whatsapp, aluno.valor_mensal, '1', '2', aluno.ativo, aluno.data_vencimento],
+        [aluno.nome, aluno.senha, aluno.cpf, aluno.email, aluno.whatsapp, aluno.valor_mensal, aluno.id_professor, aluno.id_tipo_usuario, aluno.ativo, aluno.data_vencimento],
         (err, result) => {
           if (err) {
             reject(err);

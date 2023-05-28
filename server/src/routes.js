@@ -24,15 +24,22 @@ router.get('/listaAlunos', async (req, res) => {
 });
 
 router.post('/adicionarAluno', async (req, res) => {
-  try {
-    const { nome, email, whatsapp, valor_mensal, ativo, data_vencimento } = req.body;
-    
-    await alunosController.cadastrarAluno({ nome, email, whatsapp, valor_mensal, ativo, data_vencimento });
+    try {
+      const { nome, senha, cpf, email, whatsapp, valor_mensal, id_professor, id_tipo_usuario, ativo, data_vencimento } = req.body;   
+      console.log('Dados recebidos:', req.body);
+      await alunosController.adicionarAluno({ nome, senha, cpf, email, whatsapp, valor_mensal, id_professor, id_tipo_usuario, ativo, data_vencimento });
 
-    res.status(200).json({ message: 'OK' });
-  } catch (error) {
-    res.status(500).json({ error: 'Erro' });
-  }
+      console.log('Aluno cadastrado com sucesso');
+
+      res.status(200).json({ message: 'OK' });
+    } catch (error) {
+      console.error('Erro ao cadastrar aluno:', error.code);
+      if (error.code === 'ER_DUP_ENTRY') {
+        res.status(400).json({ error: 'CPF já cadastrado' });
+      } else {
+        res.status(500).json({ error: 'Erro' });
+      }
+    }
 });
 
 
