@@ -6,6 +6,7 @@ import { BiEdit } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { professorId} from './Login';
 
 function Home() {
   const [data, setData] = useState([])

@@ -13,7 +13,12 @@ const controller = {
             reject(err);
           }
           if (result.length > 0) {
-            resolve({msg: 'OK'});
+            const professor = {
+              msg: 'OK',
+              id: result[0].id,
+              nome: result[0].nome
+            };
+            resolve(professor);
           } else {
             resolve({msg: 'ERROR'});
           }

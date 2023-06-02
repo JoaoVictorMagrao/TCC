@@ -1,35 +1,39 @@
-import '../styles/login.css'
-import React from 'react'
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import '../styles/login.css';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 /*----- Imagens -----*/
-import logo from '../img/logo.svg'
-import olhoOculto from '../img/olho-oculto.svg'
-import olho from '../img/olho.svg'
-import setaLogin from '../img/seta-loginsvg.svg'
+import logo from '../img/logo.svg';
+import olhoOculto from '../img/olho-oculto.svg';
+import olho from '../img/olho.svg';
+import setaLogin from '../img/seta-loginsvg.svg';
 
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as yup from 'yup'
-import Axios from 'axios'
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
+import Axios from 'axios';
+export let professorId = '';
+export let professorNome = '';
 
 function Login() {
-  const [senhaVisivel, setSenhaVisivel] = useState(false)
-  const [showAlert, setShowAlert] = useState(false)
-  const [alertText, setAlertText] = useState('Email ou senha incorretos.')
-  const navigate = useNavigate()
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState('Email ou senha incorretos.');
+  const navigate = useNavigate();
 
   function mostrarSenha() {
     setSenhaVisivel(!senhaVisivel)
   }
 
   /*----- API para verificar se o login do usuário existe -----*/
-  const handleClickLogin = (values) => {
+   const handleClickLogin = (values) => {
     Axios.post('http://localhost:3001/login', {
       email: values.email,
       senha: values.senha,
     })
       .then((response) => {
         if (response.data.msg === 'OK') {
+          professorId = response.data.id;
+          professorNome = response.data.nome;
           setShowAlert(false)
           navigate('/home')
         } else {
@@ -41,6 +45,7 @@ function Login() {
         setShowAlert(true)
       })
   }
+  
   /*-----  Esconder o box de erro de login depois de 3 segundos ----- */
   useEffect(() => {
     let timerId
