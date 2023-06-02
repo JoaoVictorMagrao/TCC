@@ -10,6 +10,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 function Home() {
   const [data, setData] = useState([])
   const [page, setPage] = useState(1);
+  const [filtroSituacao, setFiltroSituacao] = useState('0');
+  const [filtroNome, setFiltroNome] = useState('');
   const itemsPerPage = 10;
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const navigate = useNavigate()
@@ -18,6 +20,14 @@ function Home() {
       .then((response) => setData(response.data))
       .catch((error) => console.log(error))
   }, [])
+
+  const handleFiltroSituacaoChange = (event) => {
+    setFiltroSituacao(event.target.value);
+  };
+
+  const handleFiltroNomeChange = (event) => {
+    setFiltroNome(event.target.value);
+  };
 
   const theme = createTheme({
     components: {
@@ -50,16 +60,33 @@ function Home() {
           Cadastrar Aluno
         </button>
       </div>
-      <div className='flex flex-col overflow-x-auto w-4/5 mx-auto'>
-        <div>
-          <select className='p-4 border border-black rounded-lg w-60'>
-                <option value="0">Todos</option>
-                <option value="1">Ativos</option>
-                <option value="2">Inativos</option>
-            </select>
 
-            {/* <input type="text" className=' border   text-sm rounded-lg block w-full p-2.5'/> */}
+     
+      <div className='flex flex-col overflow-x-auto w-4/5 mx-auto'>
+      <div className='flex justify-end'>
+        <div className="flex flex-col">
+          <label htmlFor="filtroSituacao"> Situação</label>
+          <select  id='filtroSituacao'
+            name='filtroSituacao'
+            className='p-2 border border-black rounded-lg w-60'
+            value={filtroSituacao}
+            onChange={handleFiltroSituacaoChange}>
+            <option value="0">Todos</option>
+            <option value="1">Ativos</option>
+            <option value="2">Inativos</option>
+          </select>            
         </div>
+
+        <div className="ml-4 w-80">
+          <label htmlFor="filtroNome"> Pesquisar por nome</label>
+          <input type="text"
+          name='filtroNome'
+          id='filtroNome'
+          className='border text-sm rounded-lg block w-full p-2.5'
+          value={filtroNome}
+          onChange={handleFiltroNomeChange}/>
+        </div>
+      </div>
         <div className='sm:-mx-6 lg:-mx-8'>
           <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
             <div className='overflow-x-auto'>
@@ -88,7 +115,21 @@ function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                {usersToShow.map((row) => (
+                {usersToShow.filter((row) => {
+            const situacaoFiltrada =
+              filtroSituacao === '1'
+                ? row.ativo === 1
+                : filtroSituacao === '2'
+                ? row.ativo !== 1
+                : true;
+
+            const nomeFiltrado =
+              filtroNome.trim() === '' ||
+              row.nome.toLowerCase().includes(filtroNome.toLowerCase());
+
+            return situacaoFiltrada && nomeFiltrado;
+          })
+                .map((row) => (
                     <tr className='border-b dark:border-neutral-500' key={row.id}>
                       <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>
                       <td className='whitespace-nowrap px-6 py-4'>{row.nome}</td>
