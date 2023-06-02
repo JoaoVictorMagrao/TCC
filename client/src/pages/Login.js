@@ -1,25 +1,25 @@
-import '../styles/login.css';
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import '../styles/login.css'
+import React from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 /*----- Imagens -----*/
-import logo from '../img/logo.svg';
-import olhoOculto from '../img/olho-oculto.svg';
-import olho from '../img/olho.svg';
-import setaLogin from '../img/seta-loginsvg.svg';
+import logo from '../img/logo.svg'
+import olhoOculto from '../img/olho-oculto.svg'
+import olho from '../img/olho.svg'
+import setaLogin from '../img/seta-loginsvg.svg'
 
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as yup from 'yup';
-import Axios from 'axios';
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as yup from 'yup'
+import Axios from 'axios'
 
 function Login() {
-  const [senhaVisivel, setSenhaVisivel] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertText, setAlertText] = useState('Email ou senha incorretos.');
-  const navigate = useNavigate();
+  const [senhaVisivel, setSenhaVisivel] = useState(false)
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertText, setAlertText] = useState('Email ou senha incorretos.')
+  const navigate = useNavigate()
 
   function mostrarSenha() {
-    setSenhaVisivel(!senhaVisivel);
+    setSenhaVisivel(!senhaVisivel)
   }
 
   /*----- API para verificar se o login do usuário existe -----*/
@@ -30,27 +30,27 @@ function Login() {
     })
       .then((response) => {
         if (response.data.msg === 'OK') {
-          setShowAlert(false);
-           navigate('/home');
+          setShowAlert(false)
+          navigate('/home')
         } else {
-          setShowAlert(true);
+          setShowAlert(true)
         }
       })
       .catch((error) => {
-        setAlertText('Erro ao conectar com o servidor, tente novamente mais tarde...');
-        setShowAlert(true);
+        setAlertText('Erro ao conectar com o servidor, tente novamente mais tarde...')
+        setShowAlert(true)
       })
   }
   /*-----  Esconder o box de erro de login depois de 3 segundos ----- */
   useEffect(() => {
-    let timerId;
+    let timerId
     if (showAlert) {
       timerId = setTimeout(() => {
-        setShowAlert(false);
+        setShowAlert(false)
       }, 3000)
     }
     return () => {
-      clearTimeout(timerId);
+      clearTimeout(timerId)
     }
   }, [showAlert])
 
