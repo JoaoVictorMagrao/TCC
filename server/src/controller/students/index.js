@@ -29,7 +29,23 @@ const controller = {
         }
       );
     });
+  },
+  listaAlunoUnico: function (alunoId) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT id, nome, email, senha, cpf, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos WHERE id = ?',
+        [alunoId],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result[0]);
+          }
+        }
+      )
+    });
   }
+
 }
 
 module.exports = controller;

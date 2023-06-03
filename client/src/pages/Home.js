@@ -6,7 +6,8 @@ import { BiEdit } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { professorId} from './Login';
+//import { professorId} from './Login';
+
 
 function Home() {
   const [data, setData] = useState([])
@@ -50,6 +51,8 @@ function Home() {
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const usersToShow = data.slice(startIndex, endIndex);
+
+  
   return (
     <div>
       <Header />
@@ -57,8 +60,8 @@ function Home() {
         <button
           className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
           onClick={cliqueCadastrarAluno}
-        >
-          Cadastrar Aluno
+        >   <i class="fa-solid fa-plus mr-2"></i>
+           Cadastrar Aluno
         </button>
       </div>
 
@@ -69,7 +72,7 @@ function Home() {
           <label htmlFor="filtroSituacao"> Situação</label>
           <select  id='filtroSituacao'
             name='filtroSituacao'
-            className='p-2 border border-black rounded-lg w-60'
+            className='border text-sm rounded-lg block w-full p-2.5'
             value={filtroSituacao}
             onChange={handleFiltroSituacaoChange}>
             <option value="0">Todos</option>
@@ -116,20 +119,21 @@ function Home() {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Filtro para buscar por nome e por situação */}
                 {usersToShow.filter((row) => {
-            const situacaoFiltrada =
-              filtroSituacao === '1'
-                ? row.ativo === 1
-                : filtroSituacao === '2'
-                ? row.ativo !== 1
-                : true;
+                  const situacaoFiltrada =
+                    filtroSituacao === '1'
+                      ? row.ativo === 1
+                      : filtroSituacao === '2'
+                      ? row.ativo !== 1
+                      : true;
 
-            const nomeFiltrado =
-              filtroNome.trim() === '' ||
-              row.nome.toLowerCase().includes(filtroNome.toLowerCase());
+                  const nomeFiltrado =
+                    filtroNome.trim() === '' ||
+                    row.nome.toLowerCase().includes(filtroNome.toLowerCase());
 
-            return situacaoFiltrada && nomeFiltrado;
-          })
+                  return situacaoFiltrada && nomeFiltrado;
+                })
                 .map((row) => (
                     <tr className='border-b dark:border-neutral-500' key={row.id}>
                       <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>

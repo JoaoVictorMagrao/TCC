@@ -42,5 +42,14 @@ router.post('/adicionarAluno', async (req, res) => {
     }
 });
 
+router.get('/listaAlunoUnico/:id', async (req, res) => {
+  const alunoId = req.params.id;
+  try {
+    const alunos = await alunosController.listaAlunoUnico(alunoId);
+    res.send(alunos);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 module.exports = router;
