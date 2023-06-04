@@ -44,7 +44,23 @@ const controller = {
         }
       )
     });
+  },
+  updateAluno: function (alunoId, nome, email, senha, cpf, whatsapp, valorMensal, ativo, dataVencimento) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'UPDATE alunos SET nome = ?, email = ?, senha = ?, cpf = ?, whatsapp = ?, valor_mensal = ?, ativo = ?, data_vencimento = ? WHERE id = ?',
+        [nome, email, senha, cpf, whatsapp, valorMensal, ativo, dataVencimento, alunoId],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
+  
 
 }
 

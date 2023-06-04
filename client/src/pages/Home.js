@@ -6,8 +6,11 @@ import { BiEdit } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-//import { professorId} from './Login';
+import { Link } from 'react-router-dom';
 
+export let valorBotao = 'Editar Aluno';
+
+//import { professorId} from './Login';
 
 function Home() {
   const [data, setData] = useState([])
@@ -16,12 +19,28 @@ function Home() {
   const [filtroNome, setFiltroNome] = useState('');
   const itemsPerPage = 10;
   const totalPages = Math.ceil(data.length / itemsPerPage);
+
   const navigate = useNavigate()
   useEffect(() => {
     Axios.get('http://localhost:3001/listaAlunos')
       .then((response) => setData(response.data))
       .catch((error) => console.log(error))
   }, [])
+
+  const handleButtonEditarAluno = async (alunoId) => {
+    try {
+
+      const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
+      const data = await response.json();
+  
+      // Redirecionar para a página desejada e passar os dados como parâmetros na URL
+      const dados = `id=${data.id}&nome=${data.nome}&email=${data.email}&telefone=${data.whatsapp}&valor_mensal=${data.valor_mensal}&data_vencimento=${data.data_vencimento}&situacao=${data.ativo}&senha=${data.senha}&cpf=${data.cpf}`
+      window.location.href = '/cliente?' + dados;
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleFiltroSituacaoChange = (event) => {
     setFiltroSituacao(event.target.value);
@@ -45,7 +64,8 @@ function Home() {
   });
 
   const cliqueCadastrarAluno = (values) => {
-    navigate('/cliente')
+    valorBotao = 'Cadastrar Aluno';
+    navigate('/cliente');
   }
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -54,15 +74,18 @@ function Home() {
 
   
   return (
+  
     <div>
       <Header />
       <div className='mt-2 text-right mr-3'>
-        <button
-          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-          onClick={cliqueCadastrarAluno}
-        >   <i class="fa-solid fa-plus mr-2"></i>
-           Cadastrar Aluno
-        </button>
+    
+          <button
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+            onClick={cliqueCadastrarAluno}
+          >   <i className="fa-solid fa-plus mr-2"></i>
+            Cadastrar Aluno
+          </button>
+
       </div>
 
      
@@ -159,7 +182,9 @@ function Home() {
                         {row.ativo === 1 ? 'Ativo' : 'Inativo'}
                       </td>
                       <td className='whitespace-nowrap px-6 py-4'>
+                      <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
                         <BiEdit size={32} />
+                      </Link>
                       </td>
                     </tr>
                   ))}
@@ -177,7 +202,9 @@ function Home() {
         </div>
       </div>
     </div>
+
   )
+  
 }
 
 export default Home

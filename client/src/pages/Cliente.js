@@ -1,12 +1,13 @@
 import Header from '../components/Header'
 import InputMask from 'react-input-mask'
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Axios from 'axios'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { valorBotao } from './Home';
 
 const validationPost = yup.object().shape({
   nomeAluno: yup
@@ -29,7 +30,20 @@ const validationPost = yup.object().shape({
   senhaAluno: yup.string().required('A senha é obrigatório'),
 })
 
+const urlParams = new URLSearchParams(window.location.search);
+  const idEditar = urlParams.get('id');
+  const nomeEditar = urlParams.get('nome');
+  const emailEditar = urlParams.get('email');
+  const cpfEditar = urlParams.get('cpf');
+  const telefoneEditar = urlParams.get('telefone');
+  const valorEditar = urlParams.get('valor_mensal');
+  const dataVencimentoEditar = urlParams.get('data_vencimento');
+  const formattedDataVencimento = (dataVencimentoEditar == null) ? '' : dataVencimentoEditar.slice(0, 10); // Extrai apenas 'yyyy-mm-dd'
+  const situacaoEditar = urlParams.get('situacao');
+  const senhaEditar = urlParams.get('senha');
+
 function Cliente() {
+ 
   const {
     register,
     handleSubmit,
@@ -52,8 +66,9 @@ function Cliente() {
     dataVencimentoAluno,
   }) => {
     //  event.preventDefault();
+if(valorBotao === 'Cadastrar Aluno'){
+   try {
 
-    try {
       const response = await Axios.post('http://localhost:3001/adicionarAluno', {
         nome: nomeAluno,
         senha: senhaAluno,
@@ -75,6 +90,10 @@ function Cliente() {
         setShowAlert(true)
       }
     }
+}else{
+
+}
+ 
   }
 
   /*-----  Esconder o box de erro de login depois de 3 segundos ----- */
@@ -116,6 +135,7 @@ function Cliente() {
                 name='nomeAluno'
                 id='nomeAluno'
                 {...register('nomeAluno')}
+                defaultValue={nomeEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.nomeAluno?.message}</p>
@@ -132,6 +152,7 @@ function Cliente() {
                 name='emailAluno'
                 id='emailAluno'
                 {...register('emailAluno')}
+                defaultValue={emailEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.emailAluno?.message}</p>
@@ -149,6 +170,7 @@ function Cliente() {
                   id='cpfAluno'
                   name='cpfAluno'
                   {...register('cpfAluno')}
+                  defaultValue={cpfEditar}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.cpfAluno?.message}</p>
@@ -166,6 +188,7 @@ function Cliente() {
                   id='telefoneAluno'
                   name='telefoneAluno'
                   {...register('telefoneAluno')}
+                  defaultValue={telefoneEditar}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.telefoneAluno?.message}</p>
@@ -184,6 +207,7 @@ function Cliente() {
                   id='mensalidadeAluno'
                   name='mensalidadeAluno'
                   {...register('mensalidadeAluno')}
+                  defaultValue={valorEditar}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.mensalidadeAluno?.message}</p>
@@ -201,6 +225,7 @@ function Cliente() {
                   id='dataVencimentoAluno'
                   name='dataVencimentoAluno'
                   {...register('dataVencimentoAluno')}
+                  defaultValue={formattedDataVencimento}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.dataVencimentoAluno?.message}</p>
@@ -217,6 +242,7 @@ function Cliente() {
                 id='situacaoAluno'
                 name='situacaoAluno'
                 {...register('situacaoAluno')}
+                defaultValue={situacaoEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               >
                 <option value='1'>Ativo</option>
@@ -237,6 +263,7 @@ function Cliente() {
                 id='senhaAluno'
                 name='senhaAluno'
                 {...register('senhaAluno')}
+                defaultValue={senhaEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.senhaAluno?.message}</p>
@@ -248,7 +275,7 @@ function Cliente() {
               type='submit'
               className='mx-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
             >
-              Cadastrar Aluno
+            { valorBotao }
             </button>
           </div>
         </form>
