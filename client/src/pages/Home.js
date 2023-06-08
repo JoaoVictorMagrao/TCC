@@ -3,20 +3,27 @@ import Header from '../components/Header';
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { BiEdit } from 'react-icons/bi';
+import { AiFillDelete } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
+
 
 export let valorBotao = 'Editar Aluno';
 
-//import { professorId} from './Login';
+
 
 function Home() {
   const [data, setData] = useState([])
   const [page, setPage] = useState(1);
   const [filtroSituacao, setFiltroSituacao] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
+  const Swal = require('sweetalert2');
+  //const [cadastrarAluno, setCadastrarAluno] = useState(false);
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -28,6 +35,7 @@ function Home() {
   }, [])
 
   const handleButtonEditarAluno = async (alunoId) => {
+    
     try {
 
       const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
@@ -41,6 +49,58 @@ function Home() {
       console.error(error);
     }
   };
+
+  const confirmDeleteAluno = async (alunoId, nome) => {
+    Swal.fire({
+      title: `Tem certeza de que deseja excluir permanentemente o aluno ${nome}?`,
+      text: "Você não será capaz de reverter isso!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sim, quero excluir!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+          handleButtonExcluirAluno(alunoId)
+      }
+    })
+  }
+
+  const handleButtonExcluirAluno = async (alunoId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/excluirAluno/${alunoId}`, {
+        method: 'DELETE'
+      });
+  
+      if (response.ok) {
+        // Exclusão bem-sucedida
+        Swal.fire({
+          icon: 'success',
+          title: 'Atenção',
+          text: 'Aluno excluido com sucesso!',
+          showConfirmButton: false,
+          timer: 2000
+          //footer: '<a href="">Why do I have this issue?</a>'
+        })
+      } else {
+        // Lidar com erros de exclusão
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ocorreu um erro ao excluir o aluno!'
+          //footer: '<a href="">Why do I have this issue?</a>'
+        })
+      }
+    } catch (error) {
+      // Lidar com erros de requisição
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Erro na requisição:', error
+        //footer: '<a href="">Why do I have this issue?</a>'
+      })
+    }
+  }
 
   const handleFiltroSituacaoChange = (event) => {
     setFiltroSituacao(event.target.value);
@@ -64,6 +124,7 @@ function Home() {
   });
 
   const cliqueCadastrarAluno = (values) => {
+    //setCadastrarAluno(true);
     valorBotao = 'Cadastrar Aluno';
     navigate('/cliente');
   }
@@ -181,10 +242,11 @@ function Home() {
                         ></span>
                         {row.ativo === 1 ? 'Ativo' : 'Inativo'}
                       </td>
-                      <td className='whitespace-nowrap px-6 py-4'>
-                      <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
-                        <BiEdit size={32} />
-                      </Link>
+                      <td className='whitespace-nowrap px-6 py-4 flex gap-10'>
+                        <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
+                          <BiEdit size={32} />
+                        </Link>
+                        <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>
                       </td>
                     </tr>
                   ))}

@@ -2,6 +2,8 @@ import '../styles/login.css';
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+
 /*----- Imagens -----*/
 import logo from '../img/logo.svg';
 import olhoOculto from '../img/olho-oculto.svg';
@@ -11,13 +13,14 @@ import setaLogin from '../img/seta-loginsvg.svg';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import Axios from 'axios';
-export let professorId = '';
-export let professorNome = '';
+
 
 function Login() {
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState('Email ou senha incorretos.');
+
+
   const navigate = useNavigate();
 
   function mostrarSenha() {
@@ -32,8 +35,6 @@ function Login() {
     })
       .then((response) => {
         if (response.data.msg === 'OK') {
-          professorId = response.data.id;
-          professorNome = response.data.nome;
           setShowAlert(false)
           navigate('/home')
         } else {
@@ -69,6 +70,8 @@ function Login() {
   })
 
   return (
+    
+  
     <div className='container'>
       <header className='header'>
         <img src={logo} alt='ForFit Gym' />
@@ -127,6 +130,7 @@ function Login() {
         </Form>
       </Formik>
     </div>
+
   )
 }
 

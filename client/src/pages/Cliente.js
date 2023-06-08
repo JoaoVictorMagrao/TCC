@@ -1,13 +1,13 @@
-import Header from '../components/Header'
-import InputMask from 'react-input-mask'
-
-import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import Axios from 'axios'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
+import Header from '../components/Header';
+import InputMask from 'react-input-mask';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import Axios from 'axios';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { valorBotao } from './Home';
+
 
 const validationPost = yup.object().shape({
   nomeAluno: yup
@@ -28,7 +28,7 @@ const validationPost = yup.object().shape({
   dataVencimentoAluno: yup.date().required('A data de vencimento é obrigatória'),
   situacaoAluno: yup.string().required('A situação é obrigatório'),
   senhaAluno: yup.string().required('A senha é obrigatório'),
-})
+});
 
 const urlParams = new URLSearchParams(window.location.search);
   const idEditar = urlParams.get('id');
@@ -43,18 +43,22 @@ const urlParams = new URLSearchParams(window.location.search);
   const senhaEditar = urlParams.get('senha');
 
 function Cliente() {
- 
   const {
     register,
     handleSubmit,
+    //reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationPost),
   })
 
+  // const limparFormulario = () => {
+  //   reset();
+  // };
   const navigate = useNavigate()
   const [showAlert, setShowAlert] = useState(false)
-
+  const [msgError, setmsgError] = useState('Erro as cadastrar CPF')
+  
   const handleFormSubmit = async ({
     nomeAluno,
     senhaAluno,
@@ -65,37 +69,63 @@ function Cliente() {
     situacaoAluno,
     dataVencimentoAluno,
   }) => {
-    //  event.preventDefault();
-if(valorBotao === 'Cadastrar Aluno'){
-   try {
+      //  event.preventDefault();
+    
+  if(valorBotao === 'Cadastrar Aluno'){
+    try {
+      
+        const response = await Axios.post('http://localhost:3001/adicionarAluno', {
+          nome: nomeAluno,
+          senha: senhaAluno,
+          cpf: cpfAluno,
+          email: emailAluno,
+          whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+          valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+          id_professor: 1,
+          id_tipo_usuario: 2,
+          ativo: parseInt(situacaoAluno),
+          data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
+        })
 
-      const response = await Axios.post('http://localhost:3001/adicionarAluno', {
-        nome: nomeAluno,
-        senha: senhaAluno,
-        cpf: cpfAluno,
-        email: emailAluno,
-        whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-        valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-        id_professor: 1,
-        id_tipo_usuario: 2,
-        ativo: parseInt(situacaoAluno),
-        data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
-      })
-
-      if (response.data.message === 'OK') {
-        navigate('/home')
+        if (response.data.message === 'OK') {
+          navigate('/home')
+        }
+      } catch (error) {
+        if (error.response.data.error === 'CPF já cadastrado') {
+          setmsgError("Erro ao cadastrar CPF");
+          setShowAlert(true)
+        }
       }
+  }else{
+    try {  
+        const response = await Axios.put(`http://localhost:3001/updateAluno/${idEditar}`, {
+              nome: nomeAluno,
+              senha: senhaAluno,
+              cpf: cpfAluno,
+              email: emailAluno,
+              whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+              valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+              id_professor: 1,
+              id_tipo_usuario: 2,
+              ativo: parseInt(situacaoAluno),
+              data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
+            })
+
+            if (response.data === 'OK') {
+              navigate('/home')
+            }
     } catch (error) {
-      if (error.response.data.error === 'CPF já cadastrado') {
+
+      if (error.response.data.error === 'Erro') {
+        setmsgError("Erro ao atualizar cliente.");
         setShowAlert(true)
       }
     }
-}else{
-
-}
+  }
  
   }
 
+ 
   /*-----  Esconder o box de erro de login depois de 3 segundos ----- */
   useEffect(() => {
     let timerId
@@ -116,7 +146,7 @@ if(valorBotao === 'Cadastrar Aluno'){
         <div role='alert' className='modalAtencao w-1/5 m-auto mt-10'>
           <div className='bg-red-500 text-white font-bold rounded-t px-4 py-2'>Atenção</div>
           <div className='border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700'>
-            <p className='font-bold'>CPF ja cadastrado.</p>
+            <p className='font-bold'>{ msgError }</p>
           </div>
         </div>
       )}

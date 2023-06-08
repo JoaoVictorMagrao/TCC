@@ -59,6 +59,21 @@ const controller = {
         }
       );
     });
+  },
+  excluirAluno: function (alunoId) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'DELETE FROM alunos where id = ?',
+        [alunoId],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
   
 
