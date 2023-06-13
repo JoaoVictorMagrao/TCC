@@ -8,27 +8,29 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 
 export let valorBotao = 'Editar Aluno';
+
+
 
 function Home() {
   const [data, setData] = useState([])
   const [page, setPage] = useState(1);
   const [filtroSituacao, setFiltroSituacao] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
+   
   const Swal = require('sweetalert2');
+  //const [cadastrarAluno, setCadastrarAluno] = useState(false);
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
   const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
-  const usersToShow = filteredData.slice(startIndex, endIndex);
-  //const [cadastrarAluno, setCadastrarAluno] = useState(false);
-
-  
+  const endIndex = startIndex + itemsPerPage;
+  const usersToShow = data.slice(startIndex, endIndex);
 
   const navigate = useNavigate()
   useEffect(() => {
@@ -43,7 +45,9 @@ function Home() {
   };
 
   const handleButtonEditarAluno = async (alunoId) => {
+    
     try {
+
       const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
       const data = await response.json();
   
@@ -110,37 +114,11 @@ function Home() {
   }
 
   const handleFiltroSituacaoChange = (event) => {
-    const situacao = event.target.value;
-    setFiltroSituacao(situacao);
-  
-    const filteredRows = data.filter((row) => {
-      const situacaoFiltrada =
-        situacao === '1' ? row.ativo === 1 : situacao === '2' ? row.ativo !== 1 : true;
-  
-      const nomeFiltrado =
-        filtroNome.trim() === '' ||
-        row.nome.toLowerCase().includes(filtroNome.toLowerCase());
-  
-      return situacaoFiltrada && nomeFiltrado;
-    });
-  
-    setFilteredData(filteredRows);
+    setFiltroSituacao(event.target.value);
   };
 
   const handleFiltroNomeChange = (event) => {
-    const nome = event.target.value;
-    setFiltroNome(nome);
-  
-    const filteredRows = data.filter((row) => {
-      const situacaoFiltrada =
-        filtroSituacao === '1' ? row.ativo === 1 : filtroSituacao === '2' ? row.ativo !== 1 : true;
-  
-      const nomeFiltrado = nome.trim() === '' || row.nome.toLowerCase().includes(nome.toLowerCase());
-  
-      return situacaoFiltrada && nomeFiltrado;
-    });
-  
-    setFilteredData(filteredRows);
+    setFiltroNome(event.target.value);
   };
 
   const theme = createTheme({
@@ -161,7 +139,7 @@ function Home() {
     valorBotao = 'Cadastrar Aluno';
     navigate('/cliente');
   }
-
+  
   return (
   
     <div>
@@ -232,8 +210,7 @@ function Home() {
                 </thead>
                 <tbody>
                   {/* Filtro para buscar por nome e por situação */}
-                {usersToShow
-                .filter((row) => {
+                {usersToShow.filter((row) => {
                   const situacaoFiltrada =
                     filtroSituacao === '1'
                       ? row.ativo === 1
@@ -245,11 +222,9 @@ function Home() {
                     filtroNome.trim() === '' ||
                     row.nome.toLowerCase().includes(filtroNome.toLowerCase());
 
-                  // Verifica se o filtro de nome está vazio ou se o nome corresponde ao filtro
-                  const filtroNomeVazioOuCorrespondente = filtroNome.trim() === '' || nomeFiltrado;
-
-                  return situacaoFiltrada && filtroNomeVazioOuCorrespondente;
-                }).map((row) => (
+                  return situacaoFiltrada && nomeFiltrado;
+                })
+                .map((row) => (
                     <tr className='border-b dark:border-neutral-500' key={row.id}>
                       <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>
                       <td className='whitespace-nowrap px-6 py-4'>{row.nome}</td>

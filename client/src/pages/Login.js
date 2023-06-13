@@ -1,26 +1,20 @@
 import '../styles/login.css';
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { DataLoginContext } from '../context/DataLoginContext';
 import { useNavigate } from 'react-router-dom';
-
-
-/*----- Imagens -----*/
 import logo from '../img/logo.svg';
-import olhoOculto from '../img/olho-oculto.svg';
-import olho from '../img/olho.svg';
-
-
+// import olhoOculto from '../img/olho-oculto.svg';
+// import olho from '../img/olho.svg';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import Axios from 'axios';
-
 
 function Login() {
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState('Email ou senha incorretos.');
-
-
+  const {setNameUser, nameUser } = useContext(DataLoginContext);
+  const {setIdUser, idUser } = useContext(DataLoginContext);
   const navigate = useNavigate();
 
   function mostrarSenha() {
@@ -35,10 +29,12 @@ function Login() {
     })
       .then((response) => {
         if (response.data.msg === 'OK') {
-          setShowAlert(false)
-          navigate('/home')
+          setNameUser(response.data.nome);
+          setIdUser(response.data.id);
+          setShowAlert(false);
+          navigate('/home');
         } else {
-          setShowAlert(true)
+          setShowAlert(true);
         }
       })
       .catch((error) => {
@@ -113,7 +109,7 @@ function Login() {
                                 placeholder='Digite sua senha...'
                               />
                               <ErrorMessage component='span' name='senha' className='form-error text-red-500 text-sm' />
-                              <span
+                              {/* <span
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
                                 onClick={mostrarSenha}
                                 style={{ cursor: 'pointer' }}
@@ -122,7 +118,7 @@ function Login() {
                                   src={senhaVisivel ? olho : olhoOculto}
                                   alt={senhaVisivel ? 'Esconder senha' : 'Mostrar senha'}
                                 />
-                              </span>
+                              </span> */}
                           </div>
                           <div className="flex items-center justify-between">
                           

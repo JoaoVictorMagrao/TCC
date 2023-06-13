@@ -1,12 +1,18 @@
+import React, { useContext } from 'react';
 import Header from '../components/Header';
 import InputMask from 'react-input-mask';
 import { useNavigate } from 'react-router-dom';
+
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Axios from 'axios';
+
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { valorBotao } from './Home';
+import { DataLoginContext } from "../context/DataLoginContext";
+
+
 
 
 const validationPost = yup.object().shape({
@@ -55,9 +61,10 @@ function Cliente() {
   // const limparFormulario = () => {
   //   reset();
   // };
-  const navigate = useNavigate()
-  const [showAlert, setShowAlert] = useState(false)
-  const [msgError, setmsgError] = useState('Erro as cadastrar CPF')
+  const navigate = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
+  const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
+  const { idUser } = useContext(DataLoginContext);
   
   const handleFormSubmit = async ({
     nomeAluno,
@@ -73,7 +80,6 @@ function Cliente() {
     
   if(valorBotao === 'Cadastrar Aluno'){
     try {
-      
         const response = await Axios.post('http://localhost:3001/adicionarAluno', {
           nome: nomeAluno,
           senha: senhaAluno,
@@ -81,7 +87,7 @@ function Cliente() {
           email: emailAluno,
           whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
           valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-          id_professor: 1,
+          id_professor: idUser,
           id_tipo_usuario: 2,
           ativo: parseInt(situacaoAluno),
           data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
