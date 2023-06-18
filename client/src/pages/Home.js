@@ -1,14 +1,16 @@
 import '../styles/login.css';
 import Header from '../components/Header';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Axios from 'axios';
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
+import { CgGym } from 'react-icons/cg';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { DataLoginContext } from "../context/DataLoginContext";
+//import Swal from 'sweetalert2';
 
 
 
@@ -21,8 +23,8 @@ function Home() {
   const [page, setPage] = useState(1);
   const [filtroSituacao, setFiltroSituacao] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
-   
   const Swal = require('sweetalert2');
+  const { idUser } = useContext(DataLoginContext)
   //const [cadastrarAluno, setCadastrarAluno] = useState(false);
 
   const itemsPerPage = 10;
@@ -39,25 +41,24 @@ function Home() {
 
 
   const fetchAlunos = () => {
-    Axios.get('http://localhost:3001/listaAlunos')
+    Axios.get(`http://localhost:3001/listaAlunos/${idUser}`)
       .then((response) => setData(response.data))
       .catch((error) => console.log(error));
   };
 
   const handleButtonEditarAluno = async (alunoId) => {
     
-    try {
-
-      const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
-      const data = await response.json();
+    // try {
+    //   const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
+    //   const data = await response.json();
   
-      // Redirecionar para a página desejada e passar os dados como parâmetros na URL
-      const dados = `id=${data.id}&nome=${data.nome}&email=${data.email}&telefone=${data.whatsapp}&valor_mensal=${data.valor_mensal}&data_vencimento=${data.data_vencimento}&situacao=${data.ativo}&senha=${data.senha}&cpf=${data.cpf}`
-      window.location.href = '/cliente?' + dados;
+    //   // Redirecionar para a página desejada e passar os dados como parâmetros na URL
+    //   const dados = `id=${data.id}&nome=${data.nome}&email=${data.email}&telefone=${data.whatsapp}&valor_mensal=${data.valor_mensal}&data_vencimento=${data.data_vencimento}&situacao=${data.ativo}&senha=${data.senha}&cpf=${data.cpf}`
+      window.location.href = `/cliente?id=${alunoId}`;
 
-    } catch (error) {
-      console.error(error);
-    }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   const confirmDeleteAluno = async (alunoId, nome) => {
@@ -76,6 +77,7 @@ function Home() {
     })
   }
 
+/*---------------------- EXCLUIR ALUNO ----------------------*/
   const handleButtonExcluirAluno = async (alunoId) => {
     try {
       const response = await fetch(`http://localhost:3001/excluirAluno/${alunoId}`, {
@@ -112,7 +114,7 @@ function Home() {
       })
     }
   }
-
+/*---------------------- FIM EXCLUIR ALUNO ----------------------*/
   const handleFiltroSituacaoChange = (event) => {
     setFiltroSituacao(event.target.value);
   };
@@ -225,7 +227,7 @@ function Home() {
                   return situacaoFiltrada && nomeFiltrado;
                 })
                 .map((row) => (
-                    <tr className='border-b dark:border-neutral-500' key={row.id}>
+                    <tr className='border-b dark:border-neutral-500 cursor-pointer' key={row.id} >
                       <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>
                       <td className='whitespace-nowrap px-6 py-4'>{row.nome}</td>
                       <td className='whitespace-nowrap px-6 py-4'>
@@ -252,7 +254,8 @@ function Home() {
                         <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
                           <BiEdit size={32} />
                         </Link>
-                        <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>
+                        <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>   
+                        <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
                       </td>
                     </tr>
                   ))}

@@ -13,8 +13,6 @@ import { valorBotao } from './Home';
 import { DataLoginContext } from "../context/DataLoginContext";
 
 
-
-
 const validationPost = yup.object().shape({
   nomeAluno: yup
     .string()
@@ -37,35 +35,61 @@ const validationPost = yup.object().shape({
 });
 
 const urlParams = new URLSearchParams(window.location.search);
-  const idEditar = urlParams.get('id');
-  const nomeEditar = urlParams.get('nome');
-  const emailEditar = urlParams.get('email');
-  const cpfEditar = urlParams.get('cpf');
-  const telefoneEditar = urlParams.get('telefone');
-  const valorEditar = urlParams.get('valor_mensal');
-  const dataVencimentoEditar = urlParams.get('data_vencimento');
-  const formattedDataVencimento = (dataVencimentoEditar == null) ? '' : dataVencimentoEditar.slice(0, 10); // Extrai apenas 'yyyy-mm-dd'
-  const situacaoEditar = urlParams.get('situacao');
-  const senhaEditar = urlParams.get('senha');
+const idEditar = urlParams.get('id');
+ 
+async function getDadosAluno() {
+const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
+const data = await response.json();
+  return {
+    ...data,
+    nomeAluno: data.nome,
+    emailAluno: data.email,
+    cpfAluno: data.cpf,
+    telefoneAluno: data.whatsapp,
+    mensalidadeAluno: data.valor_mensal,
+    dataVencimentoAluno: (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10),
+    situacaoAluno: data.situacao,
+    senhaAluno: data.senha
+  }
+}
 
 function Cliente() {
+  
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     //reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationPost),
+    defaultValues: getDadosAluno
   })
 
   // const limparFormulario = () => {
   //   reset();
   // };
+ 
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
   const { idUser } = useContext(DataLoginContext);
-  
+  const [selectedImage, setSelectedImage] = useState(null);
+
+ const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    // Verificar se um arquivo foi selecionado
+    if (file) {
+      const reader = new FileReader();
+      // Configurar a função de callback para quando o arquivo for lido
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+      };
+      // Ler o arquivo como uma URL de dados
+      reader.readAsDataURL(file);
+    }
+  };
   const handleFormSubmit = async ({
     nomeAluno,
     senhaAluno,
@@ -110,8 +134,8 @@ function Cliente() {
               cpf: cpfAluno,
               email: emailAluno,
               whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-              valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-              id_professor: 1,
+              valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+              id_professor: idUser,
               id_tipo_usuario: 2,
               ativo: parseInt(situacaoAluno),
               data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
@@ -131,8 +155,8 @@ function Cliente() {
  
   }
 
- 
-  /*-----  Esconder o box de erro de login depois de 3 segundos ----- */
+ // console.log(getValues('cpfAluno'));
+
   useEffect(() => {
     let timerId
     if (showAlert) {
@@ -171,7 +195,6 @@ function Cliente() {
                 name='nomeAluno'
                 id='nomeAluno'
                 {...register('nomeAluno')}
-                defaultValue={nomeEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.nomeAluno?.message}</p>
@@ -188,7 +211,6 @@ function Cliente() {
                 name='emailAluno'
                 id='emailAluno'
                 {...register('emailAluno')}
-                defaultValue={emailEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.emailAluno?.message}</p>
@@ -201,12 +223,13 @@ function Cliente() {
                 >
                   CPF
                 </label>
-                <InputMask
-                  mask='999.999.999-99'
+                <input
+                 // mask='999.999.999-99'
                   id='cpfAluno'
                   name='cpfAluno'
                   {...register('cpfAluno')}
-                  defaultValue={cpfEditar}
+                  // onChange={(e) => { setValue('cpfAluno', {value:e.target.value}, {shouldValidate: false})}}
+                  // value={getValues('cpfAluno') }
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.cpfAluno?.message}</p>
@@ -218,13 +241,13 @@ function Cliente() {
                 >
                   Telefone
                 </label>
-                <InputMask
-                  mask='(99) 99999-9999'
+                <input
+                  //mask='(99) 99999-9999'
                   type='text'
                   id='telefoneAluno'
                   name='telefoneAluno'
                   {...register('telefoneAluno')}
-                  defaultValue={telefoneEditar}
+                  //value={getValues('telefoneAluno')}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.telefoneAluno?.message}</p>
@@ -243,7 +266,6 @@ function Cliente() {
                   id='mensalidadeAluno'
                   name='mensalidadeAluno'
                   {...register('mensalidadeAluno')}
-                  defaultValue={valorEditar}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.mensalidadeAluno?.message}</p>
@@ -261,7 +283,6 @@ function Cliente() {
                   id='dataVencimentoAluno'
                   name='dataVencimentoAluno'
                   {...register('dataVencimentoAluno')}
-                  defaultValue={formattedDataVencimento}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
                 <p className='error-menssage'>{errors.dataVencimentoAluno?.message}</p>
@@ -278,7 +299,6 @@ function Cliente() {
                 id='situacaoAluno'
                 name='situacaoAluno'
                 {...register('situacaoAluno')}
-                defaultValue={situacaoEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               >
                 <option value='1'>Ativo</option>
@@ -299,10 +319,32 @@ function Cliente() {
                 id='senhaAluno'
                 name='senhaAluno'
                 {...register('senhaAluno')}
-                defaultValue={senhaEditar}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />
               <p className='error-menssage'>{errors.senhaAluno?.message}</p>
+            </div>
+
+            <div className="">
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileUpload}
+                accept="image/*"
+                id="upload-button"
+              />
+              <label
+                htmlFor="upload-button"
+                className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
+              >
+                Escolha uma imagem
+              </label>
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Imagem selecionada"
+                  className="mt-4 max-w-xs"
+                />
+              )}
             </div>
           </div>
 

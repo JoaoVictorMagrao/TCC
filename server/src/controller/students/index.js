@@ -1,10 +1,11 @@
 const db = require('../../config/index');
 
 const controller = {
-  listaAluno: function (req, res) {
+  listaAluno: function (idProfessor) {
     return new Promise((resolve, reject) => {
       db.query(
-        'SELECT id, nome, email, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos',
+        'SELECT id, nome, email, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos  WHERE id_professor = ?',
+        [idProfessor],
         (err, result) => {
           if (err) {
             reject(err);

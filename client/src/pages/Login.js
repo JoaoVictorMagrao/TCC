@@ -8,6 +8,8 @@ import logo from '../img/logo.svg';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import Axios from 'axios';
+import ReactModal from 'react-modal';
+
 
 function Login() {
   const [senhaVisivel, setSenhaVisivel] = useState(false);
@@ -15,11 +17,26 @@ function Login() {
   const [alertText, setAlertText] = useState('Email ou senha incorretos.');
   const {setNameUser, nameUser } = useContext(DataLoginContext);
   const {setIdUser, idUser } = useContext(DataLoginContext);
+  const [isModalOpenEmail, setIsModalOpenEmail] = useState(false);
+  const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
   function mostrarSenha() {
     setSenhaVisivel(!senhaVisivel)
   }
+
+  const handleOpenModal = () => {
+    setIsModalOpenEmail(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpenEmail(false);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
 
   /*----- API para verificar se o login do usuário existe -----*/
    const handleClickLogin = (values) => {
@@ -64,6 +81,17 @@ function Login() {
       .min(6, 'A senha deve ter 6 caracteres')
       .required('O campo senha é obrigatório'),
   })
+
+  const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
 
   return (
     <section >
@@ -121,9 +149,33 @@ function Login() {
                               </span> */}
                           </div>
                           <div className="flex items-center justify-between">
-                          
-                              <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Esqueceu sua senha?</a>
+                              <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={handleOpenModal}>Esqueceu sua senha?</a>
                           </div>
+
+                          <ReactModal
+                             isOpen={isModalOpenEmail}
+                             onRequestClose={handleCloseModal}
+                             style={customStyles}
+                             contentLabel="Example Modal"
+                          >    
+                            <div className="modal-content">
+                              <p className="text-lg">Digite seu email:</p>
+                              <input
+                                type="email"
+                                value={email}
+                                onChange={handleEmailChange}
+                                className="border sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                              />
+                              <div className='flex gap-3'>
+                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mt-2" >
+                                  Enviar
+                                </button>
+                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2" onClick={handleCloseModal}>
+                                  Fechar
+                                </button>
+                              </div>
+                            </div>
+                          </ReactModal>
                           <button type="submit" id='btnLogar' className="buttonLogin w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                             Entrar
                           </button>

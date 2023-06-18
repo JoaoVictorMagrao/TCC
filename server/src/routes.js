@@ -14,9 +14,10 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.get('/listaAlunos', async (req, res) => {
+router.get('/listaAlunos/:id_professor', async (req, res) => {
+  const professorId = req.params.id_professor;
   try {
-    const alunos = await alunosController.listaAluno();
+    const alunos = await alunosController.listaAluno(professorId);
     res.send(alunos);
   } catch (error) {
     res.status(500).send(error);
