@@ -5,8 +5,8 @@ import { DataLoginContext } from "./context/DataLoginContext";
 
 function App() {
   const { nameUser, idUser } = useContext(DataLoginContext)
-  console.log(nameUser);
-  console.log(idUser);
+  // console.log(nameUser);
+  // console.log(idUser);
   return (
     <BrowserRouter>
       <Router />

@@ -39,7 +39,6 @@ function Home() {
     fetchAlunos();
   }, [])
 
-
   const fetchAlunos = () => {
     Axios.get(`http://localhost:3001/listaAlunos/${idUser}`)
       .then((response) => setData(response.data))

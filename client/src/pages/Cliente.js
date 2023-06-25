@@ -1,16 +1,19 @@
 import React, { useContext } from 'react';
 import Header from '../components/Header';
-import InputMask from 'react-input-mask';
 import { useNavigate } from 'react-router-dom';
 
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Axios from 'axios';
+import { storage } from '../firebase'; 
+import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
+
 
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { valorBotao } from './Home';
 import { DataLoginContext } from "../context/DataLoginContext";
+import { formatCnpjCpf, formatPhoneNumber, formatCurrency } from '../Util/util.js';
 
 
 const validationPost = yup.object().shape({
@@ -60,6 +63,7 @@ function Cliente() {
     handleSubmit,
     setValue,
     getValues,
+    
     //reset,
     formState: { errors },
   } = useForm({
@@ -75,21 +79,44 @@ function Cliente() {
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
   const { idUser } = useContext(DataLoginContext);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [imgURL, setImgURL] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [file, setFile] = useState("");
 
- const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    // Verificar se um arquivo foi selecionado
-    if (file) {
-      const reader = new FileReader();
-      // Configurar a função de callback para quando o arquivo for lido
-      reader.onload = (e) => {
-        setSelectedImage(e.target.result);
-      };
-      // Ler o arquivo como uma URL de dados
-      reader.readAsDataURL(file);
+  function handleChangeUpload(event) {
+    setFile(event.target.files[0]);
+}
+
+
+  function handleUpload(event) {
+    event.preventDefault();
+    if (!file) {
+        alert("Please choose a file first!")
     }
-  };
+ 
+    const storageRef = ref(storage,`/files/${file.name}`)
+    const uploadTask = uploadBytesResumable(storageRef, file);
+ 
+    uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+            const percent = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            );
+ 
+            // update progress
+            setProgress(percent);
+        },
+        (err) => console.log(err),
+        () => {
+          // download url
+            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                setImgURL(url);
+            });
+        }
+    ); 
+}
+  
   const handleFormSubmit = async ({
     nomeAluno,
     senhaAluno,
@@ -104,18 +131,19 @@ function Cliente() {
     
   if(valorBotao === 'Cadastrar Aluno'){
     try {
-        const response = await Axios.post('http://localhost:3001/adicionarAluno', {
-          nome: nomeAluno,
-          senha: senhaAluno,
-          cpf: cpfAluno,
-          email: emailAluno,
-          whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-          valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-          id_professor: idUser,
-          id_tipo_usuario: 2,
-          ativo: parseInt(situacaoAluno),
-          data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
-        })
+      const response = await Axios.post('http://localhost:3001/adicionarAluno', {
+        nome: nomeAluno,
+        senha: senhaAluno,
+        cpf: cpfAluno,
+        email: emailAluno,
+        whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+        valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+        id_professor: idUser,
+        id_tipo_usuario: 2,
+        ativo: parseInt(situacaoAluno),
+        data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
+        img: imgURL
+      });
 
         if (response.data.message === 'OK') {
           navigate('/home')
@@ -227,7 +255,11 @@ function Cliente() {
                  // mask='999.999.999-99'
                   id='cpfAluno'
                   name='cpfAluno'
-                  {...register('cpfAluno')}
+                  {...register('cpfAluno', {maxLength: 14})}
+                  maxLength={14}
+                  variant='outlined'
+                 // defaultValue={getFabUtilityClass.formtCnpj(member?.cpf ?? '')}
+                  onChange={e => setValue('cpfAluno', formatCnpjCpf(e.target.value))}
                   // onChange={(e) => { setValue('cpfAluno', {value:e.target.value}, {shouldValidate: false})}}
                   // value={getValues('cpfAluno') }
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
@@ -247,6 +279,10 @@ function Cliente() {
                   id='telefoneAluno'
                   name='telefoneAluno'
                   {...register('telefoneAluno')}
+                  maxLength={14}
+                  variant='outlined'
+                  onChange={e => setValue('telefoneAluno', formatPhoneNumber(e.target.value))}
+                  
                   //value={getValues('telefoneAluno')}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                 />
@@ -328,7 +364,7 @@ function Cliente() {
               <input
                 type="file"
                 className="hidden"
-                onChange={handleFileUpload}
+                onChange={handleChangeUpload}
                 accept="image/*"
                 id="upload-button"
               />
@@ -338,13 +374,15 @@ function Cliente() {
               >
                 Escolha uma imagem
               </label>
-              {selectedImage && (
+              <button onClick={handleUpload}>Confirmar Imagem</button>
+              {/* <p>{progress}</p> */}
+              {/* {selectedImage && (
                 <img
                   src={selectedImage}
                   alt="Imagem selecionada"
                   className="mt-4 max-w-xs"
                 />
-              )}
+              )} */}
             </div>
           </div>
 
@@ -357,6 +395,9 @@ function Cliente() {
             </button>
           </div>
         </form>
+
+        {!imgURL && <progress value={progress} max="100" />}
+        {imgURL && <img src={imgURL} alt="Imagem" />}
       </div>
     </div>
   )
