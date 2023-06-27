@@ -9,55 +9,53 @@ import { storage } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
 
 
-import * as yup from 'yup';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import { valorBotao } from './Home';
 import { DataLoginContext } from "../context/DataLoginContext";
-import { formatCnpjCpf, formatPhoneNumber, formatCurrency } from '../Util/util.js';
-
-
-const validationPost = yup.object().shape({
-  nomeAluno: yup
-    .string()
-    .required('O nome é obrigatório')
-    .max(40, 'O título precisa ter no maximo 255 caracteres'),
-  emailAluno: yup
-    .string()
-    .required('O email é obrigatório')
-    .max(180, 'O email precisa ter no maximo 180 caracteres')
-    .email('O texto informado não é um email'),
-  cpfAluno: yup.string().required('O CPF é obrigatório').min(14, 'CPF incompleto'),
-  telefoneAluno: yup
-    .string()
-    .required('O telefone é obrigatório')
-    .min(14, 'O numero de telefone precisa ter pelo menos 9 caracteres'),
-  //mensalidadeAluno: yup.string().required("O valor é obrigatório").max(13, "O valor não pode ser maior que 100,000.00"),
-  dataVencimentoAluno: yup.date().required('A data de vencimento é obrigatória'),
-  situacaoAluno: yup.string().required('A situação é obrigatório'),
-  senhaAluno: yup.string().required('A senha é obrigatório'),
-});
+import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost } from '../Util/util.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
  
 async function getDadosAluno() {
-const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
-const data = await response.json();
-  return {
-    ...data,
-    nomeAluno: data.nome,
-    emailAluno: data.email,
-    cpfAluno: data.cpf,
-    telefoneAluno: data.whatsapp,
-    mensalidadeAluno: data.valor_mensal,
-    dataVencimentoAluno: (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10),
-    situacaoAluno: data.situacao,
-    senhaAluno: data.senha
-  }
+    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
+    const data = await response.json();
+    {console.log(data.img)}
+      return {
+        ...data,
+        nomeAluno: data.nome,
+        emailAluno: data.email,
+        cpfAluno: data.cpf,
+        telefoneAluno: data.whatsapp,
+        mensalidadeAluno: data.valor_mensal,
+        dataVencimentoAluno: (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10),
+        situacaoAluno: data.situacao,
+        senhaAluno: data.senha,
+        selectedImage: data.img
+      }
 }
 
+
+
 function Cliente() {
+  const navigate = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
+  const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
+  const { idUser } = useContext(DataLoginContext);
+  const [imgURL, setImgURL] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [file, setFile] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   
+  useEffect(() => {
+    const fetchData = async () => {
+      const alunoData = await getDadosAluno();
+      setSelectedImage(alunoData.selectedImage);
+    };
+
+    fetchData();
+  }, []);
   const {
     register,
     handleSubmit,
@@ -71,50 +69,43 @@ function Cliente() {
     defaultValues: getDadosAluno
   })
 
+
   // const limparFormulario = () => {
   //   reset();
   // };
  
-  const navigate = useNavigate();
-  const [showAlert, setShowAlert] = useState(false);
-  const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
-  const { idUser } = useContext(DataLoginContext);
-  const [imgURL, setImgURL] = useState('');
-  const [progress, setProgress] = useState(0);
-  const [file, setFile] = useState("");
+ 
 
-  function handleChangeUpload(event) {
-    setFile(event.target.files[0]);
-}
+function handleUpload(event) {
+  event.preventDefault();
+  
+  const file = event.target.files[0];
 
+  if (!file) {
+    alert("Please choose a file first!");
+    return;
+  }
 
-  function handleUpload(event) {
-    event.preventDefault();
-    if (!file) {
-        alert("Please choose a file first!")
+  const storageRef = ref(storage, `/files/${file.name}`);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const percent = Math.round(
+        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      );
+
+      setProgress(percent);
+    },
+    (err) => console.log(err),
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+        setImgURL(url);
+        setSelectedImage(URL.createObjectURL(file)); // Cria uma URL temporária para a imagem selecionada
+      });
     }
- 
-    const storageRef = ref(storage,`/files/${file.name}`)
-    const uploadTask = uploadBytesResumable(storageRef, file);
- 
-    uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-            const percent = Math.round(
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
- 
-            // update progress
-            setProgress(percent);
-        },
-        (err) => console.log(err),
-        () => {
-          // download url
-            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                setImgURL(url);
-            });
-        }
-    ); 
+  );
 }
   
   const handleFormSubmit = async ({
@@ -364,25 +355,28 @@ function Cliente() {
               <input
                 type="file"
                 className="hidden"
-                onChange={handleChangeUpload}
+                onChange={handleUpload}
                 accept="image/*"
                 id="upload-button"
               />
+
               <label
                 htmlFor="upload-button"
                 className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
               >
                 Escolha uma imagem
               </label>
-              <button onClick={handleUpload}>Confirmar Imagem</button>
-              {/* <p>{progress}</p> */}
-              {/* {selectedImage && (
-                <img
-                  src={selectedImage}
-                  alt="Imagem selecionada"
-                  className="mt-4 max-w-xs"
-                />
-              )} */}
+
+              <div className='mt-5'>
+                {console.log(selectedImage)}
+                {selectedImage && (
+                  <div>
+                    {console.log(selectedImage)}
+                    <img src={selectedImage} alt="Selected Image" id='imgAluno' name='imgAluno' {...register('imgAluno')} width={300} />
+                    {progress !== 100 && <progress className='text-center' value={progress} max="100" />}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -396,8 +390,8 @@ function Cliente() {
           </div>
         </form>
 
-        {!imgURL && <progress value={progress} max="100" />}
-        {imgURL && <img src={imgURL} alt="Imagem" />}
+        
+
       </div>
     </div>
   )
