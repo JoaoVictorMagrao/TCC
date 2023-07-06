@@ -46,18 +46,7 @@ function Home() {
   };
 
   const handleButtonEditarAluno = async (alunoId) => {
-    
-    // try {
-    //   const response = await fetch(`http://localhost:3001/listaAlunoUnico/${alunoId}`);
-    //   const data = await response.json();
-  
-    //   // Redirecionar para a página desejada e passar os dados como parâmetros na URL
-    //   const dados = `id=${data.id}&nome=${data.nome}&email=${data.email}&telefone=${data.whatsapp}&valor_mensal=${data.valor_mensal}&data_vencimento=${data.data_vencimento}&situacao=${data.ativo}&senha=${data.senha}&cpf=${data.cpf}`
       window.location.href = `/cliente?id=${alunoId}`;
-
-    // } catch (error) {
-    //   console.error(error);
-    // }
   };
 
   const confirmDeleteAluno = async (alunoId, nome) => {

@@ -19,9 +19,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
  
 async function getDadosAluno() {
+
     const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
     const data = await response.json();
-    {console.log(data.img)}
       return {
         ...data,
         nomeAluno: data.nome,
@@ -68,13 +68,6 @@ function Cliente() {
     resolver: yupResolver(validationPost),
     defaultValues: getDadosAluno
   })
-
-
-  // const limparFormulario = () => {
-  //   reset();
-  // };
- 
- 
 
 function handleUpload(event) {
   event.preventDefault();
