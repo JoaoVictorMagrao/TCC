@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
+import SinalMais from '../img/Sinaldemais.png';
 
 
 
@@ -59,57 +60,57 @@ useEffect(() => {
       <Header />
     <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
         <Tabs className="w-80 md:w-4/5 ">
-          <TabList>
+          <TabList className='m-0'>
             {tabs.map((tab, index) => (
               <Tab key={index}>{tab}</Tab>
             ))}
-            {/* <button onClick={addTab}>
+            <button onClick={addTab}>
               <div className='bg-lime-400'>
                 <img src={SinalMais} alt="+" />
-              </div></button> */}
+              </div></button>
           </TabList>
 
           {tabs.map((tab, index) => (
-            <TabPanel key={index} >
-              <div className='flex gap-10 p-5'>
-                <div className='w-3/5'>
-                  <label
-                    htmlFor='nomeAluno'
-                    className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-                  >
-                    Treino Predefinido
-                  </label>
-                  <select
-                    id='situacaoAluno'
-                    name='situacaoAluno'
-                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  >
-                  {/* <option value='1'>Ativo</option>
-                  <option value='0'>Inativo</option> */}
-                  </select>
-                </div>
-                <div>
-                    <label
-                      htmlFor='nomeAluno'
-                      className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-                    >
-                      Escolha o dia que o aluno ira realizar o {tab}
-                    </label>
-                  <select multiple 
-                  onChange={handleSelectChange}
-                 // value={selectedOptions}
-                  className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                    
-                    <option value="1">Domingo</option>
-                    <option value="2">Segunda-feira</option>
-                    <option value="3">Terça-feira</option>
-                    <option value="4">Quarta-feira</option>
-                    <option value="5">Quinta-feira</option>
-                    <option value="6">Sexta-feira</option>
-                    <option value="7">Sábado</option>
-                  </select>
+            <TabPanel key={index} className='border border-solid border-1 border-black rounded'>
+              <div className='flex gap-10 p-5 w-4/5 mx-auto'>
+                  <div className='w-3/5'>
+                        <label
+                          htmlFor='nomeAluno'
+                          className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
+                        >
+                          Treino Predefinido
+                        </label>
+                        <select
+                          id='situacaoAluno'
+                          name='situacaoAluno'
+                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        >
+                        {/* <option value='1'>Ativo</option>
+                        <option value='0'>Inativo</option> */}
+                        </select>
+                  </div>
+                  <div>
+                        <label
+                          htmlFor='nomeAluno'
+                          className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
+                        >
+                          Escolha o dia que o aluno ira realizar o {tab}
+                        </label>
+                      <select multiple 
+                      onChange={handleSelectChange}
+                    // value={selectedOptions}
+                      className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        
+                        <option value="1">Domingo</option>
+                        <option value="2">Segunda-feira</option>
+                        <option value="3">Terça-feira</option>
+                        <option value="4">Quarta-feira</option>
+                        <option value="5">Quinta-feira</option>
+                        <option value="6">Sexta-feira</option>
+                        <option value="7">Sábado</option>
+                      </select>
                      
-                </div>
+                  </div>
                 {getDayOfWeek(selectedOptions).length > 0 && (
                   <div className="diasEscolhidos bg-gray-100 p-4 rounded-md shadow-md text-center">
                     <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>
@@ -124,7 +125,7 @@ useEffect(() => {
                 )}
               </div>
 
-              <div className='w-3/4 p-5'>
+              <div className='w-4/5 p-5 mx-auto'>
                   <label
                     htmlFor='descricaoTreino'
                     className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
@@ -137,7 +138,7 @@ useEffect(() => {
                   </textarea>
               </div>
 
-              <div className='p-5 border border-solid border-y-stone-500 border-1 rounded'>
+              <div className='p-5 border border-solid border-y-stone-500 border-1 rounded w-4/5 mx-auto'>
                 {/* ------------------------------------------- Linha 1 ------------------------------------------- */}
                       <div className='lineOne flex justify-between items-center gap-5'>
                         <div className='grupoMuscular w-1/2'>
@@ -237,9 +238,11 @@ useEffect(() => {
 
                       <div className='finalizarExercicio flex justify-end'>
                           <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3'><img src={check} alt="" /></button>
-                      </div>
-                      
+                      </div>      
               </div>
+                      <div className='p-10 flex items-center justify-center'>
+                          <button className='bg-lime-600 p-2 rounded text-white font-bold'>Finalizar Ficha</button>
+                      </div>
             </TabPanel>
           ))}
         </Tabs>
