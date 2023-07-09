@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
 import SinalMais from '../img/Sinaldemais.png';
+import axios from 'axios';
 
 
 
@@ -16,6 +17,15 @@ function Treino(){
   const [tabs, setTabs] = useState(['Treino A']);
   const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [grupoMuscularOptions, setGrupoMuscularOptions] = useState([]);
+  const [exerciciosOptions, setExerciciosOptions] = useState([]);
+  const [grupoMuscular, setGrupoMuscular] = useState('');
+  const [exercicioTreino, setExercicioTreino] = useState('');
+  const [seriesExercicio, setSeriesExercicio] = useState('');
+  const [repeticoesTreino, setRepeticoesTreino] = useState('');
+  const [cargaTreino, setCargaTreino] = useState('');
+  const [descansoTreino, setDescansoTreino] = useState('');
+
 
   const addTab = () => {
     const lastTabIndex = tabs.length - 1;
@@ -25,10 +35,7 @@ function Treino(){
 
     setTabs([...tabs, `Treino ${nextAlphabet}`]);
   };
-
-
-    
-  
+     
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
     //console.log(options);  Value do select do dias da semana
@@ -54,6 +61,42 @@ useEffect(() => {
   getDadosAluno();
 }, []);
 
+useEffect(() => {
+  const fetchGrupoMuscular = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/listaGrupoMuscular');
+      const listaGrupoMuscular = response.data;
+      setGrupoMuscularOptions(listaGrupoMuscular);
+    } catch (error) {
+      console.error('Erro ao buscar os dados:', error);
+    }
+  };
+
+  fetchGrupoMuscular();
+}, []);
+
+useEffect(() => {
+  const fetchExercicios = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/listaExercicios');
+      const listaExercicios = response.data;
+      setExerciciosOptions(listaExercicios);
+    } catch (error) {
+      console.error('Erro ao buscar os dados:', error);
+    }
+  };
+
+  fetchExercicios();
+}, []);
+
+const handleClickDataExercises = () => {
+  console.log('Grupo Muscular:', grupoMuscular);
+  console.log('Exercício:', exercicioTreino);
+  console.log('Séries:', seriesExercicio);
+  console.log('Repetições:', repeticoesTreino);
+  console.log('Carga:', cargaTreino);
+  console.log('Descanso:', descansoTreino);
+};
 
   return(
     <div>
@@ -64,16 +107,17 @@ useEffect(() => {
             {tabs.map((tab, index) => (
               <Tab key={index}>{tab}</Tab>
             ))}
-            <button onClick={addTab}>
+            {/* <button onClick={addTab}>
               <div className='bg-lime-400'>
                 <img src={SinalMais} alt="+" />
-              </div></button>
+              </div>
+            </button> */}
           </TabList>
 
           {tabs.map((tab, index) => (
             <TabPanel key={index} className='border border-solid border-1 border-black rounded'>
               <div className='flex gap-10 p-5 w-4/5 mx-auto'>
-                  <div className='w-3/5'>
+                  {/* <div className='w-3/5'>
                         <label
                           htmlFor='nomeAluno'
                           className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
@@ -86,9 +130,9 @@ useEffect(() => {
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         >
                         {/* <option value='1'>Ativo</option>
-                        <option value='0'>Inativo</option> */}
+                        <option value='0'>Inativo</option> }
                         </select>
-                  </div>
+                  </div> */}
                   <div>
                         <label
                           htmlFor='nomeAluno'
@@ -153,14 +197,22 @@ useEffect(() => {
                               id='grupoMuscular'
                               name='grupoMuscular'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                              value={grupoMuscular}
+                              onChange={(e) => setGrupoMuscular(e.target.value)}
                             >
-                            {/* <option value='1'>Ativo</option>
-                            <option value='0'>Inativo</option> */}
+                               <option value='' disabled hidden>
+                                  Selecione um grupo muscular
+                                </option>
+                                {grupoMuscularOptions.map((grupo) => (
+                                  <option key={grupo.id} value={grupo.id}>
+                                    {grupo.descricao}
+                                  </option>
+                                ))}
                             </select>
                         </div>
 
                         <div className='exercicio w-1/2'>
-                        <label
+                             <label
                               htmlFor='exercicioTreino'
                               className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                             >   
@@ -171,9 +223,17 @@ useEffect(() => {
                               id='exercicioTreino'
                               name='exercicioTreino'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                              value={exercicioTreino}
+                              onChange={(e) => setExercicioTreino(e.target.value)}
                             >
-                            {/* <option value='1'>Ativo</option>
-                            <option value='0'>Inativo</option> */}
+                               <option value='' disabled hidden>
+                                  Selecione um exercício
+                                </option>
+                             {exerciciosOptions.map((grupo) => (
+                                  <option key={grupo.id} value={grupo.id}>
+                                    {grupo.descricao}
+                                  </option>
+                                ))}
                             </select>
                         </div>
                       </div>
@@ -191,6 +251,8 @@ useEffect(() => {
                                   id='seriesExercicio'
                                   name='seriesExercicio'
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                                  value={seriesExercicio}
+                                  onChange={(e) => setSeriesExercicio(e.target.value)}
                                 />
                             </div>
 
@@ -204,6 +266,8 @@ useEffect(() => {
                                   id='repeticoesTreino'
                                   name='repeticoesTreino'
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                                  value={repeticoesTreino}
+                                  onChange={(e) => setRepeticoesTreino(e.target.value)}
                                 />
                             </div>
 
@@ -217,6 +281,8 @@ useEffect(() => {
                                   id='cargaTreino'
                                   name='cargaTreino'
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                                  value={cargaTreino}
+                                  onChange={(e) => setCargaTreino(e.target.value)}
                                 />
                             </div>
 
@@ -230,6 +296,8 @@ useEffect(() => {
                                   id='descansoTreino'
                                   name='descansoTreino'
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                                  value={descansoTreino}
+                                  onChange={(e) => setDescansoTreino(e.target.value)}
                                 />
                             </div>
                           
@@ -237,7 +305,9 @@ useEffect(() => {
           {/* ------------------------------------------- FIM Linha 2 ------------------------------------------- */}
 
                       <div className='finalizarExercicio flex justify-end'>
-                          <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3'><img src={check} alt="" /></button>
+                          <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={handleClickDataExercises}>
+                            <img src={check} alt="Check" />
+                          </button>
                       </div>      
               </div>
                       <div className='p-10 flex items-center justify-center'>
