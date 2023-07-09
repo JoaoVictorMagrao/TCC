@@ -171,6 +171,7 @@ function Home() {
           onChange={handleFiltroNomeChange}/>
         </div>
       </div>
+      <div class="flex flex-col overflow-x-auto w-4/5 mx-auto">
         <div className='sm:-mx-6 lg:-mx-8'>
           <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
             <div className='overflow-x-auto'>
@@ -258,6 +259,7 @@ function Home() {
               </ThemeProvider>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

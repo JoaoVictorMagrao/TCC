@@ -76,4 +76,13 @@ router.delete('/excluirAluno/:id', async (req, res) => {
   }
 });
 
+router.get('/listaExercicios', async (req, res) => {
+  try {
+    const exercicios = await alunosController.listaExercicios();
+    res.json(exercicios);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro' });
+  }
+});
+
 module.exports = router;

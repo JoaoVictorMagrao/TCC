@@ -75,6 +75,20 @@ const controller = {
         }
       );
     });
+  },
+  listaExercicios: function () {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT id, descricao FROM exercicios ORDER BY descricao',
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
   
 
