@@ -89,6 +89,20 @@ const controller = {
         }
       );
     });
+  },
+  listaGrupoMuscular: function () {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT id, descricao FROM grupo_muscular ORDER BY descricao',
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
   
 

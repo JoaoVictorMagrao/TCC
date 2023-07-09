@@ -85,4 +85,14 @@ router.get('/listaExercicios', async (req, res) => {
   }
 });
 
+router.get('/listaGrupoMuscular', async (req, res) => {
+  try {
+    const grupoMuscular = await alunosController.listaGrupoMuscular();
+    res.json(grupoMuscular);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro' });
+  }
+});
+
+
 module.exports = router;
