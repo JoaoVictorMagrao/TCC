@@ -25,6 +25,8 @@ function Treino(){
   const [repeticoesTreino, setRepeticoesTreino] = useState('');
   const [cargaTreino, setCargaTreino] = useState('');
   const [descansoTreino, setDescansoTreino] = useState('');
+  const [cardData, setCardData] = useState([]);
+
 
 
   const addTab = () => {
@@ -90,12 +92,15 @@ useEffect(() => {
 }, []);
 
 const handleClickDataExercises = () => {
-  console.log('Grupo Muscular:', grupoMuscular);
-  console.log('Exercício:', exercicioTreino);
-  console.log('Séries:', seriesExercicio);
-  console.log('Repetições:', repeticoesTreino);
-  console.log('Carga:', cargaTreino);
-  console.log('Descanso:', descansoTreino);
+  const newCardData = {
+    grupoMuscular: grupoMuscular,
+    exercicioTreino: exercicioTreino,
+    seriesExercicio: seriesExercicio,
+    repeticoesTreino: repeticoesTreino,
+    cargaTreino: cargaTreino,
+    descansoTreino: descansoTreino
+  };
+  setCardData((prevCardData) => [...prevCardData, newCardData]);
 };
 
   return(
@@ -198,7 +203,13 @@ const handleClickDataExercises = () => {
                               name='grupoMuscular'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                               value={grupoMuscular}
-                              onChange={(e) => setGrupoMuscular(e.target.value)}
+                              onChange={(e) => {
+                                const selectedIndex = e.target.selectedIndex;
+                                const selectedOptionText = e.target.options[selectedIndex].text;
+                                
+                                setGrupoMuscular(selectedOptionText);
+                              }}
+                            
                             >
                                <option value='' disabled hidden>
                                   Selecione um grupo muscular
@@ -224,11 +235,16 @@ const handleClickDataExercises = () => {
                               name='exercicioTreino'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
                               value={exercicioTreino}
-                              onChange={(e) => setExercicioTreino(e.target.value)}
+                              onChange={(e) => {
+                                const selectedIndex = e.target.selectedIndex;
+                                const selectedOptionText = e.target.options[selectedIndex].text;
+                                
+                                setExercicioTreino(selectedOptionText);
+                              }}
                             >
-                               <option value='' disabled hidden>
+                              <option value='' disabled hidden>
                                   Selecione um exercício
-                                </option>
+                              </option>
                              {exerciciosOptions.map((grupo) => (
                                   <option key={grupo.id} value={grupo.id}>
                                     {grupo.descricao}
@@ -308,8 +324,42 @@ const handleClickDataExercises = () => {
                           <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={handleClickDataExercises}>
                             <img src={check} alt="Check" />
                           </button>
-                      </div>      
+                      </div>     
+      
               </div>
+              {cardData.map((card, index) => (
+  <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
+    <table className='w-full'>
+      <tbody>
+        <tr>
+          <th className='text-xl font-bold text-left'>Grupo Muscular:</th>
+          <td>{card.grupoMuscular}</td>
+        </tr>
+        <tr>
+          <th className='text-xl font-bold text-left'>Exercício:</th>
+          <td>{card.exercicioTreino}</td>
+        </tr>
+        <tr>
+          <th className='text-xl font-bold text-left'>Séries:</th>
+          <td>{card.seriesExercicio}</td>
+        </tr>
+        <tr>
+          <th className='text-xl font-bold text-left'>Repetições:</th>
+          <td>{card.repeticoesTreino}</td>
+        </tr>
+        <tr>
+          <th className='text-xl font-bold text-left'>Carga:</th>
+          <td>{card.cargaTreino}</td>
+        </tr>
+        <tr>
+          <th className='text-xl font-bold text-left'>Descanso:</th>
+          <td>{card.descansoTreino}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+))}
+
                       <div className='p-10 flex items-center justify-center'>
                           <button className='bg-lime-600 p-2 rounded text-white font-bold'>Finalizar Ficha</button>
                       </div>
