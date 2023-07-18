@@ -26,6 +26,8 @@ function Treino(){
   const [cargaTreino, setCargaTreino] = useState('');
   const [descansoTreino, setDescansoTreino] = useState('');
   const [cardData, setCardData] = useState([]);
+  const [descricaoTreino, setDescricaoTreino] = useState('');
+  const [diaDaSemana, setDiaDaSemana] = useState('')
 
 
 
@@ -101,6 +103,18 @@ const handleClickDataExercises = () => {
     descansoTreino: descansoTreino
   };
   setCardData((prevCardData) => [...prevCardData, newCardData]);
+
+  setSeriesExercicio('');
+  setRepeticoesTreino('');
+  setCargaTreino('');
+  setDescansoTreino('');
+ // console.log(cardData);
+};
+
+const handleFinalizeSheet = () => {
+  console.log(cardData);
+  console.log(descricaoTreino);
+  console.log(diaDaSemana);
 };
 
   return(
@@ -165,7 +179,9 @@ const handleClickDataExercises = () => {
                     <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>
                     <div className="gap-2">
                       {getDayOfWeek(selectedOptions).map((day) => (
+                       
                         <p key={day} className="bg-blue-500 text-white py-2 px-4 rounded-md text-center">
+                          {/* {setDiaDaSemana(day)} */}
                           {day}
                         </p>
                       ))}
@@ -183,6 +199,8 @@ const handleClickDataExercises = () => {
                   </label>
 
                   <textarea name="descricaoTreino" id="descricaoTreino" cols="10" rows="2"
+                  value={descricaoTreino}
+                  onChange={(e) => setDescricaoTreino(e.target.value)}
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'>         
                   </textarea>
               </div>
@@ -361,7 +379,7 @@ const handleClickDataExercises = () => {
 ))}
 
                       <div className='p-10 flex items-center justify-center'>
-                          <button className='bg-lime-600 p-2 rounded text-white font-bold'>Finalizar Ficha</button>
+                          <button className='bg-lime-600 p-2 rounded text-white font-bold' onClick={handleFinalizeSheet}>Finalizar Ficha</button>
                       </div>
             </TabPanel>
           ))}
