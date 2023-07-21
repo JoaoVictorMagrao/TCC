@@ -6,6 +6,14 @@ import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
 import SinalMais from '../img/Sinaldemais.png';
 import axios from 'axios';
+import { FaWeightHanging } from 'react-icons/fa';
+import { GiNightSleep } from 'react-icons/gi';
+import { VscCheckAll } from 'react-icons/vsc';
+import { BiRepost } from 'react-icons/bi';
+import { FaDumbbell } from 'react-icons/fa';
+
+
+
 
 
 
@@ -27,7 +35,8 @@ function Treino(){
   const [descansoTreino, setDescansoTreino] = useState('');
   const [cardData, setCardData] = useState([]);
   const [descricaoTreino, setDescricaoTreino] = useState('');
-  const [diaDaSemana, setDiaDaSemana] = useState('')
+  const [diaDaSemana, setDiaDaSemana] = useState('');
+ 
 
 
 
@@ -42,7 +51,9 @@ function Treino(){
      
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
-    //console.log(options);  Value do select do dias da semana
+  //  console.log(options);  Value do select do dias da semana
+
+    setDiaDaSemana(options);
     setSelectedOptions(options);
   };
 
@@ -100,7 +111,9 @@ const handleClickDataExercises = () => {
     seriesExercicio: seriesExercicio,
     repeticoesTreino: repeticoesTreino,
     cargaTreino: cargaTreino,
-    descansoTreino: descansoTreino
+    descansoTreino: descansoTreino,
+    descricaoTreino: descricaoTreino,
+    diaDaSemana: diaDaSemana
   };
   setCardData((prevCardData) => [...prevCardData, newCardData]);
 
@@ -108,13 +121,13 @@ const handleClickDataExercises = () => {
   setRepeticoesTreino('');
   setCargaTreino('');
   setDescansoTreino('');
+  setDescricaoTreino('');
  // console.log(cardData);
 };
 
 const handleFinalizeSheet = () => {
   console.log(cardData);
-  console.log(descricaoTreino);
-  console.log(diaDaSemana);
+
 };
 
   return(
@@ -161,6 +174,7 @@ const handleFinalizeSheet = () => {
                         </label>
                       <select multiple 
                       onChange={handleSelectChange}
+                      value={diaDaSemana}
                     // value={selectedOptions}
                       className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         
@@ -345,38 +359,24 @@ const handleFinalizeSheet = () => {
                       </div>     
       
               </div>
+              {/*  */}
               {cardData.map((card, index) => (
-  <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
-    <table className='w-full'>
-      <tbody>
-        <tr>
-          <th className='text-xl font-bold text-left'>Grupo Muscular:</th>
-          <td>{card.grupoMuscular}</td>
-        </tr>
-        <tr>
-          <th className='text-xl font-bold text-left'>Exercício:</th>
-          <td>{card.exercicioTreino}</td>
-        </tr>
-        <tr>
-          <th className='text-xl font-bold text-left'>Séries:</th>
-          <td>{card.seriesExercicio}</td>
-        </tr>
-        <tr>
-          <th className='text-xl font-bold text-left'>Repetições:</th>
-          <td>{card.repeticoesTreino}</td>
-        </tr>
-        <tr>
-          <th className='text-xl font-bold text-left'>Carga:</th>
-          <td>{card.cargaTreino}</td>
-        </tr>
-        <tr>
-          <th className='text-xl font-bold text-left'>Descanso:</th>
-          <td>{card.descansoTreino}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-))}
+                <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
+                  <div className='text-xl font-bold text-center'>Grupo Muscular: {card.grupoMuscular}</div>
+                  <div className='flex justify-around'>
+                      <div className='columnOne'>
+                        <div className='flex gap-1'><FaDumbbell size={24}/> {card.exercicioTreino}</div>
+                        <div className='flex gap-1'><VscCheckAll size={24}/> {card.seriesExercicio} Séries</div>
+                        <div className='flex gap-1'> <BiRepost size={24}/>{card.repeticoesTreino} Repetição</div>
+                      </div>
+                      <div className='columnTwo'>
+                        <div className='flex gap-1'> <FaWeightHanging size={16}/> {card.cargaTreino} KG</div>
+                        <div className='flex gap-1'> <GiNightSleep size={16}/> {card.descansoTreino} Segundos</div>
+                        {/* <div>Dia da Semana: {card.diaDaSemana.join(', ')}</div> */}
+                      </div>
+                  </div>
+                </div>
+              ))}
 
                       <div className='p-10 flex items-center justify-center'>
                           <button className='bg-lime-600 p-2 rounded text-white font-bold' onClick={handleFinalizeSheet}>Finalizar Ficha</button>
