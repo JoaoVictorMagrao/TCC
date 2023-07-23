@@ -17,6 +17,7 @@ import { FaDumbbell } from 'react-icons/fa';
 
 
 
+
 function Treino(){
   const { codigo, nome } = useParams();
   const [nomeAluno, setNomeAluno] = useState();
@@ -28,7 +29,9 @@ function Treino(){
   const [grupoMuscularOptions, setGrupoMuscularOptions] = useState([]);
   const [exerciciosOptions, setExerciciosOptions] = useState([]);
   const [grupoMuscular, setGrupoMuscular] = useState('');
+  const [idGrupoMuscular, setIdGrupoMuscular] = useState('');
   const [exercicioTreino, setExercicioTreino] = useState('');
+  const [idExercicio, setIdExercicio] = useState('');
   const [seriesExercicio, setSeriesExercicio] = useState('');
   const [repeticoesTreino, setRepeticoesTreino] = useState('');
   const [cargaTreino, setCargaTreino] = useState('');
@@ -113,7 +116,9 @@ const handleClickDataExercises = () => {
     cargaTreino: cargaTreino,
     descansoTreino: descansoTreino,
     descricaoTreino: descricaoTreino,
-    diaDaSemana: diaDaSemana
+    diaDaSemana: diaDaSemana,
+    idGrupoMuscular: idGrupoMuscular,
+    idExercicio: idExercicio
   };
   setCardData((prevCardData) => [...prevCardData, newCardData]);
 
@@ -238,7 +243,8 @@ const handleFinalizeSheet = () => {
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
-                                
+                                const selectedValue = e.target.value; // Obter o valor da opção selecionada
+                                setIdGrupoMuscular(selectedValue);
                                 setGrupoMuscular(selectedOptionText);
                               }}
                             
@@ -270,7 +276,8 @@ const handleFinalizeSheet = () => {
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
-                                
+                                const selectedValue = e.target.value; // Obter o valor da opção selecionada
+                                setIdExercicio(selectedValue);
                                 setExercicioTreino(selectedOptionText);
                               }}
                             >
@@ -378,9 +385,15 @@ const handleFinalizeSheet = () => {
                 </div>
               ))}
 
-                      <div className='p-10 flex items-center justify-center'>
-                          <button className='bg-lime-600 p-2 rounded text-white font-bold' onClick={handleFinalizeSheet}>Finalizar Ficha</button>
-                      </div>
+<div className='p-10 flex items-center justify-center'>
+  <button
+    data-te-ripple-color="light"
+    className='ripple inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+    onClick={handleFinalizeSheet}
+  >
+    Finalizar Ficha
+  </button>
+</div>
             </TabPanel>
           ))}
         </Tabs>

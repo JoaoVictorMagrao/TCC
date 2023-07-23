@@ -103,6 +103,21 @@ const controller = {
         }
       );
     });
+  },
+  adicionarItensFichaAluno: function (itemFicha) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'INSERT INTO alunos (id_exercicio, id_treino_treino, descricao, id_grupo_muscular, series, carga, descanso) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [itemFicha.id_exercicio, itemFicha.id_treino_treino, itemFicha.descricao, itemFicha.id_grupo_muscular, itemFicha.series, itemFicha.carga, itemFicha.descanso],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
   
 
