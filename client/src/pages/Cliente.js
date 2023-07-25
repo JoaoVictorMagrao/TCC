@@ -42,7 +42,7 @@ function Cliente() {
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
-  const { idUser } = useContext(DataLoginContext);
+  const { idTeacher} = useContext(DataLoginContext);
   const [imgURL, setImgURL] = useState('');
   const [progress, setProgress] = useState(0);
   const [file, setFile] = useState("");
@@ -122,7 +122,7 @@ function handleUpload(event) {
         email: emailAluno,
         whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
         valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-        id_professor: idUser,
+        id_professor: idTeacher,
         id_tipo_usuario: 2,
         ativo: parseInt(situacaoAluno),
         data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
@@ -147,7 +147,7 @@ function handleUpload(event) {
               email: emailAluno,
               whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
               valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-              id_professor: idUser,
+              id_professor: idTeacher,
               id_tipo_usuario: 2,
               ativo: parseInt(situacaoAluno),
               data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],

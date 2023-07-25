@@ -4,9 +4,9 @@ import { Router } from "./Router";
 import { DataLoginContext } from "./context/DataLoginContext";
 
 function App() {
-  const { nameUser, idUser } = useContext(DataLoginContext)
-  // console.log(nameUser);
-  // console.log(idUser);
+  const { nameTeacher, idTeacher } = useContext(DataLoginContext)
+  // console.log(nameTeacher);
+  // console.log(idTeacher);
   return (
     <BrowserRouter>
       <Router />

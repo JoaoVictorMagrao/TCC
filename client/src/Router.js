@@ -11,7 +11,7 @@ export function Router() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/home" element={<Home />} />
       <Route path="/cliente" element={<Cliente />} />
-      <Route path="/treino/:codigo/:nome" element={<Treino/>} />
+      <Route path="/treino/:idStudent/:nameStudents" element={<Treino/>} />
     </Routes>
   );
 }

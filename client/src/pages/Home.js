@@ -10,6 +10,8 @@ import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import { DataLoginContext } from "../context/DataLoginContext";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
 //import Swal from 'sweetalert2';
 
 
@@ -24,7 +26,7 @@ function Home() {
   const [filtroSituacao, setFiltroSituacao] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
   const Swal = require('sweetalert2');
-  const { idUser } = useContext(DataLoginContext)
+  const { idTeacher } = useContext(DataLoginContext);
   //const [cadastrarAluno, setCadastrarAluno] = useState(false);
 
   const itemsPerPage = 10;
@@ -40,7 +42,7 @@ function Home() {
   }, [])
 
   const fetchAlunos = () => {
-    Axios.get(`http://localhost:3001/listaAlunos/${idUser}`)
+    Axios.get(`http://localhost:3001/listaAlunos/${idTeacher}`)
       .then((response) => setData(response.data))
       .catch((error) => console.log(error));
   };
@@ -196,7 +198,15 @@ function Home() {
                     <th scope='col' className='px-6 py-4'>
                       Situação
                     </th>
-                    <th scope='col' className='px-6 py-4'></th>
+                    <th scope='col' className='px-6 py-4'>
+
+                    </th>
+                    <th scope='col' className='px-6 py-4'>
+                      
+                      </th>
+                       <th scope='col' className='px-6 py-4'>
+                      
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -239,12 +249,30 @@ function Home() {
                         ></span>
                         {row.ativo === 1 ? 'Ativo' : 'Inativo'}
                       </td>
-                      <td className='whitespace-nowrap px-6 py-4 flex gap-10'>
-                        <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
-                          <BiEdit size={32} />
-                        </Link>
-                        <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>   
-                        <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
+                      <td>
+                          <Tooltip arrow TransitionComponent={Zoom} title="Editar">
+                            <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
+                              <div className='flex items-center justify-center'>
+                                <BiEdit size={32} />
+                              </div>
+                            </Link>
+                          </Tooltip>
+                      </td>
+
+                      <td>
+                          <Tooltip arrow TransitionComponent={Zoom} title="Deletar">
+                            <div className='flex items-center justify-center'>
+                              <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>   
+                            </div>
+                          </Tooltip>
+                      </td>
+
+                      <td>
+                          <Tooltip arrow TransitionComponent={Zoom} title="Montar Treino">
+                            <div className='flex items-center justify-center'>
+                              <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
+                            </div>
+                          </Tooltip>
                       </td>
                     </tr>
                   ))}

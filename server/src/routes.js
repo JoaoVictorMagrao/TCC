@@ -25,6 +25,22 @@ router.get('/listaAlunos/:id_professor', async (req, res) => {
   }
 });
 
+
+router.post('/adicionarExercicioFichaAluno', async (req, res) => {
+  try {
+
+    const { id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso } = req.body;   
+    //console.log('Dados recebidos:', req.body);
+
+    await alunosController.adicionarExercicioFichaAluno({ id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso });
+    res.status(200).json({ message: 'OK' });
+
+  } catch (error) {
+    console.error('Erro ao cadastrar ficha:', error.code);
+    res.status(500).json({ error: 'Erro' });
+
+  }
+});
 router.post('/adicionarAluno', async (req, res) => {
     try {
 

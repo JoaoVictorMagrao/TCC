@@ -104,20 +104,28 @@ const controller = {
       );
     });
   },
-  adicionarItensFichaAluno: function (itemFicha) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'INSERT INTO alunos (id_exercicio, id_treino_treino, descricao, id_grupo_muscular, series, carga, descanso) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [itemFicha.id_exercicio, itemFicha.id_treino_treino, itemFicha.descricao, itemFicha.id_grupo_muscular, itemFicha.series, itemFicha.carga, itemFicha.descanso],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
+  adicionarExercicioFichaAluno:  function (cardData) {
+    try {  
+      var sql = "INSERT INTO fichas (id_professor, id_alunos, id_ficha_itens, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      db.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("1 record inserted " + result);
+      });
+         db.query(
+          'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [itemFicha.id_exercicio, itemFicha.id_dia_treino, itemFicha.descricao, itemFicha.id_grupo_muscular, itemFicha.series, itemFicha.carga, itemFicha.descanso]
+         )
+        // ).then(result{
+        //   // for (const itemFicha of cardData) {
+        //   // }
+        // })
+      
+  
+      // Se quiser, pode retornar alguma mensagem ou resultado após o término do loop
+      return 'Itens adicionados com sucesso';
+    } catch (error) {
+      throw error;
+    }
   }
   
 

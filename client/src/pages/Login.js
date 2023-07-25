@@ -15,10 +15,11 @@ function Login() {
   const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState('Email ou senha incorretos.');
-  const {setNameUser, nameUser } = useContext(DataLoginContext);
-  const {setIdUser, idUser } = useContext(DataLoginContext);
+  const {setNameTeacher, nameTeacher } = useContext(DataLoginContext);
+  const {setIdTeacher, idTeacher } = useContext(DataLoginContext);
   const [isModalOpenEmail, setIsModalOpenEmail] = useState(false);
   const [email, setEmail] = useState('');
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const navigate = useNavigate();
 
   function mostrarSenha() {
@@ -40,21 +41,25 @@ function Login() {
 
   /*----- API para verificar se o login do usuário existe -----*/
    const handleClickLogin = (values) => {
+    setIsLoginOpen(true);
     Axios.post('http://localhost:3001/login', {
       email: values.email,
       senha: values.senha,
     })
       .then((response) => {
         if (response.data.msg === 'OK') {
-          setNameUser(response.data.nome);
-          setIdUser(response.data.id);
+          setIsLoginOpen(false);
+          setNameTeacher(response.data.nome);
+          setIdTeacher(response.data.id);
           setShowAlert(false);
           navigate('/home');
         } else {
+          setIsLoginOpen(false);
           setShowAlert(true);
         }
       })
       .catch((error) => {
+        setIsLoginOpen(false);
         setAlertText('Erro ao conectar com o servidor, tente novamente mais tarde...')
         setShowAlert(true)
       })
@@ -176,7 +181,7 @@ function Login() {
                               </div>
                             </div>
                           </ReactModal>
-                          <button type="submit" id='btnLogar' className="buttonLogin w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                          <button disabled={isLoginOpen} type="submit" id='btnLogar' className="buttonLogin w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                             Entrar
                           </button>
                           <p className="text-sm font-light text-gray-500 dark:text-gray-400">

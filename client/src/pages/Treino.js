@@ -1,6 +1,6 @@
 import Header from '../components/Header';
 import { useParams } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
@@ -11,15 +11,21 @@ import { GiNightSleep } from 'react-icons/gi';
 import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
-
-
-
-
-
+import { DataLoginContext } from "../context/DataLoginContext";
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
 
 
 function Treino(){
-  const { codigo, nome } = useParams();
+  const { idTeacher } = useContext(DataLoginContext);
+  const { idStudent, nameStudent } = useParams();
+
   const [nomeAluno, setNomeAluno] = useState();
   const [telefoneAluno, setTelefoneAluno] = useState();
   const [mensalidadeAluno, setMensalidadeAluno] = useState();
@@ -39,18 +45,44 @@ function Treino(){
   const [cardData, setCardData] = useState([]);
   const [descricaoTreino, setDescricaoTreino] = useState('');
   const [diaDaSemana, setDiaDaSemana] = useState('');
- 
+  
+  const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
+ //Controla quando o modal abre e fecha
+    const [confirmDeactivateListing, SetConfirmDeactivateListing] = React.useState(false);
+    const [openNameSheet, setOpenSaveSheet] = React.useState(false);
 
+    const handleClickOpenSaveSheet = () => {
+      setOpenSaveSheet(true);
+    };
+  
+    const handleCloseNameSheet = () => {
+      setOpenSaveSheet(false);
+    };
+  
+    const handleClickOpen = () => {
+      SetConfirmDeactivateListing(true);
+    };
+  
+    const handleCloseFinalizeSheet = () => {
+      SetConfirmDeactivateListing(false);
+    };
 
-  const addTab = () => {
-    const lastTabIndex = tabs.length - 1;
-    const lastTab = tabs[lastTabIndex];
-    const nextAlphabetIndex = alphabets.indexOf(lastTab[lastTab.length - 1]) + 1;
-    const nextAlphabet = alphabets[nextAlphabetIndex];
+    const handleClickacceptSheet = () => {
+      handleClickOpenSaveSheet();
+      SetConfirmDeactivateListing(false);
+    };
+  
+  // const addTab = () => {
+  //   const lastTabIndex = tabs.length - 1;
+  //   const lastTab = tabs[lastTabIndex];
+  //   const nextAlphabetIndex = alphabets.indexOf(lastTab[lastTab.length - 1]) + 1;
+  //   const nextAlphabet = alphabets[nextAlphabetIndex];
 
-    setTabs([...tabs, `Treino ${nextAlphabet}`]);
-  };
+  //   setTabs([...tabs, `Treino ${nextAlphabet}`]);
+  // };
      
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
@@ -67,7 +99,7 @@ function Treino(){
   
 
   async function getDadosAluno() {
-    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${codigo}`);
+    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
     const data = await response.json();
         setNomeAluno(data.nome);
         setTelefoneAluno(data.whatsapp);
@@ -116,7 +148,7 @@ const handleClickDataExercises = () => {
     cargaTreino: cargaTreino,
     descansoTreino: descansoTreino,
     descricaoTreino: descricaoTreino,
-    diaDaSemana: diaDaSemana,
+    diaDaSemana: 1,//diaDaSemana,
     idGrupoMuscular: idGrupoMuscular,
     idExercicio: idExercicio
   };
@@ -130,14 +162,64 @@ const handleClickDataExercises = () => {
  // console.log(cardData);
 };
 
-const handleFinalizeSheet = () => {
-  console.log(cardData);
+const handleFinalizeSheet = async () => {
+  
+  // console.log(cardData);
+  // try {
+  //   const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
+  //     cardData: cardData, // Enviando o array cardData no corpo da requisição
+  //   });
 
+  //   console.log(response.data); // Verificar a resposta do servidor (se necessário)
+  // } catch (error) {
+  //   console.error('Erro ao enviar dados para o servidor:', error);
+  // }
 };
 
   return(
     <div>
       <Header />
+     
+        <Dialog
+          open={confirmDeactivateListing}
+          TCoansitionComponent={Transition}
+          keepMounted
+          onClose={handleCloseFinalizeSheet}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogTitle>{`Deseja Realmente finalizar a ficha do ${nomeAluno}?`}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              Caso você finalize essa ficha e o {nomeAluno} estiver outra ficha ativa, ela será inativada e essa nova ficha sera ativada.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseFinalizeSheet}>Cancelar</Button>
+            <Button onClick={handleClickacceptSheet}>Ativar Ficha</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={openNameSheet} onClose={handleCloseNameSheet}>
+        <DialogTitle>Finalizar Ficha</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            O nome da ficha ira aparecer no app do seu aluno!
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="nameSheet"
+            label="Digite o nome da ficha..."
+            type="text"
+            fullWidth
+            variant="standard"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNameSheet}>Cancelar</Button>
+          <Button onClick={handleFinalizeSheet}>Salvar Ficha</Button>
+        </DialogActions>
+      </Dialog>
     <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
         <Tabs className="w-80 md:w-4/5 ">
           <TabList className='m-0'>
@@ -387,9 +469,8 @@ const handleFinalizeSheet = () => {
 
 <div className='p-10 flex items-center justify-center'>
   <button
-    data-te-ripple-color="light"
-    className='ripple inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
-    onClick={handleFinalizeSheet}
+    className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+    onClick={handleClickOpen}
   >
     Finalizar Ficha
   </button>
