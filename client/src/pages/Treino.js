@@ -20,6 +20,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
+import '@mui/material/styles';
+
 
 
 function Treino(){
@@ -45,6 +50,7 @@ function Treino(){
   const [cardData, setCardData] = useState([]);
   const [descricaoTreino, setDescricaoTreino] = useState('');
   const [diaDaSemana, setDiaDaSemana] = useState('');
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
   
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -187,10 +193,10 @@ const handleFinalizeSheet = async () => {
           onClose={handleCloseFinalizeSheet}
           aria-describedby="alert-dialog-slide-description"
         >
-          <DialogTitle>{`Deseja Realmente finalizar a ficha do ${nomeAluno}?`}</DialogTitle>
+          <DialogTitle>{`Deseja Realmente finalizar a ficha de ${nomeAluno}?`}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-slide-description">
-              Caso você finalize essa ficha e o {nomeAluno} estiver outra ficha ativa, ela será inativada e essa nova ficha sera ativada.
+            Se você concluir esta ficha e {nomeAluno} possuir outra ficha ativa, aquela será inativada e esta nova ficha será ativada.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -200,25 +206,35 @@ const handleFinalizeSheet = async () => {
         </Dialog>
 
         <Dialog open={openNameSheet} onClose={handleCloseNameSheet}>
-        <DialogTitle>Finalizar Ficha</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            O nome da ficha ira aparecer no app do seu aluno!
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="nameSheet"
-            label="Digite o nome da ficha..."
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseNameSheet}>Cancelar</Button>
-          <Button onClick={handleFinalizeSheet}>Salvar Ficha</Button>
-        </DialogActions>
+          <DialogTitle>Finalizar Ficha</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                O nome da ficha ira aparecer no app do seu aluno!
+              </DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="nameSheet"
+                label="Digite o nome da ficha..."
+                type="text"
+                fullWidth
+                variant="standard"
+              />
+
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  value={selectedEndDate}
+                  onChange={(newValue) => setSelectedEndDate(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                  label="Selecione uma data"
+                  fullWidth
+                />
+            </LocalizationProvider>
+            </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseNameSheet}>Cancelar</Button>
+            <Button onClick={handleFinalizeSheet}>Salvar Ficha</Button>
+          </DialogActions>
       </Dialog>
     <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
         <Tabs className="w-80 md:w-4/5 ">
