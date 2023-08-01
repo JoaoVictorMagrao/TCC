@@ -1,19 +1,16 @@
 import React, { useContext } from 'react';
 import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Axios from 'axios';
 import { storage } from '../firebase'; 
 import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
-
-
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { valorBotao } from './Home';
 import { DataLoginContext } from "../context/DataLoginContext";
 import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost } from '../Util/util.js';
+//import { updateAluno } from '../services/StudentsServices.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
@@ -47,6 +44,8 @@ function Cliente() {
   const [progress, setProgress] = useState(0);
   const [file, setFile] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+
+  
   
   useEffect(() => {
     const fetchData = async () => {
@@ -69,37 +68,37 @@ function Cliente() {
     defaultValues: getDadosAluno
   })
 
-function handleUpload(event) {
-  event.preventDefault();
+// function handleUpload(event) {
+//   event.preventDefault();
   
-  const file = event.target.files[0];
+//   const file = event.target.files[0];
 
-  if (!file) {
-    alert("Please choose a file first!");
-    return;
-  }
+//   if (!file) {
+//     alert("Please choose a file first!");
+//     return;
+//   }
 
-  const storageRef = ref(storage, `/files/${file.name}`);
-  const uploadTask = uploadBytesResumable(storageRef, file);
+//   const storageRef = ref(storage, `/files/${file.name}`);
+//   const uploadTask = uploadBytesResumable(storageRef, file);
 
-  uploadTask.on(
-    "state_changed",
-    (snapshot) => {
-      const percent = Math.round(
-        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-      );
+//   uploadTask.on(
+//     "state_changed",
+//     (snapshot) => {
+//       const percent = Math.round(
+//         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+//       );
 
-      setProgress(percent);
-    },
-    (err) => console.log(err),
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-        setImgURL(url);
-        setSelectedImage(URL.createObjectURL(file)); // Cria uma URL temporária para a imagem selecionada
-      });
-    }
-  );
-}
+//       setProgress(percent);
+//     },
+//     (err) => console.log(err),
+//     () => {
+//       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+//         setImgURL(url);
+//         setSelectedImage(URL.createObjectURL(file)); // Cria uma URL temporária para a imagem selecionada
+//       });
+//     }
+//   );
+// }
   
   const handleFormSubmit = async ({
     nomeAluno,
@@ -348,7 +347,7 @@ function handleUpload(event) {
               <input
                 type="file"
                 className="hidden"
-                onChange={handleUpload}
+              //  onChange={handleUpload}
                 accept="image/*"
                 id="upload-button"
               />

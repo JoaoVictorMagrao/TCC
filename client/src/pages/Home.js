@@ -1,7 +1,11 @@
 import '../styles/login.css';
 import Header from '../components/Header';
 import React, { useState, useEffect, useContext } from 'react';
-import Axios from 'axios';
+import axios from 'axios';
+import {useAuthUser} from 'react-auth-kit';
+
+import { fetchAlunos, excluirAluno } from '../services/StudentsServices.js';
+
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
 import { CgGym } from 'react-icons/cg';
@@ -9,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { DataLoginContext } from "../context/DataLoginContext";
+// import { DataLoginContext } from "../context/DataLoginContext";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 //import Swal from 'sweetalert2';
@@ -26,7 +30,7 @@ function Home() {
   const [filtroSituacao, setFiltroSituacao] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
   const Swal = require('sweetalert2');
-  const { idTeacher } = useContext(DataLoginContext);
+  // const { idTeacher } = useContext(DataLoginContext);
   //const [cadastrarAluno, setCadastrarAluno] = useState(false);
 
   const itemsPerPage = 10;
@@ -37,15 +41,14 @@ function Home() {
   const usersToShow = data.slice(startIndex, endIndex);
 
   const navigate = useNavigate()
+
+  const auth = useAuthUser();
+
+ 
   useEffect(() => {
-    fetchAlunos();
+     fetchAlunos(auth().id, setData);
   }, [])
 
-  const fetchAlunos = () => {
-    Axios.get(`http://localhost:3001/listaAlunos/${idTeacher}`)
-      .then((response) => setData(response.data))
-      .catch((error) => console.log(error));
-  };
 
   const handleButtonEditarAluno = async (alunoId) => {
       window.location.href = `/cliente?id=${alunoId}`;
@@ -68,42 +71,31 @@ function Home() {
   }
 
 /*---------------------- EXCLUIR ALUNO ----------------------*/
+
   const handleButtonExcluirAluno = async (alunoId) => {
     try {
-      const response = await fetch(`http://localhost:3001/excluirAluno/${alunoId}`, {
-        method: 'DELETE'
+      const response = await excluirAluno(alunoId);
+
+      // Exclusão bem-sucedida
+      Swal.fire({
+        icon: 'success',
+        title: 'Feito',
+        text: 'Aluno excluído com sucesso!',
+        showConfirmButton: false,
+        timer: 2000,
       });
-  
-      if (response.ok) {
-        // Exclusão bem-sucedida
-        Swal.fire({
-          icon: 'success',
-          title: 'Atenção',
-          text: 'Aluno excluido com sucesso!',
-          showConfirmButton: false,
-          timer: 2000
-          //footer: '<a href="">Why do I have this issue?</a>'
-        })
-        fetchAlunos();
-      } else {
-        // Lidar com erros de exclusão
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Ocorreu um erro ao excluir o aluno!'
-          //footer: '<a href="">Why do I have this issue?</a>'
-        })
-      }
+
+      fetchAlunos(); // Se necessário, chame a função fetchAlunos após a exclusão bem-sucedida
     } catch (error) {
-      // Lidar com erros de requisição
+      // Lidar com erros de exclusão
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Erro na requisição:', error
-        //footer: '<a href="">Why do I have this issue?</a>'
-      })
+        text: 'Ocorreu um erro ao excluir o aluno!',
+      });
     }
-  }
+  };
+
 /*---------------------- FIM EXCLUIR ALUNO ----------------------*/
   const handleFiltroSituacaoChange = (event) => {
     setFiltroSituacao(event.target.value);
@@ -133,9 +125,12 @@ function Home() {
   }
   
   return (
-  
+
+   //   Hello {auth().nome}
+   
     <div>
-      <Header />
+   <Header/>
+
       <div className='mt-2 text-right mr-3'>
     
           <button
@@ -173,6 +168,9 @@ function Home() {
           onChange={handleFiltroNomeChange}/>
         </div>
       </div>
+
+      
+
       <div class="flex flex-col overflow-x-auto w-4/5 mx-auto">
         <div className='sm:-mx-6 lg:-mx-8'>
           <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>

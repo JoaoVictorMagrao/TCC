@@ -15,8 +15,10 @@ const controller = {
           if (result.length > 0) {
             const professor = {
               msg: 'OK',
-              id: result[0].id,
-              nome: result[0].nome
+              user: {
+                id: result[0].id,
+                nome: result[0].nome
+              } 
             };
             resolve(professor);
           } else {

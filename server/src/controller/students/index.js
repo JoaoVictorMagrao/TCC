@@ -103,25 +103,34 @@ const controller = {
         }
       );
     });
-  },
-  adicionarExercicioFichaAluno:  function (cardData) {
+   }
+  ,adicionarExercicioFichaAluno: function (cardData) {
+   // console.log(cardData);
     try {  
       var sql = "INSERT INTO fichas (id_professor, id_alunos, id_ficha_itens, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?, ?)";
-      db.query(sql, function (err, result) {
+      db.query(sql, [1, 1, 1, 'teste 12345', 1, '2023-03-17', '2023-03-17'], function (err, result) {
         if (err) throw err;
-        console.log("1 record inserted " + result);
-      });
-         db.query(
-          'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [itemFicha.id_exercicio, itemFicha.id_dia_treino, itemFicha.descricao, itemFicha.id_grupo_muscular, itemFicha.series, itemFicha.carga, itemFicha.descanso]
-         )
-        // ).then(result{
-        //   // for (const itemFicha of cardData) {
-        //   // }
-        // })
-      
+        console.log(result.insertId);
   
-      // Se quiser, pode retornar alguma mensagem ou resultado após o término do loop
+        // Usando os valores do objeto cardData
+      // cardData.map(() => {
+      //   console.log(cardData.descricao);
+      // })
+      console.log('cardData');
+      console.log(cardData);
+        for (const itemFicha of cardData) {
+          db.query(
+            'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (? ,?, ?, ?, ?, ?, ?, ?)',
+            [itemFicha.id_exercicio, itemFicha.id_dia_treino, itemFicha.descricao, itemFicha.id_grupo_muscular, itemFicha.series, itemFicha.carga, itemFicha.descanso, result.insertId],
+            function (err, result) {
+              if (err) throw err;
+              console.log(result);
+            }
+          );
+        }
+      });
+    
+      // Se quiser, pode retornar alguma mensagem ou resultado após o término da consulta
       return 'Itens adicionados com sucesso';
     } catch (error) {
       throw error;

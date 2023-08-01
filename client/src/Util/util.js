@@ -1,4 +1,6 @@
 import * as yup from 'yup';
+import axios from 'axios';
+
 export const formatCnpjCpf = function (value) {
   const cnpjCpf = value.replace(/\D/g, '')
 
@@ -38,3 +40,29 @@ export const validationPost = yup.object().shape({
   situacaoAluno: yup.string().required('A situação é obrigatório'),
   senhaAluno: yup.string().required('A senha é obrigatório'),
 });
+
+
+export const getDayOfWeek = (selectedOptions) => {
+  const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+  return selectedOptions.map((option) => daysOfWeek[parseInt(option) - 1]);
+};
+
+export const getDadosAluno = async (idStudent, setNomeAluno, setTelefoneAluno, setMensalidadeAluno) => {
+  const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
+  const data = await response.json();
+  setNomeAluno(data.nome);
+  setTelefoneAluno(data.whatsapp);
+  setMensalidadeAluno(data.valor_mensal);
+  // setImgAluno(data.img);
+};
+
+export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
+  try {
+    const response = await axios.get('http://localhost:3001/listaGrupoMuscular');
+    const listaGrupoMuscular = response.data;
+    
+    setGrupoMuscularOptions(listaGrupoMuscular);
+  } catch (error) {
+    console.error('Erro ao buscar os dados:', error);
+  }
+};

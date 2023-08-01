@@ -4,13 +4,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
-import SinalMais from '../img/Sinaldemais.png';
+//import SinalMais from '../img/Sinaldemais.png';
 import axios from 'axios';
+
+/* ------------------------ Icones ----------------------*/
 import { FaWeightHanging } from 'react-icons/fa';
 import { GiNightSleep } from 'react-icons/gi';
 import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
+/* ------------------------ Arquivos com funções ----------------------*/
+import { getDayOfWeek, getDadosAluno, fetchGrupoMuscular } from '../Util/util.js';
+
+/* ------------------------ Biblioteca Material UI ----------------------*/
 import { DataLoginContext } from "../context/DataLoginContext";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -28,14 +34,14 @@ import '@mui/material/styles';
 
 
 function Treino(){
-  const { idTeacher } = useContext(DataLoginContext);
-  const { idStudent, nameStudent } = useParams();
+ // const { idTeacher } = useContext(DataLoginContext);
+  //const { idStudent, nameStudent } = useParams();
 
   const [nomeAluno, setNomeAluno] = useState();
-  const [telefoneAluno, setTelefoneAluno] = useState();
-  const [mensalidadeAluno, setMensalidadeAluno] = useState();
+  //const [telefoneAluno, setTelefoneAluno] = useState();
+  //const [mensalidadeAluno, setMensalidadeAluno] = useState();
   const [tabs, setTabs] = useState(['Treino A']);
-  const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  //const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [grupoMuscularOptions, setGrupoMuscularOptions] = useState([]);
   const [exerciciosOptions, setExerciciosOptions] = useState([]);
@@ -51,15 +57,14 @@ function Treino(){
   const [descricaoTreino, setDescricaoTreino] = useState('');
   const [diaDaSemana, setDiaDaSemana] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState(null);
-  
+  const [confirmDeactivateListing, SetConfirmDeactivateListing] = React.useState(false);
+  const [openNameSheet, setOpenSaveSheet] = React.useState(false);
+
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
  //Controla quando o modal abre e fecha
-    const [confirmDeactivateListing, SetConfirmDeactivateListing] = React.useState(false);
-    const [openNameSheet, setOpenSaveSheet] = React.useState(false);
-
     const handleClickOpenSaveSheet = () => {
       setOpenSaveSheet(true);
     };
@@ -93,43 +98,16 @@ function Treino(){
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
   //  console.log(options);  Value do select do dias da semana
-
     setDiaDaSemana(options);
     setSelectedOptions(options);
   };
 
-  const getDayOfWeek = (selectedOptions) => {
-    const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-    return selectedOptions.map((option) => daysOfWeek[parseInt(option) - 1]);
-  };
-  
-
-  async function getDadosAluno() {
-    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
-    const data = await response.json();
-        setNomeAluno(data.nome);
-        setTelefoneAluno(data.whatsapp);
-        setMensalidadeAluno(data.valor_mensal);
-      //  setImgAluno(data.img);         
-  }
 
 useEffect(() => {
   getDadosAluno();
+  fetchGrupoMuscular(setGrupoMuscularOptions);
 }, []);
 
-useEffect(() => {
-  const fetchGrupoMuscular = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/listaGrupoMuscular');
-      const listaGrupoMuscular = response.data;
-      setGrupoMuscularOptions(listaGrupoMuscular);
-    } catch (error) {
-      console.error('Erro ao buscar os dados:', error);
-    }
-  };
-
-  fetchGrupoMuscular();
-}, []);
 
 useEffect(() => {
   const fetchExercicios = async () => {
