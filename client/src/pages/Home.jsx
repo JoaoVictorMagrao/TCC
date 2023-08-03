@@ -1,11 +1,9 @@
 import '../styles/login.css';
-import Header from '../components/Header';
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+
+import React, { useState, useEffect } from 'react';
+//import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
-
 import { fetchAlunos, excluirAluno } from '../services/StudentsServices.js';
-
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
 import { CgGym } from 'react-icons/cg';
@@ -16,13 +14,12 @@ import { Link } from 'react-router-dom';
 // import { DataLoginContext } from "../context/DataLoginContext";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
+import DrawerLeft from '../components/DrawerLeft';
+
+
+
 //import Swal from 'sweetalert2';
-
-
-
 export let valorBotao = 'Editar Aluno';
-
-
 
 function Home() {
   const [data, setData] = useState([])
@@ -85,7 +82,7 @@ function Home() {
         timer: 2000,
       });
 
-      fetchAlunos(); // Se necessário, chame a função fetchAlunos após a exclusão bem-sucedida
+      fetchAlunos(); // chama a função fetchAlunos após a exclusão bem-sucedida
     } catch (error) {
       // Lidar com erros de exclusão
       Swal.fire({
@@ -125,23 +122,9 @@ function Home() {
   }
   
   return (
-
    //   Hello {auth().nome}
-   
     <div>
-   <Header/>
-
-      <div className='mt-2 text-right mr-3'>
-    
-          <button
-            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-            onClick={cliqueCadastrarAluno}
-          >   <i className="fa-solid fa-plus mr-2"></i>
-            Cadastrar Aluno
-          </button>
-
-      </div>
-
+   <DrawerLeft nome={auth().nome}/>
      
       <div className="flex flex-col w-4/5 mx-auto overflow-x-auto lg:overflow-x-hidden">
       <div className='flex justify-end'>

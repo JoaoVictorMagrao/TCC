@@ -7,16 +7,14 @@ import Axios from 'axios';
 import { storage } from '../firebase'; 
 import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { valorBotao } from './Home';
 import { DataLoginContext } from "../context/DataLoginContext";
 import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost } from '../Util/util.js';
 //import { updateAluno } from '../services/StudentsServices.js';
-
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
- 
-async function getDadosAluno() {
 
+
+async function getDadosAluno() {
     const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
     const data = await response.json();
       return {
@@ -41,12 +39,11 @@ function Cliente() {
   const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
   const { idTeacher} = useContext(DataLoginContext);
   const [imgURL, setImgURL] = useState('');
+  const [valueButton, setValueButton] = useState('');
   const [progress, setProgress] = useState(0);
   const [file, setFile] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-
-  
-  
+ 
   useEffect(() => {
     const fetchData = async () => {
       const alunoData = await getDadosAluno();
@@ -99,7 +96,9 @@ function Cliente() {
 //     }
 //   );
 // }
-  
+
+
+
   const handleFormSubmit = async ({
     nomeAluno,
     senhaAluno,
@@ -111,8 +110,7 @@ function Cliente() {
     dataVencimentoAluno,
   }) => {
       //  event.preventDefault();
-    
-  if(valorBotao === 'Cadastrar Aluno'){
+  if(valueButton === 'Cadastrar Aluno'){
     try {
       const response = await Axios.post('http://localhost:3001/adicionarAluno', {
         nome: nomeAluno,
@@ -360,7 +358,6 @@ function Cliente() {
               </label>
 
               <div className='mt-5'>
-                {console.log(selectedImage)}
                 {selectedImage && (
                   <div>
                     {console.log(selectedImage)}
@@ -377,7 +374,7 @@ function Cliente() {
               type='submit'
               className='mx-auto text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
             >
-            { valorBotao }
+            { idEditar ? 'Editar Aluno' :  'Cadastrar Aluno'  }
             </button>
           </div>
         </form>

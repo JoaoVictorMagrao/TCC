@@ -4,10 +4,12 @@ import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/logo.svg';
 import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 // import olhoOculto from '../img/olho-oculto.svg';
 // import olho from '../img/olho.svg';
 //import * as yup from 'yup';
-import Swal from 'sweetalert2';
+
 
 
 function Login() {
@@ -15,6 +17,10 @@ function Login() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [colorMessage, setColorMessage] = useState("error");
+  
   const signIn = useSignIn();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
@@ -22,7 +28,13 @@ function Login() {
   function mostrarSenha() {
     setSenhaVisivel(!senhaVisivel)
   }
-
+  const handleCloseTost = () => {
+    setTimeout(function () {
+      // setLoading(false);
+      setOpenSnackbar(false); // Redirect or do-something
+    }, 3000);
+    
+  };
 
   useEffect(() => {
     if(isAuthenticated()){
@@ -41,17 +53,16 @@ function Login() {
 
       if (response.data.msg === null) {
         setIsLoginOpen(false);
-        Swal.fire({
-          title: "Error",
-          text: "Usuário ou senha incorretos",
-          icon: "error",
-          confirmButtonText: "Ok"
-        })
-
+        setSuccessMessage("Ocorreu alguem erro ao fazer seu login, tente novamente mais tarde!");
+        setColorMessage("error")
+        setOpenSnackbar(true);
         return;
       }
 
       if (response.data.msg === "OK") {
+        setSuccessMessage("Login efetuado com sucesso!!!");
+        setColorMessage("success")
+        setOpenSnackbar(true);
         if (
           signIn({
             token: response.data.token,
@@ -63,39 +74,25 @@ function Login() {
           setTimeout(function () {
             // setLoading(false);
             navigate("/home"); // Redirect or do-something
-          }, 1000);
+          }, 2000);
         }
       }else{
-        Swal.fire({
-          title: "Error",
-          text: "Usuário ou senha incorretos",
-          icon: "error",
-          confirmButtonText: "Ok"
-        })
+        setIsLoginOpen(false);
+        setSuccessMessage("Usuário ou senha incorreto.");
+        setColorMessage("error")
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          setOpenSnackbar(false);
+        }, 3000);
       }
     } catch (err) {
-      // setLoading(false);
-      Swal.fire({
-        title: "Error",
-        text: "Erro ao conectar com o servidor, tente novamente mais tarde...",
-        icon: "error",
-        confirmButtonText: "Ok"
-      })
+      setIsLoginOpen(false);
+      setSuccessMessage("ERRO: " + err);
+      setColorMessage("error")
+      setOpenSnackbar(true);
       console.log(err);
     }
   }
-
-
-
-  /*----- Validando campos de email e senha ----- */
-  // const validationLogin = yup.object().shape({
-  //   email: yup.string().email('Não é um email').required('Este campo é obrigatório'),
-  //   senha: yup
-  //     .string()
-  //     .min(6, 'A senha deve ter 6 caracteres')
-  //     .required('O campo senha é obrigatório'),
-  // })
-
   // 
   return (
     <section >
@@ -106,7 +103,11 @@ function Login() {
                   <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                   Bem-vindo! Por favor, faça login para acessar sua conta.
               </h1>
-
+                  <Snackbar open={openSnackbar} autoHideDuration={6000}>
+                    <Alert severity={colorMessage} sx={{ width: "100%" }}>
+                      {successMessage}
+                    </Alert>
+                  </Snackbar>
                   <form onSubmit={handleLogin}>
                       <div className="space-y-4 md:space-y-6">
                           <div>
