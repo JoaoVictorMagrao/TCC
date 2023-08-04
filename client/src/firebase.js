@@ -2,8 +2,6 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from 'firebase/storage';
 
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyD6O20H31BazdHUsISYTw0wgSwggCArNGA",
   authDomain: "upload-imagem-alunos.firebaseapp.com",

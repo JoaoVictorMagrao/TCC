@@ -124,154 +124,152 @@ function Home() {
   return (
    //   Hello {auth().nome}
     <div>
-   <DrawerLeft nome={auth().nome}/>
+        <DrawerLeft nome={auth().nome}/>
      
-      <div className="flex flex-col w-4/5 mx-auto overflow-x-auto lg:overflow-x-hidden">
-      <div className='flex justify-end'>
-        <div className="flex flex-col">
-          <label htmlFor="filtroSituacao"> Situação</label>
-          <select  id='filtroSituacao'
-            name='filtroSituacao'
-            className='border text-sm rounded-lg block w-full p-2.5'
-            value={filtroSituacao}
-            onChange={handleFiltroSituacaoChange}>
-            <option value="0">Todos</option>
-            <option value="1">Ativos</option>
-            <option value="2">Inativos</option>
-          </select>            
-        </div>
+      <div className="flex flex-col w-4/5 mx-auto overflow-x-auto lg:overflow-x-hidden mt-4">   
+          <div class="flex flex-col overflow-x-auto w-4/5 mx-auto">
+              <div className='flex justify-end'>
+                  <div className="flex flex-col">
+                    <label htmlFor="filtroSituacao"> Situação</label>
+                    <select  id='filtroSituacao'
+                      name='filtroSituacao'
+                      className='border text-sm rounded-lg block w-full p-2.5'
+                      value={filtroSituacao}
+                      onChange={handleFiltroSituacaoChange}>
+                      <option value="0">Todos</option>
+                      <option value="1">Ativos</option>
+                      <option value="2">Inativos</option>
+                    </select>            
+                  </div>
 
-        <div className="ml-4 w-80">
-          <label htmlFor="filtroNome"> Pesquisar por nome</label>
-          <input type="text"
-          name='filtroNome'
-          id='filtroNome'
-          className='border text-sm rounded-lg block w-full p-2.5'
-          value={filtroNome}
-          onChange={handleFiltroNomeChange}/>
-        </div>
-      </div>
+                  <div className="ml-4 w-80">
+                    <label htmlFor="filtroNome"> Pesquisar por nome</label>
+                    <input type="text"
+                    name='filtroNome'
+                    id='filtroNome'
+                    className='border text-sm rounded-lg block w-full p-2.5'
+                    value={filtroNome}
+                    onChange={handleFiltroNomeChange}/>
+                  </div>
+              </div>
 
-      
-
-      <div class="flex flex-col overflow-x-auto w-4/5 mx-auto">
-        <div className='sm:-mx-6 lg:-mx-8'>
-          <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
-            <div className='overflow-x-auto'>
-              <table className='min-w-full text-left text-sm font-light'>
-                <thead className='border-b font-medium dark:border-neutral-500'>
-                  <tr>
-                    <th scope='col' className='px-6 py-4'>
-                      Código
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      Nome
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      Vr. Mensal
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      Data Vencimento
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      Telefone
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      Situação
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-
-                    </th>
-                    <th scope='col' className='px-6 py-4'>
-                      
+          <div className='sm:-mx-6 lg:-mx-8'>
+            <div className='inline-block min-w-full py-2 sm:px-6 lg:px-8'>
+              <div className='overflow-x-auto'>
+                <table className='min-w-full text-left text-sm font-light'>
+                  <thead className='border-b font-medium dark:border-neutral-500'>
+                    <tr>
+                      <th scope='col' className='px-6 py-4'>
+                        Código
                       </th>
-                       <th scope='col' className='px-6 py-4'>
-                      
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Filtro para buscar por nome e por situação */}
-                {usersToShow.filter((row) => {
-                  const situacaoFiltrada =
-                    filtroSituacao === '1'
-                      ? row.ativo === 1
-                      : filtroSituacao === '2'
-                      ? row.ativo !== 1
-                      : true;
+                      <th scope='col' className='px-6 py-4'>
+                        Nome
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
+                        Vr. Mensal
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
+                        Data Vencimento
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
+                        Telefone
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
+                        Situação
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
 
-                  const nomeFiltrado =
-                    filtroNome.trim() === '' ||
-                    row.nome.toLowerCase().includes(filtroNome.toLowerCase());
-
-                  return situacaoFiltrada && nomeFiltrado;
-                })
-                .map((row) => (
-                    <tr className='border-b dark:border-neutral-500 cursor-pointer' key={row.id} >
-                      <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>
-                      <td className='whitespace-nowrap px-6 py-4'>{row.nome}</td>
-                      <td className='whitespace-nowrap px-6 py-4'>
-                        {row.valor_mensal.toLocaleString('pt-br', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </td>
-                      <td className='whitespace-nowrap px-6 py-4'>
-                        {new Date(row.data_vencimento).toLocaleDateString('pt-BR')}
-                      </td>
-                      <td className='whitespace-nowrap px-6 py-4'>{row.whatsapp_formatado}</td>
-                      <td className='whitespace-nowrap px-6 py-4'>
-                        <span
-                          className={
-                            row.ativo === 1
-                              ? 'bg-green-500 rounded-full inline-block w-3 h-3 mr-2'
-                              : 'bg-red-500 rounded-full inline-block w-3 h-3 mr-2'
-                          }
-                        ></span>
-                        {row.ativo === 1 ? 'Ativo' : 'Inativo'}
-                      </td>
-                      <td>
-                          <Tooltip arrow TransitionComponent={Zoom} title="Editar">
-                            <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
-                              <div className='flex items-center justify-center'>
-                                <BiEdit size={32} />
-                              </div>
-                            </Link>
-                          </Tooltip>
-                      </td>
-
-                      <td>
-                          <Tooltip arrow TransitionComponent={Zoom} title="Deletar">
-                            <div className='flex items-center justify-center'>
-                              <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>   
-                            </div>
-                          </Tooltip>
-                      </td>
-
-                      <td>
-                          <Tooltip arrow TransitionComponent={Zoom} title="Montar Treino">
-                            <div className='flex items-center justify-center'>
-                              <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
-                            </div>
-                          </Tooltip>
-                      </td>
+                      </th>
+                      <th scope='col' className='px-6 py-4'>
+                        
+                        </th>
+                        <th scope='col' className='px-6 py-4'>
+                        
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              <ThemeProvider theme={theme}>
-                <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(event, value) => setPage(value)}
-                />
-              </ThemeProvider>
+                  </thead>
+                  <tbody>
+                    {/* Filtro para buscar por nome e por situação */}
+                  {usersToShow.filter((row) => {
+                    const situacaoFiltrada =
+                      filtroSituacao === '1'
+                        ? row.ativo === 1
+                        : filtroSituacao === '2'
+                        ? row.ativo !== 1
+                        : true;
+
+                    const nomeFiltrado =
+                      filtroNome.trim() === '' ||
+                      row.nome.toLowerCase().includes(filtroNome.toLowerCase());
+
+                    return situacaoFiltrada && nomeFiltrado;
+                  })
+                  .map((row) => (
+                      <tr className='border-b dark:border-neutral-500 cursor-pointer' key={row.id} >
+                        <td className='whitespace-nowrap px-6 py-4 font-medium'>{row.id}</td>
+                        <td className='whitespace-nowrap px-6 py-4'>{row.nome}</td>
+                        <td className='whitespace-nowrap px-6 py-4'>
+                          {row.valor_mensal.toLocaleString('pt-br', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </td>
+                        <td className='whitespace-nowrap px-6 py-4'>
+                          {new Date(row.data_vencimento).toLocaleDateString('pt-BR')}
+                        </td>
+                        <td className='whitespace-nowrap px-6 py-4'>{row.whatsapp_formatado}</td>
+                        <td className='whitespace-nowrap px-6 py-4'>
+                          <span
+                            className={
+                              row.ativo === 1
+                                ? 'bg-green-500 rounded-full inline-block w-3 h-3 mr-2'
+                                : 'bg-red-500 rounded-full inline-block w-3 h-3 mr-2'
+                            }
+                          ></span>
+                          {row.ativo === 1 ? 'Ativo' : 'Inativo'}
+                        </td>
+                        <td>
+                            <Tooltip arrow TransitionComponent={Zoom} title="Editar">
+                              <Link to={`/cliente/${row.id}`} onClick={() => handleButtonEditarAluno(row.id)}>
+                                <div className='flex items-center justify-center'>
+                                  <BiEdit size={32} />
+                                </div>
+                              </Link>
+                            </Tooltip>
+                        </td>
+
+                        <td>
+                            <Tooltip arrow TransitionComponent={Zoom} title="Deletar">
+                              <div className='flex items-center justify-center'>
+                                <AiFillDelete size={32} onClick={() => confirmDeleteAluno(row.id, row.nome)} className='cursor-pointer'/>   
+                              </div>
+                            </Tooltip>
+                        </td>
+
+                        <td>
+                            <Tooltip arrow TransitionComponent={Zoom} title="Montar Treino">
+                              <div className='flex items-center justify-center'>
+                                <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
+                              </div>
+                            </Tooltip>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <ThemeProvider theme={theme}>
+                  <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={(event, value) => setPage(value)}
+                  />
+                </ThemeProvider>
+              </div>
             </div>
           </div>
-        </div>
+          </div>
         </div>
       </div>
-    </div>
 
   )
   

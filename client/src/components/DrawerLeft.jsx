@@ -9,7 +9,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import CloseIcon from '@mui/icons-material/Close';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import ListItemButton from '@mui/material/ListItemButton';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -58,14 +60,17 @@ function DrawerLeft({ nome }){
         variant="permanent"
         anchor="left"
       >
+    
         <Toolbar />
+        {/* <CloseIcon/> StickyNote2Icon */}
+       
         <Divider />
         <List>
-          {['Cadastrar Aluno', 'Sair'].map((text, index) => (
+          {['Cadastrar Aluno', 'Sair', 'Fichas'].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={text === 'Cadastrar Aluno' ? cliqueCadastrarAluno : logout}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {index === 0 ? <PersonAddAlt1Icon /> : index === 1 ? <CloseIcon /> : <StickyNote2Icon />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
