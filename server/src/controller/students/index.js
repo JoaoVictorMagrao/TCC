@@ -105,37 +105,34 @@ const controller = {
     });
    }
   ,adicionarExercicioFichaAluno: function (cardData) {
-   // console.log(cardData);
+   
+   const dataFicha = cardData.ficha;
     try {  
-      var sql = "INSERT INTO fichas (id_professor, id_alunos, id_ficha_itens, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?, ?)";
-      db.query(sql, [1, 1, 1, 'teste 12345', 1, '2023-03-17', '2023-03-17'], function (err, result) {
+      var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
+      db.query(sql, [dataFicha.id_professor, dataFicha.id_aluno, dataFicha.nome_ficha,dataFicha.ativo, dataFicha.data_criacao, dataFicha.data_final], function (err, result) {
         if (err) throw err;
    
-  
         // Usando os valores do objeto cardData
       // cardData.map(() => {
       //   console.log(cardData.descricao);
       // })
-  
-
-      const dataArray = Object.entries(cardData).map(([key, value]) => ({
+      const dataArray = Object.entries(cardData.exercicio).map(([key, value]) => ({
         descricao: key,
         valor: value,
       }));
-    console.log(dataArray);
 
       for (const itemFicha of dataArray) {
-    //    console.log(itemFicha.valor);
+        //console.log(itemFicha.valor.descricao);
         db.query(
           'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            itemFicha.id_exercicio, // Assuming id_exercicio or id_dia_treino should be from cardData
-            itemFicha.id_dia_treino, // Assuming id_exercicio or id_dia_treino should be from cardData
-            itemFicha.descricao,
-            itemFicha.id_grupo_muscular, // Assuming id_grupo_muscular should be from cardData
-            itemFicha.series, // Assuming series should be from cardData
-            itemFicha.carga, // Assuming carga should be from cardData
-            itemFicha.descanso, // Assuming descanso should be from cardData
+            itemFicha.valor.id_exercicio, // Assuming id_exercicio or id_dia_treino should be from cardData
+            itemFicha.valor.id_dia_treino, // Assuming id_exercicio or id_dia_treino should be from cardData
+            itemFicha.valor.descricao,
+            itemFicha.valor.id_grupo_muscular, // Assuming id_grupo_muscular should be from cardData
+            itemFicha.valor.series, // Assuming series should be from cardData
+            itemFicha.valor.carga, // Assuming carga should be from cardData
+            itemFicha.valor.descanso, // Assuming descanso should be from cardData
             result.insertId,
           ],
           function (err, result) {

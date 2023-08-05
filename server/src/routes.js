@@ -79,10 +79,8 @@ router.get('/listaAlunos/:id_professor', async (req, res) => {
 router.post('/adicionarExercicioFichaAluno', async (req, res) => {
   try {
 
-    const { id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso } = req.body;   
-    //console.log('Dados recebidos:', req.body);
-
-    await alunosController.adicionarExercicioFichaAluno({ id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso });
+    const data = { id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final } = req.body;   
+    await alunosController.adicionarExercicioFichaAluno(data);
     res.status(200).json({ message: 'OK' });
 
   } catch (error) {

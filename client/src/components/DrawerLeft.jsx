@@ -19,6 +19,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { BiPowerOff } from 'react-icons/bi';
 import {useSignOut} from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
+import logo from '../img/logo.svg';
 //export let valorBotao = 'Cadastrar Aluno';
 
 function DrawerLeft({ nome }){
@@ -60,9 +61,9 @@ function DrawerLeft({ nome }){
         variant="permanent"
         anchor="left"
       >
-    
+  
         <Toolbar />
-        {/* <CloseIcon/> StickyNote2Icon */}
+  
        
         <Divider />
         <List>
