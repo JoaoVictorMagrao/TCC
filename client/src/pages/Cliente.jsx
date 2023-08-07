@@ -8,7 +8,7 @@ import { storage } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DataLoginContext } from "../context/DataLoginContext";
-import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost } from '../Util/util.js';
+import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost, allowAlphanumericAndSpaces } from '../Util/util.js';
 //import { updateAluno } from '../services/StudentsServices.js';
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
@@ -40,6 +40,15 @@ function Cliente() {
   const { idTeacher} = useContext(DataLoginContext);
   const [imgURL, setImgURL] = useState('');
   const [valueButton, setValueButton] = useState('');
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    if (!allowAlphanumericAndSpaces(value)) {
+      event.target.value = value.replace(/[^a-zA-Z0-9\s]/g, '');
+    }
+  };
+  
   // const [progress, setProgress] = useState(0);
   // const [file, setFile] = useState("");
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -203,6 +212,7 @@ function Cliente() {
                 type='text'
                 name='nomeAluno'
                 id='nomeAluno'
+                onInput={handleInputChange}
                 {...register('nomeAluno')}
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
               />

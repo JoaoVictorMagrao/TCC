@@ -67,11 +67,11 @@ function DrawerLeft({ nome }){
        
         <Divider />
         <List>
-          {['Cadastrar Aluno', 'Sair', 'Fichas'].map((text, index) => (
+          {['Cadastrar Aluno', 'Fichas', 'Sair' ].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={text === 'Cadastrar Aluno' ? cliqueCadastrarAluno : logout}>
                 <ListItemIcon>
-                {index === 0 ? <PersonAddAlt1Icon /> : index === 1 ? <CloseIcon /> : <StickyNote2Icon />}
+                {index === 0 ? <PersonAddAlt1Icon /> : index === 1 ? <StickyNote2Icon /> : <CloseIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>

@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import axios from 'axios';
+//import { useState } from 'react';
 
 export const formatCnpjCpf = function (value) {
   const cnpjCpf = value.replace(/\D/g, '')
@@ -65,4 +66,9 @@ export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
   } catch (error) {
     console.error('Erro ao buscar os dados:', error);
   }
+};
+
+export const allowAlphanumericAndSpaces = (value) => {
+  const regex = /^[a-zA-Z0-9\s]*$/;
+  return regex.test(value);
 };
