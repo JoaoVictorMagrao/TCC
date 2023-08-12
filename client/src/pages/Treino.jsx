@@ -6,6 +6,7 @@ import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
 //import SinalMais from '../img/Sinaldemais.png';
 import axios from 'axios';
+import {useAuthUser} from 'react-auth-kit';
 
 /* ------------------------ Icones ----------------------*/
 import { FaWeightHanging } from 'react-icons/fa';
@@ -14,7 +15,7 @@ import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
-import { getDayOfWeek, getDadosAluno, fetchGrupoMuscular } from '../Util/util.js';
+import { getDayOfWeek, getDadosAluno, fetchGrupoMuscular, getCurrentDate } from '../Util/util.js';
 
 
 /* ------------------------ Biblioteca Material UI ----------------------*/
@@ -35,9 +36,9 @@ import '@mui/material/styles';
 
 
 function Treino(){
- // const { idTeacher } = useContext(DataLoginContext);
-  //const { idStudent, nameStudent } = useParams();
-
+ // const { idStudent, nameStudent } = useParams();
+  const auth = useAuthUser();
+  const { idStudent } = useParams();
   const [nomeAluno, setNomeAluno] = useState();
   //const [telefoneAluno, setTelefoneAluno] = useState();
   //const [mensalidadeAluno, setMensalidadeAluno] = useState();
@@ -61,6 +62,23 @@ function Treino(){
   const [confirmDeactivateListing, SetConfirmDeactivateListing] = React.useState(false);
   const [openNameSheet, setOpenSaveSheet] = React.useState(false);
   const [exercicioSelectText, setExercicioSelectText] = useState("Selecione um grupo muscular");
+  const [nameSheet, setNameSheet] = useState('');
+  const idTeacher = auth().id;
+  const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value); // Atualiza o estado com a data selecionada
+  };
+
+  const formatDateForDatabase = (dateString) => {
+    const dateObject = new Date(dateString);
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObject.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+
 
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -87,6 +105,10 @@ function Treino(){
       handleClickOpenSaveSheet();
       SetConfirmDeactivateListing(false);
     };
+
+    const handleNameSheetChange = (event) => {
+      setNameSheet(event.target.value); // Atualiza o estado com o valor do input
+    };
   
   // const addTab = () => {
   //   const lastTabIndex = tabs.length - 1;
@@ -106,7 +128,7 @@ function Treino(){
 
 
 useEffect(() => {
-  getDadosAluno();
+  //getDadosAluno(idStudent);
   fetchGrupoMuscular(setGrupoMuscularOptions);
 }, []);
 
@@ -136,16 +158,15 @@ const handleClickDataExercises = () => {
   };
 
   const transformedData = {
-    ficha: {
-      id_professor: 1,
-      id_aluno: 1,
-      nome_ficha: 'Ficha teste ROTA',
-      ativo: 1,
-      data_criacao: '2023-03-17',
-      data_final: '2023-07-17'
-    },
-    exercicio: [
-      {
+    // ficha: {
+    //   id_professor: idTeacher,
+    //   id_aluno: idStudent,
+    //   nome_ficha: nameSheet,
+    //   ativo: 1,
+    //   data_criacao: '2023-03-17',
+    //   data_final: '2023-07-17'
+    // },
+    exercicio: [{
         id_exercicio: newCardData.idExercicio,
         id_dia_treino: newCardData.diaDaSemana,
         descricao: newCardData.descricaoTreino,
@@ -153,12 +174,10 @@ const handleClickDataExercises = () => {
         series: newCardData.seriesExercicio,
         carga: newCardData.cargaTreino,
         descanso: newCardData.descansoTreino,
-        id_ficha: 1,
+      //  id_ficha: 1,
         grupo_muscular: newCardData.grupoMuscular,
         exercicioTreino: newCardData.exercicioTreino
-      }
-    ]
-    
+      }]  
   };
 
   setCardData((prevCardData) => [...prevCardData, transformedData]);
@@ -180,8 +199,23 @@ useEffect(() => {
 }, [idGrupoMuscular]);
 
 const handleFinalizeSheet = async () => {
+  //aqui
   
-  // console.log(cardData);
+  const fichaData = {
+    id_professor: idTeacher,
+    id_aluno: idStudent,
+    nome_ficha: nameSheet,
+    ativo: 1,
+    data_criacao: getCurrentDate(),
+    data_final: selectedDate
+  };
+
+  const finalizedData = {
+    ficha: fichaData,
+    exercicio: cardData.map((data) => data.exercicio).flat() // Extrair os exercícios do cardData
+  };
+
+  console.log(finalizedData);
   // try {
   //   const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
   //     cardData: cardData, // Enviando o array cardData no corpo da requisição
@@ -230,7 +264,23 @@ const handleFinalizeSheet = async () => {
                 type="text"
                 fullWidth
                 variant="standard"
+                value={nameSheet} 
+                onChange={handleNameSheetChange}
               />
+
+              <TextField
+                  margin="dense"
+                  id="selectedDate"
+                  label="Selecione uma data de inspiração da ficha"
+                  type="date"
+                  fullWidth
+                  variant="standard"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
 
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker

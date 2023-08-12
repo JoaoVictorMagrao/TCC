@@ -48,14 +48,15 @@ export const getDayOfWeek = (selectedOptions) => {
   return selectedOptions.map((option) => daysOfWeek[parseInt(option) - 1]);
 };
 
-export const getDadosAluno = async (idStudent, setNomeAluno, setTelefoneAluno, setMensalidadeAluno) => {
-  const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
-  const data = await response.json();
-  setNomeAluno(data.nome);
-  setTelefoneAluno(data.whatsapp);
-  setMensalidadeAluno(data.valor_mensal);
-  // setImgAluno(data.img);
-};
+// export const getDadosAluno = async (idStudent, setNomeAluno, setTelefoneAluno, setMensalidadeAluno) => {
+//   console.log(idStudent);
+//   const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
+//   const data = await response.json();
+//   setNomeAluno(data.nome);
+//   setTelefoneAluno(data.whatsapp);
+//   setMensalidadeAluno(data.valor_mensal);
+//   // setImgAluno(data.img);
+// };
 
 export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
   try {
@@ -71,4 +72,15 @@ export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
 export const allowAlphanumericAndSpaces = (value) => {
   const regex = /^[a-zA-Z0-9\s]*$/;
   return regex.test(value);
+};
+
+export const getCurrentDate = () => {
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adicionando 1, pois os meses começam em 0
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const data_criacao = `${year}-${month}-${day}`;
+
+  return data_criacao;
 };

@@ -25,7 +25,10 @@ export function Router() {
           </RequireAuth>
       }/>
       
-      <Route path="/treino/:idStudent/:nameStudents" element={<Treino />} />
+      <Route path="/treino/:idStudent/" element={
+      <RequireAuth loginPath={'/login'}>
+        <Treino />
+      </RequireAuth>} />
     </Routes>
   );
 }

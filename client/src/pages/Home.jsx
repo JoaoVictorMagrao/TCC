@@ -243,7 +243,7 @@ function Home() {
                         <td>
                             <Tooltip arrow TransitionComponent={Zoom} title="Montar Treino">
                               <div className='flex items-center justify-center'>
-                                <CgGym size={32} onClick={() => navigate(`/treino/${row.id}/${row.nome}`)}/>   
+                                <CgGym size={32} onClick={() => navigate(`/treino/${row.id}`)}/>   
                               </div>
                             </Tooltip>
                         </td>
