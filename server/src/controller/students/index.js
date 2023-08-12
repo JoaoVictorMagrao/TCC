@@ -76,10 +76,12 @@ const controller = {
       );
     });
   },
-  listaExercicios: function () {
+  listaExercicios: function (idGrupoMuscular) {
+    console.log(idGrupoMuscular);
     return new Promise((resolve, reject) => {
       db.query(
-        'SELECT id, descricao FROM exercicios ORDER BY descricao',
+        'SELECT id, descricao FROM exercicios where id_grupo_muscular = ? ORDER BY descricao ',
+        [idGrupoMuscular],
         (err, result) => {
           if (err) {
             reject(err);

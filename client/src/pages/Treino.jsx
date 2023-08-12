@@ -16,6 +16,7 @@ import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
 import { getDayOfWeek, getDadosAluno, fetchGrupoMuscular } from '../Util/util.js';
 
+
 /* ------------------------ Biblioteca Material UI ----------------------*/
 import { DataLoginContext } from "../context/DataLoginContext";
 import Button from '@mui/material/Button';
@@ -59,6 +60,7 @@ function Treino(){
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [confirmDeactivateListing, SetConfirmDeactivateListing] = React.useState(false);
   const [openNameSheet, setOpenSaveSheet] = React.useState(false);
+  const [exercicioSelectText, setExercicioSelectText] = useState("Selecione um grupo muscular");
 
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -108,20 +110,16 @@ useEffect(() => {
   fetchGrupoMuscular(setGrupoMuscularOptions);
 }, []);
 
+const fetchExercicios = async (idGrupoMuscular) => {
+  try {
+    const response = await axios.get(`http://localhost:3001/listaExercicios/${idGrupoMuscular}`);
+    const listaExercicios = response.data;
+    setExerciciosOptions(listaExercicios);
+  } catch (error) {
+    console.error('Erro ao buscar os dados:', error);
+  }
+};
 
-useEffect(() => {
-  const fetchExercicios = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/listaExercicios');
-      const listaExercicios = response.data;
-      setExerciciosOptions(listaExercicios);
-    } catch (error) {
-      console.error('Erro ao buscar os dados:', error);
-    }
-  };
-
-  fetchExercicios();
-}, []);
 
 const handleClickDataExercises = () => {
   const newCardData = {
@@ -136,7 +134,34 @@ const handleClickDataExercises = () => {
     idGrupoMuscular: idGrupoMuscular,
     idExercicio: idExercicio
   };
-  setCardData((prevCardData) => [...prevCardData, newCardData]);
+
+  const transformedData = {
+    ficha: {
+      id_professor: 1,
+      id_aluno: 1,
+      nome_ficha: 'Ficha teste ROTA',
+      ativo: 1,
+      data_criacao: '2023-03-17',
+      data_final: '2023-07-17'
+    },
+    exercicio: [
+      {
+        id_exercicio: newCardData.idExercicio,
+        id_dia_treino: newCardData.diaDaSemana,
+        descricao: newCardData.descricaoTreino,
+        id_grupo_muscular: newCardData.idGrupoMuscular,
+        series: newCardData.seriesExercicio,
+        carga: newCardData.cargaTreino,
+        descanso: newCardData.descansoTreino,
+        id_ficha: 1,
+        grupo_muscular: newCardData.grupoMuscular,
+        exercicioTreino: newCardData.exercicioTreino
+      }
+    ]
+    
+  };
+
+  setCardData((prevCardData) => [...prevCardData, transformedData]);
 
   setSeriesExercicio('');
   setRepeticoesTreino('');
@@ -145,6 +170,14 @@ const handleClickDataExercises = () => {
   setDescricaoTreino('');
  // console.log(cardData);
 };
+
+useEffect(() => {
+  if (idGrupoMuscular) {
+    setExercicioSelectText("Exercicíos disponiveis");
+  } else {
+    setExercicioSelectText("Selecione um exercício");
+  }
+}, [idGrupoMuscular]);
 
 const handleFinalizeSheet = async () => {
   
@@ -315,13 +348,14 @@ const handleFinalizeSheet = async () => {
                               id='grupoMuscular'
                               name='grupoMuscular'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                              value={grupoMuscular}
+                              value={idGrupoMuscular}
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
                                 const selectedValue = e.target.value; // Obter o valor da opção selecionada
                                 setIdGrupoMuscular(selectedValue);
                                 setGrupoMuscular(selectedOptionText);
+                                fetchExercicios(selectedValue);
                               }}
                             
                             >
@@ -348,17 +382,20 @@ const handleFinalizeSheet = async () => {
                               id='exercicioTreino'
                               name='exercicioTreino'
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                              value={exercicioTreino}
+                              value={idExercicio}
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
-                                const selectedValue = e.target.value; // Obter o valor da opção selecionada
+                                const selectedValue = e.target.value;
+
                                 setIdExercicio(selectedValue);
                                 setExercicioTreino(selectedOptionText);
-                              }}
+                                
+                              }}  
+                              disabled={!idGrupoMuscular}
                             >
                               <option value='' disabled hidden>
-                                  Selecione um exercício
+                              {exercicioSelectText}
                               </option>
                              {exerciciosOptions.map((grupo) => (
                                   <option key={grupo.id} value={grupo.id}>
@@ -445,19 +482,21 @@ const handleFinalizeSheet = async () => {
               {/*  */}
               {cardData.map((card, index) => (
                 <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
-                  <div className='text-xl font-bold text-center'>Grupo Muscular: {card.grupoMuscular}</div>
-                  <div className='flex justify-around'>
+                  <div className='text-xl font-bold text-center'>Grupo Muscular: {card.exercicio[0].grupo_muscular}</div>
+                  {card.exercicio.map((exercicio, exIndex) => (
+                    <div className='flex justify-around' key={exIndex}>
                       <div className='columnOne'>
-                        <div className='flex gap-1'><FaDumbbell size={24}/> {card.exercicioTreino}</div>
-                        <div className='flex gap-1'><VscCheckAll size={24}/> {card.seriesExercicio} Séries</div>
-                        <div className='flex gap-1'> <BiRepost size={24}/>{card.repeticoesTreino} Repetição</div>
+                        <div className='flex gap-1'><FaDumbbell size={24}/> {exercicio.exercicioTreino}</div> {/* Modificação aqui */}
+                        <div className='flex gap-1'><VscCheckAll size={24}/> {exercicio.series} Séries</div>
+                        <div className='flex gap-1'> <BiRepost size={24}/>{exercicio.repeticoesTreino} Repetição</div>
                       </div>
                       <div className='columnTwo'>
-                        <div className='flex gap-1'> <FaWeightHanging size={16}/> {card.cargaTreino} KG</div>
-                        <div className='flex gap-1'> <GiNightSleep size={16}/> {card.descansoTreino} Segundos</div>
-                        {/* <div>Dia da Semana: {card.diaDaSemana.join(', ')}</div> */}
+                        <div className='flex gap-1'> <FaWeightHanging size={16}/> {exercicio.carga} KG</div>
+                        <div className='flex gap-1'> <GiNightSleep size={16}/> {exercicio.descanso} Segundos</div>
+                        {/* <div>Dia da Semana: {exercicio.id_dia_treino}</div> */}
                       </div>
-                  </div>
+                    </div>
+                  ))}
                 </div>
               ))}
 

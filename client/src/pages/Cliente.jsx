@@ -13,7 +13,6 @@ import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost, allow
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
 
-
 async function getDadosAluno() {
     const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
     const data = await response.json();
@@ -32,15 +31,16 @@ async function getDadosAluno() {
 }
 
 
-
 function Cliente() {
+
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
-  const [msgError, setmsgError] = useState('Erro as cadastrar CPF');
+  const [msgError, setmsgError] = useState('Erro ao atualizar cliente');
   const { idTeacher} = useContext(DataLoginContext);
   const [imgURL, setImgURL] = useState('');
   const [valueButton, setValueButton] = useState('');
-  const [inputValue, setInputValue] = useState('');
+ 
+
 
   const handleInputChange = (event) => {
     const value = event.target.value;
@@ -58,22 +58,25 @@ function Cliente() {
       const alunoData = await getDadosAluno();
     //  setSelectedImage(alunoData.selectedImage);
     };
-
     fetchData();
+   
   }, []);
+
+  
   const {
     register,
     handleSubmit,
     setValue,
     getValues,
-    
-    //reset,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationPost),
     defaultValues: getDadosAluno
   })
 
+  //  reset();
+  
 // function handleUpload(event) {
 //   event.preventDefault();
   
@@ -139,10 +142,10 @@ function Cliente() {
           navigate('/home')
         }
       } catch (error) {
-        if (error.response.data.error === 'CPF já cadastrado') {
-          setmsgError("Erro ao cadastrar CPF");
-          setShowAlert(true)
-        }
+        // if (error.response.data.error === 'CPF já cadastrado') {
+        //   setmsgError("Erro ao cadastrar CPF");
+        //   setShowAlert(true)
+        // }
       }
   }else{
     try {  

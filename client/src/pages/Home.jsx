@@ -21,6 +21,7 @@ import DrawerLeft from '../components/DrawerLeft';
 //import Swal from 'sweetalert2';
 export let valorBotao = 'Editar Aluno';
 
+
 function Home() {
   const [data, setData] = useState([])
   const [page, setPage] = useState(1);
@@ -41,7 +42,6 @@ function Home() {
 
   const auth = useAuthUser();
 
- 
   useEffect(() => {
      fetchAlunos(auth().id, setData);
   }, [])
@@ -82,7 +82,7 @@ function Home() {
         timer: 2000,
       });
 
-      fetchAlunos(); // chama a função fetchAlunos após a exclusão bem-sucedida
+      fetchAlunos(auth().id, setData); 
     } catch (error) {
       // Lidar com erros de exclusão
       Swal.fire({
@@ -114,12 +114,6 @@ function Home() {
       },
     },
   });
-
-  const cliqueCadastrarAluno = (values) => {
-    //setCadastrarAluno(true);
-    valorBotao = 'Cadastrar Aluno';
-    navigate('/cliente');
-  }
   
   return (
    //   Hello {auth().nome}

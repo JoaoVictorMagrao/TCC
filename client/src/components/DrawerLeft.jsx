@@ -21,6 +21,7 @@ import {useSignOut} from 'react-auth-kit';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/logo.svg';
 //export let valorBotao = 'Cadastrar Aluno';
+export let currentPage = '';
 
 function DrawerLeft({ nome }){
   
@@ -33,6 +34,7 @@ function DrawerLeft({ nome }){
   }
 
   const cliqueCadastrarAluno = (values) => {
+    currentPage = 'Cadastrar';
     navigate('/cliente');
   }
 

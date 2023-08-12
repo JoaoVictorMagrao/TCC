@@ -140,9 +140,10 @@ router.delete('/excluirAluno/:id', async (req, res) => {
   }
 });
 
-router.get('/listaExercicios', async (req, res) => {
+router.get('/listaExercicios/:idGrupoMuscular', async (req, res) => {
   try {
-    const exercicios = await alunosController.listaExercicios();
+    const { idGrupoMuscular } = req.params;
+    const exercicios = await alunosController.listaExercicios(idGrupoMuscular);
     res.json(exercicios);
   } catch (error) {
     res.status(500).json({ error: 'Erro' });
