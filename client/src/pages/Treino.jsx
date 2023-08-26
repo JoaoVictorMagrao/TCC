@@ -1,13 +1,20 @@
 import Header from '../components/Header';
 import { useParams } from 'react-router-dom';
-import React, { useState, useEffect, useContext } from 'react';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import React, { useState, useEffect } from 'react';
+//import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+//import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
 //import SinalMais from '../img/Sinaldemais.png';
 import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 /* ------------------------ Icones ----------------------*/
 import { FaWeightHanging } from 'react-icons/fa';
 import { GiNightSleep } from 'react-icons/gi';
@@ -15,11 +22,12 @@ import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
-import { getDayOfWeek, getDadosAluno, fetchGrupoMuscular, getCurrentDate } from '../Util/util.js';
+import { getDayOfWeek, fetchGrupoMuscular, getCurrentDate } from '../Util/util.js';
+
 
 
 /* ------------------------ Biblioteca Material UI ----------------------*/
-import { DataLoginContext } from "../context/DataLoginContext";
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -31,6 +39,8 @@ import Slide from '@mui/material/Slide';
 import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
 import '@mui/material/styles';
 
 
@@ -40,10 +50,8 @@ function Treino(){
   const auth = useAuthUser();
   const { idStudent } = useParams();
   const [nomeAluno, setNomeAluno] = useState();
-  //const [telefoneAluno, setTelefoneAluno] = useState();
-  //const [mensalidadeAluno, setMensalidadeAluno] = useState();
+  const [valueTab, setValueTab] = useState(0); 
   const [tabs, setTabs] = useState(['Treino A']);
-  //const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [grupoMuscularOptions, setGrupoMuscularOptions] = useState([]);
   const [exerciciosOptions, setExerciciosOptions] = useState([]);
@@ -63,22 +71,13 @@ function Treino(){
   const [openNameSheet, setOpenSaveSheet] = React.useState(false);
   const [exercicioSelectText, setExercicioSelectText] = useState("Selecione um grupo muscular");
   const [nameSheet, setNameSheet] = useState('');
+  //const [training, settraining] = useState('');
   const idTeacher = auth().id;
   const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value); // Atualiza o estado com a data selecionada
   };
-
-  const formatDateForDatabase = (dateString) => {
-    const dateObject = new Date(dateString);
-    const year = dateObject.getFullYear();
-    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObject.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-
 
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -109,15 +108,36 @@ function Treino(){
     const handleNameSheetChange = (event) => {
       setNameSheet(event.target.value); // Atualiza o estado com o valor do input
     };
-  
-  // const addTab = () => {
-  //   const lastTabIndex = tabs.length - 1;
-  //   const lastTab = tabs[lastTabIndex];
-  //   const nextAlphabetIndex = alphabets.indexOf(lastTab[lastTab.length - 1]) + 1;
-  //   const nextAlphabet = alphabets[nextAlphabetIndex];
 
-  //   setTabs([...tabs, `Treino ${nextAlphabet}`]);
-  // };
+    const addTab = () => {
+      if (tabs.length < 7) {
+        const nextTab = String.fromCharCode(65 + tabs.length); // Começa com 'B' (65 em ASCII)
+        setTabs([...tabs, `Treino ${nextTab}`]);
+        setValue(tabs.length); // Define o valor para a nova aba
+      }
+    };
+
+    const handleChangeTabs = (event, newValue) => {
+      setValueTab(newValue);
+    };
+    // const addTab = () => {
+    
+    //   //  if(seriesExercicio === '' || repeticoesTreino === '' || cargaTreino === '' || descansoTreino === ''){
+    //   //   toast.warning('Você deve preencher todos os campos obrigatórios.');
+    //   //  }else{
+
+    //     const lastTabIndex = tabs.length - 1;
+    //     const lastTab = tabs[lastTabIndex];
+    //     const nextAlphabetIndex = alphabets.indexOf(lastTab[lastTab.length - 1]) + 1;
+    //     const nextAlphabet = alphabets[nextAlphabetIndex];
+    //     const newTabName = lastTab.slice(0, -1) + nextAlphabet;
+    
+    //     const newTabs = [...tabs];
+    //     newTabs[lastTabIndex] = newTabName;
+    //     setTabs(newTabs);
+    //   // }
+    
+    // };
      
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
@@ -127,10 +147,16 @@ function Treino(){
   };
 
 
-useEffect(() => {
-  //getDadosAluno(idStudent);
-  fetchGrupoMuscular(setGrupoMuscularOptions);
-}, []);
+  useEffect(() => {
+    //getDadosAluno(idStudent);
+    fetchGrupoMuscular(setGrupoMuscularOptions);
+  
+    if (idGrupoMuscular) {
+      setExercicioSelectText("Exercicíos disponiveis");
+    } else {
+      setExercicioSelectText("Selecione um exercício");
+    }
+  }, [idGrupoMuscular]);
 
 const fetchExercicios = async (idGrupoMuscular) => {
   try {
@@ -152,20 +178,12 @@ const handleClickDataExercises = () => {
     cargaTreino: cargaTreino,
     descansoTreino: descansoTreino,
     descricaoTreino: descricaoTreino,
-    diaDaSemana: 1,//diaDaSemana,
+    diaDaSemana: parseInt(diaDaSemana[0]),
     idGrupoMuscular: idGrupoMuscular,
     idExercicio: idExercicio
   };
 
   const transformedData = {
-    // ficha: {
-    //   id_professor: idTeacher,
-    //   id_aluno: idStudent,
-    //   nome_ficha: nameSheet,
-    //   ativo: 1,
-    //   data_criacao: '2023-03-17',
-    //   data_final: '2023-07-17'
-    // },
     exercicio: [{
         id_exercicio: newCardData.idExercicio,
         id_dia_treino: newCardData.diaDaSemana,
@@ -180,27 +198,17 @@ const handleClickDataExercises = () => {
       }]  
   };
 
+        setSeriesExercicio('');
+        setRepeticoesTreino('');
+        setCargaTreino('');
+        setDescansoTreino('');
+        setDescricaoTreino('');
   setCardData((prevCardData) => [...prevCardData, transformedData]);
-
-  setSeriesExercicio('');
-  setRepeticoesTreino('');
-  setCargaTreino('');
-  setDescansoTreino('');
-  setDescricaoTreino('');
- // console.log(cardData);
+  console.log(cardData);
 };
 
-useEffect(() => {
-  if (idGrupoMuscular) {
-    setExercicioSelectText("Exercicíos disponiveis");
-  } else {
-    setExercicioSelectText("Selecione um exercício");
-  }
-}, [idGrupoMuscular]);
-
 const handleFinalizeSheet = async () => {
-  //aqui
-  
+
   const fichaData = {
     id_professor: idTeacher,
     id_aluno: idStudent,
@@ -226,11 +234,18 @@ const handleFinalizeSheet = async () => {
   //   console.error('Erro ao enviar dados para o servidor:', error);
   // }
 };
+const [value, setValue] = React.useState('1');
 
+const handleChange = (event, newValue) => {
+  setValue(newValue);
+};
   return(
     <div>
       <Header />
-     
+      <ToastContainer 
+      autoClose={3000}
+      position="bottom-right"
+      theme="colored"  />
         <Dialog
           open={confirmDeactivateListing}
           TCoansitionComponent={Transition}
@@ -298,20 +313,17 @@ const handleFinalizeSheet = async () => {
           </DialogActions>
       </Dialog>
     <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
-        <Tabs className="w-80 md:w-4/5 ">
-          <TabList className='m-0'>
+    <Box sx={{ width: '100%', typography: 'body1', border: '1px ridge #ccc' }}>
+    <TabContext value={valueTab}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <TabList onChange={handleChangeTabs} aria-label="lab API tabs example">
             {tabs.map((tab, index) => (
-              <Tab key={index}>{tab}</Tab>
+              <Tab key={index} label={tab} value={index} />
             ))}
-            {/* <button onClick={addTab}>
-              <div className='bg-lime-400'>
-                <img src={SinalMais} alt="+" />
-              </div>
-            </button> */}
           </TabList>
-
-          {tabs.map((tab, index) => (
-            <TabPanel key={index} className='border border-solid border-1 border-black rounded'>
+        </Box>
+        {tabs.map((tab, index) => (
+          <TabPanel key={index} value={index}>
               <div className='flex gap-10 p-5 w-4/5 mx-auto'>
                   {/* <div className='w-3/5'>
                         <label
@@ -334,7 +346,7 @@ const handleFinalizeSheet = async () => {
                           htmlFor='nomeAluno'
                           className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                         >
-                          Escolha o dia que o aluno ira realizar o {tab}
+                          Escolha o dia que o aluno ira realizar o {tab} <span className='text-red-500 text-xl font-bold'>*</span>
                         </label>
                       <select multiple 
                       onChange={handleSelectChange}
@@ -373,7 +385,7 @@ const handleFinalizeSheet = async () => {
                     htmlFor='descricaoTreino'
                     className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                   >
-                      Descrição do Treino
+                      Descrição do Treino 
                   </label>
 
                   <textarea name="descricaoTreino" id="descricaoTreino" cols="10" rows="2"
@@ -383,7 +395,7 @@ const handleFinalizeSheet = async () => {
                   </textarea>
               </div>
 
-              <div className='p-5 border border-solid border-y-stone-500 border-1 rounded w-4/5 mx-auto'>
+              <div className='p-5 border border-solid border-y-stone-500 border-1 rounded w-4/5 mx-auto'> 
                 {/* ------------------------------------------- Linha 1 ------------------------------------------- */}
                       <div className='lineOne flex justify-between items-center gap-5'>
                         <div className='grupoMuscular w-1/2'>
@@ -391,7 +403,7 @@ const handleFinalizeSheet = async () => {
                               htmlFor='grupoMuscular'
                               className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                             >   
-                              Grupo Muscular
+                              Grupo Muscular <span className='text-red-500 text-xl font-bold'>*</span>
                             </label>
 
                             <select
@@ -425,7 +437,7 @@ const handleFinalizeSheet = async () => {
                               htmlFor='exercicioTreino'
                               className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                             >   
-                             Exércicio
+                             Exércicio <span className='text-red-500 text-xl font-bold'>*</span>
                             </label>
 
                             <select
@@ -461,7 +473,7 @@ const handleFinalizeSheet = async () => {
                       <div className='lineTwo flex gap-5 mt-5'>
                             <div className='series w-1/4'>
                                 <label htmlFor='seriesExercicio' className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'>   
-                                Séries
+                                Séries <span className='text-red-500 text-xl font-bold'>*</span>
                                 </label>
 
                                 <input
@@ -476,7 +488,7 @@ const handleFinalizeSheet = async () => {
 
                             <div className='repeticoes w-1/4'>
                             <label htmlFor='repeticoesTreino' className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'>   
-                                Repetições
+                                Repetições <span className='text-red-500 text-xl font-bold'>*</span>
                                 </label>
 
                                 <input
@@ -491,7 +503,7 @@ const handleFinalizeSheet = async () => {
 
                             <div className='carga w-1/4'>
                             <label htmlFor='cargaTreino' className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'>   
-                                Carga
+                                Carga <span className='text-red-500 text-xl font-bold'>*</span>
                                 </label>
 
                                 <input
@@ -506,7 +518,7 @@ const handleFinalizeSheet = async () => {
 
                             <div className='descanso w-1/4'>
                             <label htmlFor='descansoTreino' className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'>   
-                                Descanso (S)
+                                Descanso (S) <span className='text-red-500 text-xl font-bold'>*</span>
                                 </label>
 
                                 <input
@@ -519,17 +531,18 @@ const handleFinalizeSheet = async () => {
                                 />
                             </div>
                           
-                      </div>
+                      </div> 
           {/* ------------------------------------------- FIM Linha 2 ------------------------------------------- */}
 
                       <div className='finalizarExercicio flex justify-end'>
                           <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={handleClickDataExercises}>
+                          <Tooltip arrow TransitionComponent={Zoom} title="Incluir exercício">
                             <img src={check} alt="Check" />
+                            </ Tooltip>
                           </button>
                       </div>     
       
               </div>
-              {/*  */}
               {cardData.map((card, index) => (
                 <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
                   <div className='text-xl font-bold text-center'>Grupo Muscular: {card.exercicio[0].grupo_muscular}</div>
@@ -550,17 +563,36 @@ const handleFinalizeSheet = async () => {
                 </div>
               ))}
 
-<div className='p-10 flex items-center justify-center'>
-  <button
-    className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
-    onClick={handleClickOpen}
-  >
-    Finalizar Ficha
-  </button>
-</div>
-            </TabPanel>
-          ))}
-        </Tabs>
+                <div className='p-10 flex justify-end'>
+                  <button
+                    className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+                    onClick={addTab}
+                  >
+                    Finalizar treino
+                    
+                  </button>
+                </div>
+          </TabPanel>
+        ))}
+         <div className='p-10 flex items-center justify-center'>
+                <button
+                  className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+                  onClick={handleClickOpen}
+                >
+                  Finalizar Ficha
+                </button>
+              </div>
+      </TabContext>
+
+</Box>
+
+
+
+
+
+
+
+      
       </div>
     </div>
   )

@@ -77,7 +77,6 @@ const controller = {
     });
   },
   listaExercicios: function (idGrupoMuscular) {
-    console.log(idGrupoMuscular);
     return new Promise((resolve, reject) => {
       db.query(
         'SELECT id, descricao FROM exercicios where id_grupo_muscular = ? ORDER BY descricao ',

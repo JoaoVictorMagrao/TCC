@@ -6,6 +6,8 @@ import logo from '../img/logo.svg';
 import { useIsAuthenticated, useSignIn } from 'react-auth-kit'
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import olhoOculto from '../img/olho-oculto.svg';
 // import olho from '../img/olho.svg';
 //import * as yup from 'yup';
@@ -60,9 +62,6 @@ function Login() {
       }
 
       if (response.data.msg === "OK") {
-        setSuccessMessage("Login efetuado com sucesso!!!");
-        setColorMessage("success")
-        setOpenSnackbar(true);
         if (
           signIn({
             token: response.data.token,
@@ -72,30 +71,24 @@ function Login() {
           })
         ) {
           setTimeout(function () {
-            // setLoading(false);
-            navigate("/home"); // Redirect or do-something
+            
+            navigate("/home"); 
+            toast.success('Login efetuado com sucesso!!!');
           }, 2000);
         }
       }else{
         setIsLoginOpen(false);
-        setSuccessMessage("Usuário ou senha incorreto.");
-        setColorMessage("error")
-        setOpenSnackbar(true);
-        setTimeout(() => {
-          setOpenSnackbar(false);
-        }, 3000);
+        toast.warning('Usuário ou senha incorreto.');
       }
     } catch (err) {
       setIsLoginOpen(false);
-      setSuccessMessage("ERRO: " + err);
-      setColorMessage("error")
-      setOpenSnackbar(true);
+      toast.warning("ERRO: " + err);
       console.log(err);
     }
   }
   // 
   return (
-    <section >
+    <section >   
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 min-h-screen bg-login">                  
             <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -103,11 +96,11 @@ function Login() {
                   <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                   Bem-vindo! Por favor, faça login para acessar sua conta.
               </h1>
-                  <Snackbar open={openSnackbar} autoHideDuration={6000}>
+                  {/* <Snackbar open={openSnackbar} autoHideDuration={6000}>
                     <Alert severity={colorMessage} sx={{ width: "100%" }}>
                       {successMessage}
                     </Alert>
-                  </Snackbar>
+                  </Snackbar> */}
                   <form onSubmit={handleLogin}>
                       <div className="space-y-4 md:space-y-6">
                           <div>
@@ -160,6 +153,10 @@ function Login() {
                 </div>
             </div>
         </div>
+        <ToastContainer 
+        autoClose={3000}
+        position="bottom-right"
+        theme="colored"  />
     </section>
  
   )
