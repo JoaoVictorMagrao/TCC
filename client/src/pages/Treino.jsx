@@ -10,11 +10,6 @@ import {useAuthUser} from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
 /* ------------------------ Icones ----------------------*/
 import { FaWeightHanging } from 'react-icons/fa';
 import { GiNightSleep } from 'react-icons/gi';
@@ -23,7 +18,11 @@ import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
 import { getDayOfWeek, fetchGrupoMuscular, getCurrentDate } from '../Util/util.js';
-
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 
 /* ------------------------ Biblioteca Material UI ----------------------*/
@@ -50,6 +49,7 @@ function Treino(){
   const auth = useAuthUser();
   const { idStudent } = useParams();
   const [nomeAluno, setNomeAluno] = useState();
+  const [tabValue, setTabValue] = useState(0);
   const [valueTab, setValueTab] = useState(0); 
   const [tabs, setTabs] = useState(['Treino A']);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -71,7 +71,7 @@ function Treino(){
   const [openNameSheet, setOpenSaveSheet] = React.useState(false);
   const [exercicioSelectText, setExercicioSelectText] = useState("Selecione um grupo muscular");
   const [nameSheet, setNameSheet] = useState('');
-  //const [training, settraining] = useState('');
+  const [formData, setFormData] = useState({});
   const idTeacher = auth().id;
   const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
 
@@ -83,6 +83,17 @@ function Treino(){
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
+  const addTab = () => {
+    if (tabs.length < 7) {
+      const nextTab = String.fromCharCode(65 + tabs.length); // Começa com 'B' (65 em ASCII)
+      setTabs([...tabs, `Treino ${nextTab}`]);
+      setValue(tabs.length); // Define o valor para a nova aba
+    }
+  };
+
+  const handleChangeTabs = (event, newValue) => {
+    setValueTab(newValue);
+  };
  //Controla quando o modal abre e fecha
     const handleClickOpenSaveSheet = () => {
       setOpenSaveSheet(true);
@@ -109,36 +120,8 @@ function Treino(){
       setNameSheet(event.target.value); // Atualiza o estado com o valor do input
     };
 
-    const addTab = () => {
-      if (tabs.length < 7) {
-        const nextTab = String.fromCharCode(65 + tabs.length); // Começa com 'B' (65 em ASCII)
-        setTabs([...tabs, `Treino ${nextTab}`]);
-        setValue(tabs.length); // Define o valor para a nova aba
-      }
-    };
-
-    const handleChangeTabs = (event, newValue) => {
-      setValueTab(newValue);
-    };
-    // const addTab = () => {
-    
-    //   //  if(seriesExercicio === '' || repeticoesTreino === '' || cargaTreino === '' || descansoTreino === ''){
-    //   //   toast.warning('Você deve preencher todos os campos obrigatórios.');
-    //   //  }else{
-
-    //     const lastTabIndex = tabs.length - 1;
-    //     const lastTab = tabs[lastTabIndex];
-    //     const nextAlphabetIndex = alphabets.indexOf(lastTab[lastTab.length - 1]) + 1;
-    //     const nextAlphabet = alphabets[nextAlphabetIndex];
-    //     const newTabName = lastTab.slice(0, -1) + nextAlphabet;
-    
-    //     const newTabs = [...tabs];
-    //     newTabs[lastTabIndex] = newTabName;
-    //     setTabs(newTabs);
-    //   // }
-    
-    // };
-     
+   
+  
   const handleSelectChange = (event) => {
     const options = Array.from(event.target.selectedOptions, (option) => option.value);
   //  console.log(options);  Value do select do dias da semana
@@ -313,6 +296,7 @@ const handleChange = (event, newValue) => {
           </DialogActions>
       </Dialog>
     <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
+    
     <Box sx={{ width: '100%', typography: 'body1', border: '1px ridge #ccc' }}>
     <TabContext value={valueTab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
