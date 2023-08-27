@@ -75,6 +75,18 @@ function Treino(){
   const idTeacher = auth().id;
   const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
 
+  /* Por aba */
+  const [descricaoTreinoPorAba, setDescricaoPorAba] = useState({});
+  const [grupoMuscularTreinoPorAba, setGrupoMuscularPorAba] = useState('');
+  const [idGrupoMuscularTreinoPorAba, setIdGrupoMuscularPorAba] = useState('');
+  const [exercicioTreinoPorAba, setExercicioTreinoPorAba] = useState('');
+  const [idExercicioTreinoPorAba, setIdExercicioPorAba] = useState('');
+  const [diaDaSemanaTreinoPorAba, setDiaDaSemanaTreinoPorAba] = useState('');
+  const [seriesExercicioPorAba, setSeriesExercicioPorAba] = useState('');
+  const [repeticoesTreinoPorAba, setRepeticoesTreinoPorAba] = useState('');
+  const [cargaTreinoPorAba, setCargaTreinoPorAba] = useState('');
+  const [descansoTreinoPorAba, setDescansoTreinoPorAba] = useState('');
+
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value); // Atualiza o estado com a data selecionada
   };
@@ -94,6 +106,55 @@ function Treino(){
   const handleChangeTabs = (event, newValue) => {
     setValueTab(newValue);
   };
+
+  const getInputValueForTab = (field) => {
+    return (formData[tabValue] && formData[tabValue][field]) || '';
+  };
+
+  const handleInputChangeValueTab = (e, campo) => {
+    const valor = e.target.value;
+    setDescricaoPorAba({
+      ...descricaoTreinoPorAba,
+      [campo]: valor,
+    });
+
+    setRepeticoesTreinoPorAba({
+      ...repeticoesTreinoPorAba,
+      [campo]: valor,
+    });
+
+    setCargaTreinoPorAba({
+      ...cargaTreinoPorAba,
+      [campo]: valor,
+    });
+
+    setDescansoTreinoPorAba({
+      ...descansoTreinoPorAba,
+      [campo]: valor,
+    });
+
+    setSeriesExercicioPorAba({
+      ...seriesExercicioPorAba,
+      [campo]: valor,
+    });
+
+    setIdGrupoMuscularPorAba({
+      ...idGrupoMuscularTreinoPorAba,
+      [campo]: valor,
+    });
+    
+    setIdExercicioPorAba({
+      ...idExercicioTreinoPorAba,
+      [campo]: valor,
+    });
+    
+    setDiaDaSemanaTreinoPorAba({
+      ...diaDaSemanaTreinoPorAba,
+      [campo]: valor,
+    });
+    
+  };
+
  //Controla quando o modal abre e fecha
     const handleClickOpenSaveSheet = () => {
       setOpenSaveSheet(true);
@@ -151,28 +212,29 @@ const fetchExercicios = async (idGrupoMuscular) => {
   }
 };
 
-
-const handleClickDataExercises = () => {
+//aqui repeticoesTreinoPorAba
+const handleClickDataExercises = (tab) => {
   const newCardData = {
+    [`exercicio${tab}`]: descricaoTreinoPorAba,
     grupoMuscular: grupoMuscular,
     exercicioTreino: exercicioTreino,
-    seriesExercicio: seriesExercicio,
-    repeticoesTreino: repeticoesTreino,
-    cargaTreino: cargaTreino,
-    descansoTreino: descansoTreino,
-    descricaoTreino: descricaoTreino,
+    // seriesExercicio: seriesExercicio,
+    // repeticoesTreino: repeticoesTreinoPorAba,
+    // cargaTreino: cargaTreino,
+    // descansoTreino: descansoTreino,
+    // descricaoTreino: descricaoTreino,
     diaDaSemana: parseInt(diaDaSemana[0]),
-    idGrupoMuscular: idGrupoMuscular,
-    idExercicio: idExercicio
+    // idGrupoMuscular: idGrupoMuscular,
+    // idExercicio: idExercicio
   };
-
+  console.log(newCardData[`exercicio${tab}`]);
   const transformedData = {
     exercicio: [{
         id_exercicio: newCardData.idExercicio,
         id_dia_treino: newCardData.diaDaSemana,
         descricao: newCardData.descricaoTreino,
         id_grupo_muscular: newCardData.idGrupoMuscular,
-        series: newCardData.seriesExercicio,
+        series:newCardData.seriesExercicio,
         carga: newCardData.cargaTreino,
         descanso: newCardData.descansoTreino,
       //  id_ficha: 1,
@@ -309,22 +371,7 @@ const handleChange = (event, newValue) => {
         {tabs.map((tab, index) => (
           <TabPanel key={index} value={index}>
               <div className='flex gap-10 p-5 w-4/5 mx-auto'>
-                  {/* <div className='w-3/5'>
-                        <label
-                          htmlFor='nomeAluno'
-                          className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-                        >
-                          Treino Predefinido
-                        </label>
-                        <select
-                          id='situacaoAluno'
-                          name='situacaoAluno'
-                          className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        >
-                        {/* <option value='1'>Ativo</option>
-                        <option value='0'>Inativo</option> }
-                        </select>
-                  </div> */}
+                
                   <div>
                         <label
                           htmlFor='nomeAluno'
@@ -332,9 +379,9 @@ const handleChange = (event, newValue) => {
                         >
                           Escolha o dia que o aluno ira realizar o {tab} <span className='text-red-500 text-xl font-bold'>*</span>
                         </label>
-                      <select multiple 
-                      onChange={handleSelectChange}
-                      value={diaDaSemana}
+                      <select 
+                       value={diaDaSemanaTreinoPorAba[`diaSemana-${tab}`] || ''}
+                       onChange={(e) => handleInputChangeValueTab(e, `diaSemana-${tab}`)}
                     // value={selectedOptions}
                       className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         
@@ -372,10 +419,14 @@ const handleChange = (event, newValue) => {
                       Descrição do Treino 
                   </label>
 
-                  <textarea name="descricaoTreino" id="descricaoTreino" cols="10" rows="2"
-                  value={descricaoTreino}
-                  onChange={(e) => setDescricaoTreino(e.target.value)}
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'>         
+                  <textarea
+                    name={`descricaoTreino-${tab}`}
+                    id={`descricaoTreino-${tab}`}
+                    cols="10"
+                    rows="2"
+                    value={descricaoTreinoPorAba[`descricaoTreino-${tab}`] || ''}
+                    onChange={(e) => handleInputChangeValueTab(e, `descricaoTreino-${tab}`)}
+                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'>
                   </textarea>
               </div>
 
@@ -391,14 +442,15 @@ const handleChange = (event, newValue) => {
                             </label>
 
                             <select
-                              id='grupoMuscular'
-                              name='grupoMuscular'
+                              id={`grupoMuscular-${tab}`}
+                              name={`grupoMuscular-${tab}`}
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                              value={idGrupoMuscular}
+                              value={idGrupoMuscularTreinoPorAba[`grupoMuscular-${tab}`] || ''}
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
                                 const selectedValue = e.target.value; // Obter o valor da opção selecionada
+                                handleInputChangeValueTab(e, `grupoMuscular-${tab}`)
                                 setIdGrupoMuscular(selectedValue);
                                 setGrupoMuscular(selectedOptionText);
                                 fetchExercicios(selectedValue);
@@ -425,15 +477,15 @@ const handleChange = (event, newValue) => {
                             </label>
 
                             <select
-                              id='exercicioTreino'
-                              name='exercicioTreino'
+                              id={`exercicioTreino-${tab}`}
+                              name={`exercicioTreino-${tab}`}
                               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                              value={idExercicio}
+                              value={idExercicioTreinoPorAba[`exercicioTreino-${tab}`] || ''}
                               onChange={(e) => {
                                 const selectedIndex = e.target.selectedIndex;
                                 const selectedOptionText = e.target.options[selectedIndex].text;
                                 const selectedValue = e.target.value;
-
+                                handleInputChangeValueTab(e, `exercicioTreino-${tab}`)
                                 setIdExercicio(selectedValue);
                                 setExercicioTreino(selectedOptionText);
                                 
@@ -462,11 +514,11 @@ const handleChange = (event, newValue) => {
 
                                 <input
                                   type='number'
-                                  id='seriesExercicio'
-                                  name='seriesExercicio'
+                                  id={`seriesExercicio-${tab}`}
+                                  name={`seriesExercicio-${tab}`}
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                                  value={seriesExercicio}
-                                  onChange={(e) => setSeriesExercicio(e.target.value)}
+                                  value={seriesExercicioPorAba[`seriesExercicio-${tab}`] || ''}
+                                  onChange={(e) => handleInputChangeValueTab(e, `seriesExercicio-${tab}`)}
                                 />
                             </div>
 
@@ -477,11 +529,11 @@ const handleChange = (event, newValue) => {
 
                                 <input
                                   type='text'
-                                  id='repeticoesTreino'
-                                  name='repeticoesTreino'
+                                  id={`repeticoesTreino-${tab}`}
+                                  name={`repeticoesTreino-${tab}`}
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                                  value={repeticoesTreino}
-                                  onChange={(e) => setRepeticoesTreino(e.target.value)}
+                                  value={repeticoesTreinoPorAba[`repeticoesTreino-${tab}`] || ''}
+                                  onChange={(e) => handleInputChangeValueTab(e, `repeticoesTreino-${tab}`)}
                                 />
                             </div>
 
@@ -492,11 +544,11 @@ const handleChange = (event, newValue) => {
 
                                 <input
                                   type='number'
-                                  id='cargaTreino'
-                                  name='cargaTreino'
+                                  id={`cargaTreino-${tab}`}
+                                  name={`cargaTreino-${tab}`}
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                                  value={cargaTreino}
-                                  onChange={(e) => setCargaTreino(e.target.value)}
+                                  value={cargaTreinoPorAba[`cargaTreino-${tab}`] || ''}
+                                  onChange={(e) => handleInputChangeValueTab(e, `cargaTreino-${tab}`)}
                                 />
                             </div>
 
@@ -504,14 +556,14 @@ const handleChange = (event, newValue) => {
                             <label htmlFor='descansoTreino' className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'>   
                                 Descanso (S) <span className='text-red-500 text-xl font-bold'>*</span>
                                 </label>
-
+                                
                                 <input
                                   type='number'
-                                  id='descansoTreino'
-                                  name='descansoTreino'
+                                  id={`descansoTreino-${tab}`}
+                                  name={`descansoTreino-${tab}`}
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                                  value={descansoTreino}
-                                  onChange={(e) => setDescansoTreino(e.target.value)}
+                                  value={descansoTreinoPorAba[`descansoTreino-${tab}`] || ''}
+                                  onChange={(e) => handleInputChangeValueTab(e, `descansoTreino-${tab}`)}
                                 />
                             </div>
                           
@@ -519,7 +571,7 @@ const handleChange = (event, newValue) => {
           {/* ------------------------------------------- FIM Linha 2 ------------------------------------------- */}
 
                       <div className='finalizarExercicio flex justify-end'>
-                          <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={handleClickDataExercises}>
+                          <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={() => handleClickDataExercises(tab)}>
                           <Tooltip arrow TransitionComponent={Zoom} title="Incluir exercício">
                             <img src={check} alt="Check" />
                             </ Tooltip>
@@ -527,20 +579,35 @@ const handleChange = (event, newValue) => {
                       </div>     
       
               </div>
+            
               {cardData.map((card, index) => (
-                <div key={index} className='cardExercicio bg-gray-100 p-4 rounded shadow w-3/5 mx-auto mt-5'>
-                  <div className='text-xl font-bold text-center'>Grupo Muscular: {card.exercicio[0].grupo_muscular}</div>
+                  
+                <div key={index} className='cardExercicio  w-3/5 mx-auto mt-5'>
+                  {/* <div className='text-xl font-bold text-center'>Grupo Muscular: {card.exercicio[0].grupo_muscular}</div> */}
                   {card.exercicio.map((exercicio, exIndex) => (
-                    <div className='flex justify-around' key={exIndex}>
-                      <div className='columnOne'>
-                        <div className='flex gap-1'><FaDumbbell size={24}/> {exercicio.exercicioTreino}</div> {/* Modificação aqui */}
-                        <div className='flex gap-1'><VscCheckAll size={24}/> {exercicio.series} Séries</div>
-                        <div className='flex gap-1'> <BiRepost size={24}/>{exercicio.repeticoesTreino} Repetição</div>
+
+                    <div className='flex justify-between bg-white rounded p-4 shadow-md mb-4' key={exIndex}>
+                      <div className='flex items-center'>
+                        <FaDumbbell className='text-blue-500' size={24} />
+                        <span className='ml-2 font-semibold'>{exercicio.exercicioTreino}</span>
                       </div>
-                      <div className='columnTwo'>
-                        <div className='flex gap-1'> <FaWeightHanging size={16}/> {exercicio.carga} KG</div>
-                        <div className='flex gap-1'> <GiNightSleep size={16}/> {exercicio.descanso} Segundos</div>
-                        {/* <div>Dia da Semana: {exercicio.id_dia_treino}</div> */}
+                      <div className='flex gap-5'>
+                        <div className='flex items-center'>
+                          <VscCheckAll className='text-green-500' size={24} />
+                          <span className='ml-2'>{exercicio.series} Séries</span>
+                        </div>
+                        <div className='flex items-center'>
+                          <BiRepost className='text-purple-500' size={24} />
+                          <span className='ml-2'>{exercicio.repeticoesTreino} Repetições</span>
+                        </div>
+                        <div className='flex items-center'>
+                          <FaWeightHanging className='text-yellow-500' size={16} />
+                          <span className='ml-2'>{exercicio.carga} KG</span>
+                        </div>
+                        <div className='flex items-center'>
+                          <GiNightSleep className='text-indigo-500' size={16} />
+                          <span className='ml-2'>{exercicio.descanso} Segundos</span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -558,14 +625,14 @@ const handleChange = (event, newValue) => {
                 </div>
           </TabPanel>
         ))}
-         <div className='p-10 flex items-center justify-center'>
-                <button
-                  className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
-                  onClick={handleClickOpen}
-                >
-                  Finalizar Ficha
-                </button>
-              </div>
+         <div className=' flex items-center justify-center'>
+            <button
+              className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+              onClick={handleClickOpen}
+            >
+              Finalizar Ficha
+            </button>
+          </div>
       </TabContext>
 
 </Box>
