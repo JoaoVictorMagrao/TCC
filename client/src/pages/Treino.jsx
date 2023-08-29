@@ -76,7 +76,10 @@ function Treino(){
   const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
 
   /* Por aba */
-  const [descricaoTreinoPorAba, setDescricaoPorAba] = useState({});
+  // idGrupoMuscularPorAba: idGrupoMuscularPorAba,
+  // idExercicioPorAba: idExercicioPorAba,
+  // grupoMuscularPorAba: grupoMuscularPorAba,
+  const [descricaoTreinoPorAba, setDescricaoPorAba] = useState('');
   const [grupoMuscularTreinoPorAba, setGrupoMuscularPorAba] = useState('');
   const [idGrupoMuscularTreinoPorAba, setIdGrupoMuscularPorAba] = useState('');
   const [exercicioTreinoPorAba, setExercicioTreinoPorAba] = useState('');
@@ -105,10 +108,6 @@ function Treino(){
 
   const handleChangeTabs = (event, newValue) => {
     setValueTab(newValue);
-  };
-
-  const getInputValueForTab = (field) => {
-    return (formData[tabValue] && formData[tabValue][field]) || '';
   };
 
   const handleInputChangeValueTab = (e, campo) => {
@@ -145,6 +144,11 @@ function Treino(){
     
     setIdExercicioPorAba({
       ...idExercicioTreinoPorAba,
+      [campo]: valor,
+    });
+
+    setExercicioTreinoPorAba({
+      ...exercicioTreinoPorAba,
       [campo]: valor,
     });
     
@@ -212,34 +216,35 @@ const fetchExercicios = async (idGrupoMuscular) => {
   }
 };
 
-//aqui repeticoesTreinoPorAba
+
 const handleClickDataExercises = (tab) => {
   const newCardData = {
-    [`exercicio${tab}`]: descricaoTreinoPorAba,
-    grupoMuscular: grupoMuscular,
-    exercicioTreino: exercicioTreino,
-    // seriesExercicio: seriesExercicio,
-    // repeticoesTreino: repeticoesTreinoPorAba,
-    // cargaTreino: cargaTreino,
-    // descansoTreino: descansoTreino,
-    // descricaoTreino: descricaoTreino,
-    diaDaSemana: parseInt(diaDaSemana[0]),
-    // idGrupoMuscular: idGrupoMuscular,
-    // idExercicio: idExercicio
+    //[`exercicio${tab}`]: descricaoTreinoPorAba,     
+     exercicioTreinoPorAba: exercicioTreino,
+     seriesTreinoPorAba: seriesExercicioPorAba[`seriesTreino-${tab}`],
+     repeticoesTreinoPorAba: repeticoesTreinoPorAba[`repeticoesTreino-${tab}`],
+     cargaTreinoPorAba: cargaTreinoPorAba[`cargaTreino-${tab}`],
+     descansoTreinoPorAba: descansoTreinoPorAba[`descansoTreino-${tab}`],
+     descricaoTreinoPorAba: descricaoTreinoPorAba[`descricaoTreino-${tab}`],
+     diaDaSemanaPorAba: diaDaSemanaTreinoPorAba[`diaSemanaTreino-${tab}`],
+     idGrupoMuscularPorAba: idGrupoMuscular,
+     idExercicioPorAba: idExercicio
+    //  grupoMuscularPorAba: idGrupoMuscular,
   };
-  console.log(newCardData[`exercicio${tab}`]);
+  console.log(newCardData);
   const transformedData = {
     exercicio: [{
-        id_exercicio: newCardData.idExercicio,
-        id_dia_treino: newCardData.diaDaSemana,
-        descricao: newCardData.descricaoTreino,
-        id_grupo_muscular: newCardData.idGrupoMuscular,
-        series:newCardData.seriesExercicio,
-        carga: newCardData.cargaTreino,
-        descanso: newCardData.descansoTreino,
+        id_exercicio: newCardData.idExercicioPorAba,
+        id_dia_treino: newCardData.diaDaSemanaPorAba,
+        descricao: newCardData.descricaoTreinoPorAba,
+        id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
+        series:newCardData.seriesTreinoPorAba,
+        carga: newCardData.cargaTreinoPorAba,
+        descanso: newCardData.descansoTreinoPorAba,
+        repeticoesTreino: newCardData.repeticoesTreinoPorAba,
       //  id_ficha: 1,
-        grupo_muscular: newCardData.grupoMuscular,
-        exercicioTreino: newCardData.exercicioTreino
+        grupo_muscular: newCardData.grupoMuscularPorAba,
+        exercicioTreino: newCardData.exercicioTreinoPorAba
       }]  
   };
 
@@ -281,9 +286,6 @@ const handleFinalizeSheet = async () => {
 };
 const [value, setValue] = React.useState('1');
 
-const handleChange = (event, newValue) => {
-  setValue(newValue);
-};
   return(
     <div>
       <Header />
@@ -395,20 +397,20 @@ const handleChange = (event, newValue) => {
                       </select>
                      
                   </div>
-                {getDayOfWeek(selectedOptions).length > 0 && (
+                {/* {getDayOfWeek(selectedOptions).length > 0 && (
                   <div className="diasEscolhidos bg-gray-100 p-4 rounded-md shadow-md text-center">
                     <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>
                     <div className="gap-2">
                       {getDayOfWeek(selectedOptions).map((day) => (
                        
                         <p key={day} className="bg-blue-500 text-white py-2 px-4 rounded-md text-center">
-                          {/* {setDiaDaSemana(day)} */}
+                        
                           {day}
                         </p>
                       ))}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
 
               <div className='w-4/5 p-5 mx-auto'>
@@ -488,7 +490,7 @@ const handleChange = (event, newValue) => {
                                 handleInputChangeValueTab(e, `exercicioTreino-${tab}`)
                                 setIdExercicio(selectedValue);
                                 setExercicioTreino(selectedOptionText);
-                                
+                        
                               }}  
                               disabled={!idGrupoMuscular}
                             >

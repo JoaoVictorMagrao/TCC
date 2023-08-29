@@ -73,7 +73,7 @@ function Login() {
           setTimeout(function () {
             
             navigate("/home"); 
-            toast.success('Login efetuado com sucesso!!!');
+           // toast.success('Login efetuado com sucesso!!!');
           }, 2000);
         }
       }else{
