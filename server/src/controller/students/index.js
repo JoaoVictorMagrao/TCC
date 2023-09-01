@@ -106,7 +106,7 @@ const controller = {
     });
    }
   ,adicionarExercicioFichaAluno: function (cardData) {
-   
+   console.log(cardData);
    const dataFicha = cardData.ficha;
     try {  
       var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";

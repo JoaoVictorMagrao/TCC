@@ -64,6 +64,7 @@ function Treino(){
   const [cargaTreino, setCargaTreino] = useState('');
   const [descansoTreino, setDescansoTreino] = useState('');
   const [cardData, setCardData] = useState([]);
+  const [cardDataEnviaDados, setCardDataEnviaDados] = useState([]);
   const [descricaoTreino, setDescricaoTreino] = useState('');
   const [diaDaSemana, setDiaDaSemana] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState(null);
@@ -221,19 +222,20 @@ const handleClickDataExercises = (tab) => {
   const newCardData = {
     //[`exercicio${tab}`]: descricaoTreinoPorAba,     
      exercicioTreinoPorAba: exercicioTreino,
-     seriesTreinoPorAba: seriesExercicioPorAba[`seriesTreino-${tab}`],
+     seriesTreinoPorAba: seriesExercicioPorAba[`seriesExercicio-${tab}`],
      repeticoesTreinoPorAba: repeticoesTreinoPorAba[`repeticoesTreino-${tab}`],
      cargaTreinoPorAba: cargaTreinoPorAba[`cargaTreino-${tab}`],
      descansoTreinoPorAba: descansoTreinoPorAba[`descansoTreino-${tab}`],
      descricaoTreinoPorAba: descricaoTreinoPorAba[`descricaoTreino-${tab}`],
-     diaDaSemanaPorAba: diaDaSemanaTreinoPorAba[`diaSemanaTreino-${tab}`],
+     diaDaSemanaPorAba: diaDaSemanaTreinoPorAba[`diaSemana-${tab}`],
      idGrupoMuscularPorAba: idGrupoMuscular,
      idExercicioPorAba: idExercicio
     //  grupoMuscularPorAba: idGrupoMuscular,
   };
-  console.log(newCardData);
+  //console.log(newCardData);
   const transformedData = {
-    exercicio: [{
+    [`exercicio${tab}`]: [
+      {
         id_exercicio: newCardData.idExercicioPorAba,
         id_dia_treino: newCardData.diaDaSemanaPorAba,
         descricao: newCardData.descricaoTreinoPorAba,
@@ -243,18 +245,37 @@ const handleClickDataExercises = (tab) => {
         descanso: newCardData.descansoTreinoPorAba,
         repeticoesTreino: newCardData.repeticoesTreinoPorAba,
       //  id_ficha: 1,
-        grupo_muscular: newCardData.grupoMuscularPorAba,
+       // grupo_muscular: newCardData.grupoMuscularPorAba,
         exercicioTreino: newCardData.exercicioTreinoPorAba
-      }]  
+      }
+    ]  
   };
 
-        setSeriesExercicio('');
-        setRepeticoesTreino('');
-        setCargaTreino('');
-        setDescansoTreino('');
-        setDescricaoTreino('');
+  const transformedDataEnviarDados = {
+    exercicio: [
+      {
+        id_exercicio: newCardData.idExercicioPorAba,
+        id_dia_treino: newCardData.diaDaSemanaPorAba,
+        descricao: newCardData.descricaoTreinoPorAba,
+        id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
+        series:newCardData.seriesTreinoPorAba,
+        carga: newCardData.cargaTreinoPorAba,
+        descanso: newCardData.descansoTreinoPorAba,
+        repeticoesTreino: newCardData.repeticoesTreinoPorAba,
+        exercicioTreino: newCardData.exercicioTreinoPorAba
+      },
+    ]  
+  };
+
+        // setSeriesExercicioPorAba('');
+        // setRepeticoesTreinoPorAba('');
+        // setCargaTreinoPorAba('');
+        // setDescansoTreinoPorAba('');
+        // setDescricaoPorAba('');
+        
+  setCardDataEnviaDados((prevCardData) => [...prevCardData, transformedDataEnviarDados]);
   setCardData((prevCardData) => [...prevCardData, transformedData]);
-  console.log(cardData);
+ // console.log(cardData);
 };
 
 const handleFinalizeSheet = async () => {
@@ -268,21 +289,22 @@ const handleFinalizeSheet = async () => {
     data_final: selectedDate
   };
 
+  //console.log(cardData);
   const finalizedData = {
     ficha: fichaData,
-    exercicio: cardData.map((data) => data.exercicio).flat() // Extrair os exercícios do cardData
+    exercicio: cardDataEnviaDados.map((data) => data.exercicio).flat(),
   };
 
   console.log(finalizedData);
-  // try {
-  //   const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
-  //     cardData: cardData, // Enviando o array cardData no corpo da requisição
-  //   });
+  try {
+    const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
+      cardData: finalizedData, // Enviando o array cardData no corpo da requisição
+    });
 
-  //   console.log(response.data); // Verificar a resposta do servidor (se necessário)
-  // } catch (error) {
-  //   console.error('Erro ao enviar dados para o servidor:', error);
-  // }
+    console.log(response.data); // Verificar a resposta do servidor (se necessário)
+  } catch (error) {
+    console.error('Erro ao enviar dados para o servidor:', error);
+  }
 };
 const [value, setValue] = React.useState('1');
 
@@ -383,7 +405,13 @@ const [value, setValue] = React.useState('1');
                         </label>
                       <select 
                        value={diaDaSemanaTreinoPorAba[`diaSemana-${tab}`] || ''}
-                       onChange={(e) => handleInputChangeValueTab(e, `diaSemana-${tab}`)}
+                       onChange={(e) => {
+                        const valorSelecionado = e.target.value;
+                        setDiaDaSemanaTreinoPorAba({
+                          ...diaDaSemanaTreinoPorAba,
+                          [`diaSemana-${tab}`]: valorSelecionado,
+                        });
+                      }}
                     // value={selectedOptions}
                       className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         
@@ -581,40 +609,39 @@ const [value, setValue] = React.useState('1');
                       </div>     
       
               </div>
-            
-              {cardData.map((card, index) => (
-                  
-                <div key={index} className='cardExercicio  w-3/5 mx-auto mt-5'>
-                  {/* <div className='text-xl font-bold text-center'>Grupo Muscular: {card.exercicio[0].grupo_muscular}</div> */}
-                  {card.exercicio.map((exercicio, exIndex) => (
-
-                    <div className='flex justify-between bg-white rounded p-4 shadow-md mb-4' key={exIndex}>
+           {/* // {console.log(`Treino ${tab}`)} */}
+           {cardData
+            .filter((card) => card[`exercicio${tab}`]) // Filtrar exercícios com a chave correspondente à guia atual
+            .map((filteredCard, index) => (
+              <div key={index} className='cardExercicio w-3/5 mx-auto mt-5'>
+                {filteredCard[`exercicio${tab}`].map((exercicio, exIndex) => (
+                  <div className='flex justify-between bg-white rounded p-4 shadow-md mb-4' key={exIndex}>
+                    <div className='flex items-center'>
+                      <FaDumbbell className='text-blue-500' size={24} />
+                      <span className='ml-2 font-semibold'>{exercicio.exercicioTreino}</span>
+                    </div>
+                    <div className='flex gap-5'>
                       <div className='flex items-center'>
-                        <FaDumbbell className='text-blue-500' size={24} />
-                        <span className='ml-2 font-semibold'>{exercicio.exercicioTreino}</span>
+                        <VscCheckAll className='text-green-500' size={24} />
+                        <span className='ml-2'>{exercicio.series} Séries</span>
                       </div>
-                      <div className='flex gap-5'>
-                        <div className='flex items-center'>
-                          <VscCheckAll className='text-green-500' size={24} />
-                          <span className='ml-2'>{exercicio.series} Séries</span>
-                        </div>
-                        <div className='flex items-center'>
-                          <BiRepost className='text-purple-500' size={24} />
-                          <span className='ml-2'>{exercicio.repeticoesTreino} Repetições</span>
-                        </div>
-                        <div className='flex items-center'>
-                          <FaWeightHanging className='text-yellow-500' size={16} />
-                          <span className='ml-2'>{exercicio.carga} KG</span>
-                        </div>
-                        <div className='flex items-center'>
-                          <GiNightSleep className='text-indigo-500' size={16} />
-                          <span className='ml-2'>{exercicio.descanso} Segundos</span>
-                        </div>
+                      <div className='flex items-center'>
+                        <BiRepost className='text-purple-500' size={24} />
+                        <span className='ml-2'>{exercicio.repeticoesTreino} Repetições</span>
+                      </div>
+                      <div className='flex items-center'>
+                        <FaWeightHanging className='text-yellow-500' size={16} />
+                        <span className='ml-2'>{exercicio.carga} KG</span>
+                      </div>
+                      <div className='flex items-center'>
+                        <GiNightSleep className='text-indigo-500' size={16} />
+                        <span className='ml-2'>{exercicio.descanso} Segundos</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
+            ))}
 
                 <div className='p-10 flex justify-end'>
                   <button
