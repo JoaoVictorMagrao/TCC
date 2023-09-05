@@ -252,8 +252,8 @@ const handleClickDataExercises = (tab) => {
   };
 
   const transformedDataEnviarDados = {
-    exercicio: [
-      {
+  
+      
         id_exercicio: newCardData.idExercicioPorAba,
         id_dia_treino: newCardData.diaDaSemanaPorAba,
         descricao: newCardData.descricaoTreinoPorAba,
@@ -263,8 +263,8 @@ const handleClickDataExercises = (tab) => {
         descanso: newCardData.descansoTreinoPorAba,
         repeticoesTreino: newCardData.repeticoesTreinoPorAba,
         exercicioTreino: newCardData.exercicioTreinoPorAba
-      },
-    ]  
+      
+    
   };
 
         // setSeriesExercicioPorAba('');
@@ -289,10 +289,12 @@ const handleFinalizeSheet = async () => {
     data_final: selectedDate
   };
 
-  //console.log(cardData);
+  
+  const cardDataEnviaDadosJSON = JSON.stringify(cardDataEnviaDados);
+
   const finalizedData = {
     ficha: fichaData,
-    exercicio: cardDataEnviaDados.map((data) => data.exercicio).flat(),
+    exercicio: cardDataEnviaDadosJSON
   };
 
   console.log(finalizedData);

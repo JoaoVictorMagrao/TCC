@@ -106,34 +106,37 @@ const controller = {
     });
    }
   ,adicionarExercicioFichaAluno: function (cardData) {
-   console.log(cardData);
-   const dataFicha = cardData.ficha;
+   //console.log(cardData);
+   const dataSheet = cardData.cardData.ficha;
+   const dataExercise = cardData.cardData.exercicio;
+
     try {  
       var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
-      db.query(sql, [dataFicha.id_professor, dataFicha.id_aluno, dataFicha.nome_ficha,dataFicha.ativo, dataFicha.data_criacao, dataFicha.data_final], function (err, result) {
+      db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha,dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
         if (err) throw err;
-   
-        // Usando os valores do objeto cardData
+    
       // cardData.map(() => {
       //   console.log(cardData.descricao);
       // })
-      const dataArray = Object.entries(cardData.exercicio).map(([key, value]) => ({
+
+      console.log(dataExercise);
+      const dataArray = Object.entries(dataExercise).map(([key, value]) => ({
         descricao: key,
         valor: value,
       }));
-
-      for (const itemFicha of dataArray) {
-        //console.log(itemFicha.valor.descricao);
+console.log('--------------------------------------');
+      for (const exercicio of JSON.parse(dataExercise)) {
+        console.log(exercicio);
         db.query(
           'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            itemFicha.valor.id_exercicio, // Assuming id_exercicio or id_dia_treino should be from cardData
-            itemFicha.valor.id_dia_treino, // Assuming id_exercicio or id_dia_treino should be from cardData
-            itemFicha.valor.descricao,
-            itemFicha.valor.id_grupo_muscular, // Assuming id_grupo_muscular should be from cardData
-            itemFicha.valor.series, // Assuming series should be from cardData
-            itemFicha.valor.carga, // Assuming carga should be from cardData
-            itemFicha.valor.descanso, // Assuming descanso should be from cardData
+            exercicio.id_exercicio,
+            exercicio.id_dia_treino, 
+            exercicio.descricao,
+            exercicio.id_grupo_muscular, 
+            exercicio.series, 
+            exercicio.carga, 
+            exercicio.descanso,
             result.insertId,
           ],
           function (err, result) {
