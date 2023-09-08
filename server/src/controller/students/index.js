@@ -114,17 +114,7 @@ const controller = {
       var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
       db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha,dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
         if (err) throw err;
-    
-      // cardData.map(() => {
-      //   console.log(cardData.descricao);
-      // })
-
-      console.log(dataExercise);
-      const dataArray = Object.entries(dataExercise).map(([key, value]) => ({
-        descricao: key,
-        valor: value,
-      }));
-console.log('--------------------------------------');
+  
       for (const exercicio of JSON.parse(dataExercise)) {
         console.log(exercicio);
         db.query(

@@ -9,6 +9,7 @@ import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CloseIcon from '@mui/icons-material/Close';
 
 /* ------------------------ Icones ----------------------*/
 import { FaWeightHanging } from 'react-icons/fa';
@@ -277,6 +278,24 @@ const handleClickDataExercises = (tab) => {
   setCardData((prevCardData) => [...prevCardData, transformedData]);
  // console.log(cardData);
 };
+function removeExercicio(tab, id_exercicio) {
+  const updatedCardData = cardData.filter((card) => {
+    if (card[`exercicio${tab}`]) {
+      return card[`exercicio${tab}`].every((exercise) => exercise.id_exercicio !== id_exercicio);
+    }
+    return true; 
+  });
+
+  // Crie um novo array excluindo o exercício com base no id_exercicio em cardDataEnviaDados
+ // console.log(cardDataEnviaDados);
+  const updatedCardDataEnviaDados = cardDataEnviaDados.filter(
+    (exercise) => exercise.id_exercicio !== id_exercicio
+  );
+  
+  setCardDataEnviaDados(updatedCardDataEnviaDados);
+  console.log(cardDataEnviaDados);
+  setCardData(updatedCardData);
+}
 
 const handleFinalizeSheet = async () => {
 
@@ -615,7 +634,7 @@ const [value, setValue] = React.useState('1');
            {cardData
             .filter((card) => card[`exercicio${tab}`]) // Filtrar exercícios com a chave correspondente à guia atual
             .map((filteredCard, index) => (
-              <div key={index} className='cardExercicio w-3/5 mx-auto mt-5'>
+              <div key={index} className='cardExercicio w-4/5 mx-auto mt-5'>
                 {filteredCard[`exercicio${tab}`].map((exercicio, exIndex) => (
                   <div className='flex justify-between bg-white rounded p-4 shadow-md mb-4' key={exIndex}>
                     <div className='flex items-center'>
@@ -623,6 +642,7 @@ const [value, setValue] = React.useState('1');
                       <span className='ml-2 font-semibold'>{exercicio.exercicioTreino}</span>
                     </div>
                     <div className='flex gap-5'>
+                     
                       <div className='flex items-center'>
                         <VscCheckAll className='text-green-500' size={24} />
                         <span className='ml-2'>{exercicio.series} Séries</span>
@@ -640,6 +660,7 @@ const [value, setValue] = React.useState('1');
                         <span className='ml-2'>{exercicio.descanso} Segundos</span>
                       </div>
                     </div>
+                    <CloseIcon onClick={() => removeExercicio(tab, exercicio.id_exercicio)} />
                   </div>
                 ))}
               </div>
