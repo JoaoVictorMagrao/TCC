@@ -220,6 +220,7 @@ const fetchExercicios = async (idGrupoMuscular) => {
 
 
 const handleClickDataExercises = (tab) => {
+
   const newCardData = {
     //[`exercicio${tab}`]: descricaoTreinoPorAba,     
      exercicioTreinoPorAba: exercicioTreino,
@@ -233,50 +234,51 @@ const handleClickDataExercises = (tab) => {
      idExercicioPorAba: idExercicio
     //  grupoMuscularPorAba: idGrupoMuscular,
   };
-  //console.log(newCardData);
-  const transformedData = {
-    [`exercicio${tab}`]: [
-      {
-        id_exercicio: newCardData.idExercicioPorAba,
-        id_dia_treino: newCardData.diaDaSemanaPorAba,
-        descricao: newCardData.descricaoTreinoPorAba,
-        id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
-        series:newCardData.seriesTreinoPorAba,
-        carga: newCardData.cargaTreinoPorAba,
-        descanso: newCardData.descansoTreinoPorAba,
-        repeticoesTreino: newCardData.repeticoesTreinoPorAba,
-      //  id_ficha: 1,
-       // grupo_muscular: newCardData.grupoMuscularPorAba,
-        exercicioTreino: newCardData.exercicioTreinoPorAba
-      }
-    ]  
-  };
+ 
 
-  const transformedDataEnviarDados = {
-  
+    if(newCardData.seriesTreinoPorAba === '' || newCardData.cargaTreinoPorAba === '' || newCardData.descansoTreinoPorAba === '' ||  newCardData.repeticoesTreinoPorAba === ''){
+      alert('tudo vazio');
+    }else{
       
-        id_exercicio: newCardData.idExercicioPorAba,
-        id_dia_treino: newCardData.diaDaSemanaPorAba,
-        descricao: newCardData.descricaoTreinoPorAba,
-        id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
-        series:newCardData.seriesTreinoPorAba,
-        carga: newCardData.cargaTreinoPorAba,
-        descanso: newCardData.descansoTreinoPorAba,
-        repeticoesTreino: newCardData.repeticoesTreinoPorAba,
-        exercicioTreino: newCardData.exercicioTreinoPorAba
-      
-    
-  };
+    const transformedData = {
+      [`exercicio${tab}`]: [
+        {
+          id_exercicio: newCardData.idExercicioPorAba,
+          id_dia_treino: newCardData.diaDaSemanaPorAba,
+          descricao: newCardData.descricaoTreinoPorAba,
+          id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
+          series:newCardData.seriesTreinoPorAba,
+          carga: newCardData.cargaTreinoPorAba,
+          descanso: newCardData.descansoTreinoPorAba,
+          repeticoesTreino: newCardData.repeticoesTreinoPorAba,
+        //  id_ficha: 1,
+        // grupo_muscular: newCardData.grupoMuscularPorAba,
+          exercicioTreino: newCardData.exercicioTreinoPorAba
+        }
+      ]  
+    };
 
-        // setSeriesExercicioPorAba('');
-        // setRepeticoesTreinoPorAba('');
-        // setCargaTreinoPorAba('');
-        // setDescansoTreinoPorAba('');
-        // setDescricaoPorAba('');
-        
-  setCardDataEnviaDados((prevCardData) => [...prevCardData, transformedDataEnviarDados]);
-  setCardData((prevCardData) => [...prevCardData, transformedData]);
- // console.log(cardData);
+    const transformedDataEnviarDados = {
+          id_exercicio: newCardData.idExercicioPorAba,
+          id_dia_treino: newCardData.diaDaSemanaPorAba,
+          descricao: newCardData.descricaoTreinoPorAba,
+          id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
+          series:newCardData.seriesTreinoPorAba,
+          carga: newCardData.cargaTreinoPorAba,
+          descanso: newCardData.descansoTreinoPorAba,
+          repeticoesTreino: newCardData.repeticoesTreinoPorAba,
+          exercicioTreino: newCardData.exercicioTreinoPorAba  
+    };
+
+          setSeriesExercicioPorAba('');
+          setRepeticoesTreinoPorAba('');
+          setCargaTreinoPorAba('');
+          setDescansoTreinoPorAba('');
+          setDescricaoPorAba('');
+          
+    setCardDataEnviaDados((prevCardData) => [...prevCardData, transformedDataEnviarDados]);
+    setCardData((prevCardData) => [...prevCardData, transformedData]);
+  }
 };
 function removeExercicio(tab, id_exercicio) {
   const updatedCardData = cardData.filter((card) => {
@@ -579,7 +581,7 @@ const [value, setValue] = React.useState('1');
                                 </label>
 
                                 <input
-                                  type='text'
+                                  type='number'
                                   id={`repeticoesTreino-${tab}`}
                                   name={`repeticoesTreino-${tab}`}
                                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
@@ -660,7 +662,7 @@ const [value, setValue] = React.useState('1');
                         <span className='ml-2'>{exercicio.descanso} Segundos</span>
                       </div>
                     </div>
-                    <CloseIcon onClick={() => removeExercicio(tab, exercicio.id_exercicio)} />
+                    <CloseIcon className='cursor-pointer' onClick={() => removeExercicio(tab, exercicio.id_exercicio)} />
                   </div>
                 ))}
               </div>
