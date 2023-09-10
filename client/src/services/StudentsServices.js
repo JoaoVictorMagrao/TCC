@@ -15,3 +15,13 @@ export const excluirAluno = async (alunoId) => {
   }
 };
 
+
+export const singleStudentList = (idStudents, setDataSingleStudents) => {
+  axios.get(`http://localhost:3001/listaAlunoUnico/${idStudents}`)
+    .then((response) => {
+      setDataSingleStudents(response.data);
+    })
+    .catch((error) => console.log(error));
+};
+
+

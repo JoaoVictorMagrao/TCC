@@ -131,14 +131,12 @@ const controller = {
           ],
           function (err, result) {
             if (err) throw err;
-            console.log(result);
+          //  console.log(result);
           }
         );
       }
       });
     
-      // Se quiser, pode retornar alguma mensagem ou resultado após o término da consulta
-      return 'Itens adicionados com sucesso';
     } catch (error) {
       throw error;
     }

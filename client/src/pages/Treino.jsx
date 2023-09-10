@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 //import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 //import 'react-tabs/style/react-tabs.css';
 import check from '../img/check.png';
+import { useNavigate } from 'react-router-dom';
 //import SinalMais from '../img/Sinaldemais.png';
+import { singleStudentList } from '../services/StudentsServices.js';
 import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
@@ -74,9 +76,11 @@ function Treino(){
   const [exercicioSelectText, setExercicioSelectText] = useState("Selecione um grupo muscular");
   const [nameSheet, setNameSheet] = useState('');
   const [formData, setFormData] = useState({});
+  const [isButtonDisabledFinalizeSheet, setIsButtonDisabledFinalizeSheet] = useState(cardDataEnviaDados.length === 0);
   const idTeacher = auth().id;
-  const [selectedDate, setSelectedDate] = useState(''); // Estado para guardar a data
-
+  const [dataSingleStudents, setDataSingleStudents] = useState([]);
+  const [selectedDateFinalizeSheet, setSelectedDateFinalizeSheet] = useState(''); 
+  const navigate = useNavigate()
   /* Por aba */
   // idGrupoMuscularPorAba: idGrupoMuscularPorAba,
   // idExercicioPorAba: idExercicioPorAba,
@@ -93,7 +97,7 @@ function Treino(){
   const [descansoTreinoPorAba, setDescansoTreinoPorAba] = useState('');
 
   const handleDateChange = (event) => {
-    setSelectedDate(event.target.value); // Atualiza o estado com a data selecionada
+    setSelectedDateFinalizeSheet(event.target.value); // Atualiza o estado com a data selecionada
   };
 
   const Transition = React.forwardRef(function Transition(props, ref) {
@@ -199,14 +203,15 @@ function Treino(){
 
   useEffect(() => {
     //getDadosAluno(idStudent);
+    singleStudentList(idStudent, setDataSingleStudents);
     fetchGrupoMuscular(setGrupoMuscularOptions);
-  
+    setIsButtonDisabledFinalizeSheet(cardDataEnviaDados.length === 0);
     if (idGrupoMuscular) {
       setExercicioSelectText("Exercicíos disponiveis");
     } else {
       setExercicioSelectText("Selecione um exercício");
     }
-  }, [idGrupoMuscular]);
+  }, [idGrupoMuscular, cardDataEnviaDados]);
 
 const fetchExercicios = async (idGrupoMuscular) => {
   try {
@@ -234,17 +239,24 @@ const handleClickDataExercises = (tab) => {
      idExercicioPorAba: idExercicio
     //  grupoMuscularPorAba: idGrupoMuscular,
   };
- 
 
-    if(newCardData.seriesTreinoPorAba === '' || newCardData.cargaTreinoPorAba === '' || newCardData.descansoTreinoPorAba === '' ||  newCardData.repeticoesTreinoPorAba === ''){
-      alert('tudo vazio');
+const condicaoSeries = (newCardData.seriesTreinoPorAba === '' || newCardData.seriesTreinoPorAba === undefined);
+const condicaoCarga = (newCardData.cargaTreinoPorAba === '' || newCardData.cargaTreinoPorAba === undefined);
+const condicaoDescanso = (newCardData.descansoTreinoPorAba === '' || newCardData.descansoTreinoPorAba === undefined);
+const condicaoRepeticoes = (newCardData.repeticoesTreinoPorAba === '' || newCardData.repeticoesTreinoPorAba === undefined);
+const verificaDiaSemana = newCardData.diaDaSemanaPorAba === undefined? 1: newCardData.diaDaSemanaPorAba;
+
+    if(condicaoSeries || condicaoCarga || condicaoDescanso || condicaoRepeticoes){
+      toast.warning('Preencha todos os campos obrigatórios!!!');
     }else{
-      
+      toast.success(`Exercicío adicionado com sucesso ao ${tab}`);
+
+     
     const transformedData = {
       [`exercicio${tab}`]: [
         {
           id_exercicio: newCardData.idExercicioPorAba,
-          id_dia_treino: newCardData.diaDaSemanaPorAba,
+          id_dia_treino: verificaDiaSemana,
           descricao: newCardData.descricaoTreinoPorAba,
           id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
           series:newCardData.seriesTreinoPorAba,
@@ -295,38 +307,52 @@ function removeExercicio(tab, id_exercicio) {
   );
   
   setCardDataEnviaDados(updatedCardDataEnviaDados);
-  console.log(cardDataEnviaDados);
   setCardData(updatedCardData);
 }
 
 const handleFinalizeSheet = async () => {
 
-  const fichaData = {
-    id_professor: idTeacher,
-    id_aluno: idStudent,
-    nome_ficha: nameSheet,
-    ativo: 1,
-    data_criacao: getCurrentDate(),
-    data_final: selectedDate
-  };
+  if(nameSheet === '' || selectedDateFinalizeSheet === ''){
+    toast.warning('Preencha todos os campos.');
+  }else{
 
+    const fichaData = {
+      id_professor: idTeacher,
+      id_aluno: idStudent,
+      nome_ficha: nameSheet,
+      ativo: 1,
+      data_criacao: getCurrentDate(),
+      data_final: selectedDateFinalizeSheet
+    };
+
+    
+    const cardDataEnviaDadosJSON = JSON.stringify(cardDataEnviaDados);
   
-  const cardDataEnviaDadosJSON = JSON.stringify(cardDataEnviaDados);
+    const finalizedData = {
+      ficha: fichaData,
+      exercicio: cardDataEnviaDadosJSON
+    };
 
-  const finalizedData = {
-    ficha: fichaData,
-    exercicio: cardDataEnviaDadosJSON
-  };
+  //  console.log(finalizedData);
+    try {
+      const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
+        cardData: finalizedData, // Enviando o array cardData no corpo da requisição
+      });
+    if(response.data.message === 'OK'){
+      toast.success('Ficha Cadastrada com sucesso!');
+      setNameSheet('');
+      setSelectedDateFinalizeSheet('');
+      handleCloseNameSheet();
+      setTimeout(() => {
+        navigate(`/home`);
+      }, 3500);
+    }else{
+      toast.error('Algo de errado aconteceu ao cadastrar a ficha, tente novamente.');
+    }
 
-  console.log(finalizedData);
-  try {
-    const response = await axios.post('http://localhost:3001/adicionarExercicioFichaAluno', {
-      cardData: finalizedData, // Enviando o array cardData no corpo da requisição
-    });
-
-    console.log(response.data); // Verificar a resposta do servidor (se necessário)
-  } catch (error) {
-    console.error('Erro ao enviar dados para o servidor:', error);
+    } catch (error) {
+      console.error('Erro ao enviar dados para o servidor:', error);
+    }
   }
 };
 const [value, setValue] = React.useState('1');
@@ -345,10 +371,11 @@ const [value, setValue] = React.useState('1');
           onClose={handleCloseFinalizeSheet}
           aria-describedby="alert-dialog-slide-description"
         >
-          <DialogTitle>{`Deseja Realmente finalizar a ficha de ${nomeAluno}?`}</DialogTitle>
+        
+          <DialogTitle>{`Deseja Realmente finalizar a ficha de ${dataSingleStudents.nome}?`}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-slide-description">
-            Se você concluir esta ficha e {nomeAluno} possuir outra ficha ativa, aquela será inativada e esta nova ficha será ativada.
+            Se você concluir esta ficha e {dataSingleStudents.nome} possuir outra ficha ativa, aquela será inativada e esta nova ficha será ativada.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -382,7 +409,7 @@ const [value, setValue] = React.useState('1');
                   type="date"
                   fullWidth
                   variant="standard"
-                  value={selectedDate}
+                  value={selectedDateFinalizeSheet}
                   onChange={handleDateChange}
                   InputLabelProps={{
                     shrink: true,
@@ -404,10 +431,10 @@ const [value, setValue] = React.useState('1');
             <Button onClick={handleFinalizeSheet}>Salvar Ficha</Button>
           </DialogActions>
       </Dialog>
-    <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5">
+    <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5 mb-10">
     
     <Box sx={{ width: '100%', typography: 'body1', border: '1px ridge #ccc' }}>
-    <TabContext value={valueTab}>
+    <TabContext value={valueTab} >
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChangeTabs} aria-label="lab API tabs example">
             {tabs.map((tab, index) => (
@@ -679,10 +706,12 @@ const [value, setValue] = React.useState('1');
                 </div>
           </TabPanel>
         ))}
+ 
          <div className=' flex items-center justify-center'>
             <button
-              className='ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
+              className='mb-5 ripple inline-block  bg-primary px-6 pb-2 pt-2.5 text-xs  uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-lime-600 p-2 rounded text-white font-bold'
               onClick={handleClickOpen}
+              disabled={isButtonDisabledFinalizeSheet}
             >
               Finalizar Ficha
             </button>
