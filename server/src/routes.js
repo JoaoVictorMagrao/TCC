@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const professorController = require('./controller/teachers/index');
 const alunosController = require('./controller/students/index');
+const mobileController = require('./controller/mobileController/index');
 const path = require('path');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
@@ -24,28 +25,57 @@ router.post("/user/generateToken", (req, res) => {
   res.send(token);
 });
 
-// router.get("/user/validateToken", (req, res) => {
-//   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
-//   let jwtSecretKey = process.env.JWT_SECRET_KEY;
+/*--------------- Rotas App ---------------*/
+router.get('/listaFichasAluno/:id_aluno', async (req, res) => {
+  const alunoId = req.params.id_aluno;
+  
+  try {
+    const fichas = await mobileController.listaFichasAluno(alunoId);
+    res.send(fichas);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
-//   try {
-//       const token = req.header(tokenHeaderKey);
-//   console.log(token);
- 
-//       const verified = jwt.verify(token, jwtSecretKey)
+router.get('/listaTreinosAluno/:id_ficha', async (req, res) => {
+  const fichaId = req.params.id_ficha;
+  console.log(fichaId);
+  
+  try {
+    const fichas = await mobileController.listaTreinosAluno(fichaId); // Certifique-se de que esta função esteja definida
+    res.send(fichas);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
-//       if(verified){
-//           return res.send("Successfully Verified");
-//       }else{
-//           // Access Denied
-//           return res.status(401).send(error);
-//       }
-//   } catch (error) {
-//       // Access Denied
-//       return res.status(401).send(error);
-//   }
-// });
+router.get('/listaExerciciosTreino/:id_dia_treino/:id_ficha', async (req, res) => {
+  const fichaId = req.params.id_ficha;
+  const diaTreinoId = req.params.id_dia_treino;
+  
+  try {
+    const exercicios = await mobileController.listaExerciciosTreino(diaTreinoId ,fichaId); // Certifique-se de que esta função esteja definida
+    res.send(exercicios);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
+router.get('/listaExercicioUnico/:id_dia_treino/:id_ficha/:id_exercicio', async (req, res) => {
+  const fichaId = req.params.id_ficha;
+  const diaTreinoId = req.params.id_dia_treino;
+  const exercicioId = req.params.id_exercicio;
+
+  
+  try {
+    const exercicios = await mobileController.listaExercicioUnico(diaTreinoId ,fichaId, exercicioId); 
+    res.send(exercicios);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+/*--------------- FIM Rotas App ---------------*/
 router.post('/login', (req, res) => {
   professorController.login(req, res)
     .then(entity => {

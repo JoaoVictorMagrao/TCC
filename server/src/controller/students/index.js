@@ -111,31 +111,40 @@ const controller = {
    const dataExercise = cardData.cardData.exercicio;
 
     try {  
-      var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
-      db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha,dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
-        if (err) throw err;
-  
-      for (const exercicio of JSON.parse(dataExercise)) {
-        console.log(exercicio);
-        db.query(
-          'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-          [
-            exercicio.id_exercicio,
-            exercicio.id_dia_treino, 
-            exercicio.descricao,
-            exercicio.id_grupo_muscular, 
-            exercicio.series, 
-            exercicio.carga, 
-            exercicio.descanso,
-            result.insertId,
-          ],
-          function (err, result) {
+
+      var sqlUpdate = "UPDATE fichas set ativo = 0 where id_aluno = ?";
+      db.query(sqlUpdate, [dataSheet.id_aluno], function(err, result) {
+        if (err) {
+          console.error("Erro ao atualizar a ficha:", err);
+        }else{
+          var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
+          db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha,dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
             if (err) throw err;
-          //  console.log(result);
+      
+          for (const exercicio of JSON.parse(dataExercise)) {
+            console.log(exercicio);
+            db.query(
+              'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+              [
+                exercicio.id_exercicio,
+                exercicio.id_dia_treino, 
+                exercicio.descricao,
+                exercicio.id_grupo_muscular, 
+                exercicio.series, 
+                exercicio.carga, 
+                exercicio.descanso,
+                result.insertId,
+              ],
+              function (err, result) {
+                if (err) throw err;
+              //  console.log(result);
+              }
+            );
           }
-        );
-      }
+          });
+        }
       });
+    
     
     } catch (error) {
       throw error;

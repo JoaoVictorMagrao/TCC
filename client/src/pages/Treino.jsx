@@ -405,7 +405,7 @@ const [value, setValue] = React.useState('1');
               <TextField
                   margin="dense"
                   id="selectedDate"
-                  label="Selecione uma data de inspiração da ficha"
+                  label="Selecione uma data de expiração da ficha"
                   type="date"
                   fullWidth
                   variant="standard"
