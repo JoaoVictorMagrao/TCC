@@ -1,6 +1,38 @@
 const db = require('../../config/index');
 
 const controller = {
+  loginAluno: function (req, res) {
+    const email = req.body.email;
+    const senha = req.body.senha;
+
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT A.id, A.nome, A.senha, A.email, F.id as id_ficha FROM alunos as A INNER JOIN fichas as F ON A.id = F.id_aluno where A.email = ? AND A.senha = ? AND F.ativo = 1',
+        [email, senha],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          }
+          console.log(result);
+          if (result.length > 0) {
+            const aluno = {
+              msg: 'OK',
+              user: {
+                id: result[0].id,
+                nome: result[0].nome,
+                senha: result[0].senha,
+                email: result[0].email,
+                id_ficha: result[0].id_ficha
+              } 
+            };
+            resolve(aluno);
+          } else {
+            resolve({msg: 'ERROR'});
+          }
+        }
+      )
+    });
+  },
   listaFichasAluno: function (idAluno) {
  
     return new Promise((resolve, reject) => {

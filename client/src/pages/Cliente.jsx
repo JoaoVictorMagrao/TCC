@@ -13,33 +13,47 @@ import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost, allow
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
 
-async function getDadosAluno() {
-    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
-    const data = await response.json();
-      return {
-        ...data,
-        nomeAluno: data.nome,
-        emailAluno: data.email,
-        cpfAluno: data.cpf,
-        telefoneAluno: data.whatsapp,
-        mensalidadeAluno: data.valor_mensal,
-        dataVencimentoAluno: (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10),
-        situacaoAluno: data.situacao,
-        senhaAluno: data.senha,
-        selectedImage: data.img
-      }
-}
-
-
 function Cliente() {
-
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationPost),
+   // defaultValues: getDadosAluno
+  })
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setmsgError] = useState('Erro ao atualizar cliente');
   const { idTeacher} = useContext(DataLoginContext);
   const [imgURL, setImgURL] = useState('');
   const [valueButton, setValueButton] = useState('');
- 
+  
+  async function fetchDadosAluno() {
+    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
+    const data = await response.json();
+
+    setValue('nomeAluno', data.nome);
+    setValue('emailAluno', data.email);
+    setValue('cpfAluno', data.cpf);
+    setValue('telefoneAluno', data.whatsapp_formatado);
+    setValue('mensalidadeAluno', data.valor_mensal);
+    setValue('dataVencimentoAluno', (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10));
+    setValue('situacaoAluno', data.ativo);
+    setValue('senhaAluno', data.senha);
+    setValue('selectedImage', data.img);
+  }
+  useEffect(() => {
+    const url = window.location.href;
+    if (url.includes('id')) {
+      fetchDadosAluno();
+    } else {
+      clearForm();
+    }
+  }, []);
 
 
   const handleInputChange = (event) => {
@@ -52,28 +66,7 @@ function Cliente() {
   // const [progress, setProgress] = useState(0);
   // const [file, setFile] = useState("");
   // const [selectedImage, setSelectedImage] = useState(null);
- 
-  useEffect(() => {
-    const fetchData = async () => {
-      const alunoData = await getDadosAluno();
-    //  setSelectedImage(alunoData.selectedImage);
-    };
-    fetchData();
-   
-  }, []);
 
-  
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getValues,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationPost),
-    defaultValues: getDadosAluno
-  })
 
   //  reset();
   
@@ -109,7 +102,9 @@ function Cliente() {
 //   );
 // }
 
-
+const clearForm = () => {
+  reset(); 
+};
 
   const handleFormSubmit = async ({
     nomeAluno,
@@ -177,6 +172,9 @@ function Cliente() {
   }
 
  // console.log(getValues('cpfAluno'));
+ useEffect(() => {
+  clearForm();
+}, []);
 
   useEffect(() => {
     let timerId

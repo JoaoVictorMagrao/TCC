@@ -26,6 +26,22 @@ router.post("/user/generateToken", (req, res) => {
 });
 
 /*--------------- Rotas App ---------------*/
+
+router.post('/loginAluno', (req, res) => {
+  mobileController.loginAluno(req, res)
+    .then(entity => {
+       const data = {
+        time: Date(),
+        userId: entity.id,
+      };
+
+      res.send(entity);
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+});
+
 router.get('/listaFichasAluno/:id_aluno', async (req, res) => {
   const alunoId = req.params.id_aluno;
   
