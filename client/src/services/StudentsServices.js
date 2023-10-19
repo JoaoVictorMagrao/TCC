@@ -24,4 +24,9 @@ export const singleStudentList = (idStudents, setDataSingleStudents) => {
     .catch((error) => console.log(error));
 };
 
+export const getStudentRecords = async (idStudents, setDataSheet) => {
+  const response = await axios.get(`http://localhost:3001/listaFichas/${idStudents}`);
+  return response.data;
+}
+
 

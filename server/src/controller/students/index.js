@@ -149,6 +149,30 @@ const controller = {
     } catch (error) {
       throw error;
     }
+  },
+  listaFichas: function (nomeFicha, dataCriacao) {
+    return new Promise((resolve, reject) => {
+      let queryNomeFicha;
+      let queryDataCriacao;
+         queryNomeFicha = (nomeFicha != '') ? `where nome_ficha = ?` : '';
+      if(queryNomeFicha == ''){
+        queryDataCriacao = (dataCriacao != '') ? `where data_criacao = ${dataCriacao}` : '';
+      }else{
+        queryDataCriacao = (dataCriacao != '') ? `and data_criacao = ${dataCriacao}` : ''; 
+      }
+   
+      db.query(
+        'SELECT * FROM alunos WHERE id = ?',
+        [alunoId],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result[0]);
+          }
+        }
+      )
+    });
   }
   
 

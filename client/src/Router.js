@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Cliente from './pages/Cliente';
 import Treino from './pages/Treino';
+import Fichas from './pages/Fichas';
 
 
 export function Router() {
@@ -16,6 +17,12 @@ export function Router() {
       <Route path="/home" element={
           <RequireAuth loginPath={'/login'}>
               <Home />
+          </RequireAuth>
+      }/>
+
+      <Route path="/fichas" element={
+          <RequireAuth loginPath={'/login'}>
+              <Fichas />
           </RequireAuth>
       }/>
 

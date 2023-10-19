@@ -65,11 +65,11 @@ const controller = {
       )
     });
   },
-  listaExerciciosTreino: function (idDiaTreino,idFicha) {
+  listaExerciciosTreino: function (idFicha) {
     return new Promise((resolve, reject) => {
       db.query(
-        'select G.*, FI.* from ficha_itens FI INNER JOIN grupo_muscular G on(G.id = FI.id_grupo_muscular) where id_dia_treino = ? and id_ficha = ?',
-        [idDiaTreino, idFicha],
+        'select FI.id_dia_treino, E.descricao as exercicio, FI.id from ficha_itens FI INNER JOIN exercicios E ON(FI.id_exercicio = e.id) where id_ficha = ? group by E.descricao order by FI.id_dia_treino asc',
+        [idFicha],
         (err, result) => {
           if (err) {
    

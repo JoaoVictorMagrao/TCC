@@ -65,12 +65,12 @@ router.get('/listaTreinosAluno/:id_ficha', async (req, res) => {
   }
 });
 
-router.get('/listaExerciciosTreino/:id_dia_treino/:id_ficha', async (req, res) => {
+router.get('/listaExerciciosTreino/:id_ficha', async (req, res) => {
   const fichaId = req.params.id_ficha;
   const diaTreinoId = req.params.id_dia_treino;
   
   try {
-    const exercicios = await mobileController.listaExerciciosTreino(diaTreinoId ,fichaId); // Certifique-se de que esta função esteja definida
+    const exercicios = await mobileController.listaExerciciosTreino(fichaId); 
     res.send(exercicios);
   } catch (error) {
     res.status(500).send(error);
@@ -92,6 +92,18 @@ router.get('/listaExercicioUnico/:id_dia_treino/:id_ficha/:id_exercicio', async 
 });
 
 /*--------------- FIM Rotas App ---------------*/
+
+router.get('/listaFichas/:nome/:dataCriacao', async (req, res) => {
+  try {
+    const nomeFicha = req.params.nome;
+    const dataCriacao = req.params.dataCriacao;
+    const fichas = await alunosController.listaFichas(nomeFicha, dataCriacao);
+    res.json(fichas);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro' });
+  }
+});
+
 router.post('/login', (req, res) => {
   professorController.login(req, res)
     .then(entity => {
@@ -204,6 +216,5 @@ router.get('/listaGrupoMuscular', async (req, res) => {
     res.status(500).json({ error: 'Erro' });
   }
 });
-
 
 module.exports = router;

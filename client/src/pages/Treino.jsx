@@ -106,9 +106,9 @@ function Treino(){
 
   const addTab = () => {
     if (tabs.length < 7) {
-      const nextTab = String.fromCharCode(65 + tabs.length); // Começa com 'B' (65 em ASCII)
+      const nextTab = String.fromCharCode(65 + tabs.length);
       setTabs([...tabs, `Treino ${nextTab}`]);
-      setValue(tabs.length); // Define o valor para a nova aba
+      setValue(tabs.length);
     }
   };
 
@@ -477,7 +477,7 @@ const [value, setValue] = React.useState('1');
                   </div>
                 {/* {getDayOfWeek(selectedOptions).length > 0 && (
                   <div className="diasEscolhidos bg-gray-100 p-4 rounded-md shadow-md text-center">
-                    <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>
+                    <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>""
                     <div className="gap-2">
                       {getDayOfWeek(selectedOptions).map((day) => (
                        
