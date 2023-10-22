@@ -24,8 +24,13 @@ export const singleStudentList = (idStudents, setDataSingleStudents) => {
     .catch((error) => console.log(error));
 };
 
-export const getStudentRecords = async (idStudents, setDataSheet) => {
-  const response = await axios.get(`http://localhost:3001/listaFichas/${idStudents}`);
+export const getStudentRecords = async (idTeacher, StartExpirationDate, endExpirationDate, idStudent) => {
+  const response = await axios.get(`http://localhost:3001/listaFichas/${idTeacher}/${endExpirationDate}/${StartExpirationDate}/${idStudent} `);
+  return response.data;
+}
+
+export const searchStudents = async (idTeacher) => {
+  const response = await axios.get(`http://localhost:3001/listaAlunosFicha/${idTeacher}`);
   return response.data;
 }
 

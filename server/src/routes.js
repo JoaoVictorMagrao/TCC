@@ -77,6 +77,7 @@ router.get('/listaExerciciosTreino/:id_ficha', async (req, res) => {
   }
 });
 
+
 router.get('/listaExercicioUnico/:id_dia_treino/:id_ficha/:id_exercicio', async (req, res) => {
   const fichaId = req.params.id_ficha;
   const diaTreinoId = req.params.id_dia_treino;
@@ -93,13 +94,28 @@ router.get('/listaExercicioUnico/:id_dia_treino/:id_ficha/:id_exercicio', async 
 
 /*--------------- FIM Rotas App ---------------*/
 
-router.get('/listaFichas/:nome/:dataCriacao', async (req, res) => {
+
+router.get('/listaAlunosFicha/:id_professor', async (req, res) => {
+  const professorId = req.params.id_professor;
+  
   try {
-    const nomeFicha = req.params.nome;
-    const dataCriacao = req.params.dataCriacao;
-    const fichas = await alunosController.listaFichas(nomeFicha, dataCriacao);
+    const alunos = await alunosController.listaAlunosFicha(professorId); 
+    res.send(alunos);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get('/listaFichas/:idProfessor/:dataExpiracaoInicial/:dataExpiracaoFinal/:idAluno', async (req, res) => {
+  try {
+    const dataExpiracaoInicial = req.params.dataExpiracaoInicial;
+    const dataExpiracaoFinal = req.params.dataExpiracaoFinal;
+    const idAluno = req.params.idAluno;
+    const idProfessor = req.params.idProfessor;
+    const fichas = await alunosController.listaFichas(idProfessor, dataExpiracaoInicial, dataExpiracaoFinal, idAluno);
     res.json(fichas);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Erro' });
   }
 });

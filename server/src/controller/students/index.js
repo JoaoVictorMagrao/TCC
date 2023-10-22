@@ -150,30 +150,66 @@ const controller = {
       throw error;
     }
   },
-  listaFichas: function (nomeFicha, dataCriacao) {
+  listaFichas: function (idProfessor, dataExpiracaoInicial, dataExpiracaoFinal, idAluno) {
+    //console.log(idProfessor + ' / ' + dataExpiracaoInicial + ' / ' + dataExpiracaoFinal + ' / ' + idAluno);
     return new Promise((resolve, reject) => {
-      let queryNomeFicha;
-      let queryDataCriacao;
-         queryNomeFicha = (nomeFicha != '') ? `where nome_ficha = ?` : '';
-      if(queryNomeFicha == ''){
-        queryDataCriacao = (dataCriacao != '') ? `where data_criacao = ${dataCriacao}` : '';
-      }else{
-        queryDataCriacao = (dataCriacao != '') ? `and data_criacao = ${dataCriacao}` : ''; 
-      }
-   
-      db.query(
-        'SELECT * FROM alunos WHERE id = ?',
-        [alunoId],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result[0]);
-          }
+        let queryConditions = [];
+        let queryParams = [idProfessor];
+
+        if (dataExpiracaoInicial != 0 && dataExpiracaoFinal != 0) {
+            queryConditions.push('F.data_final >= ? AND F.data_final <= ?');
+            queryParams.push(dataExpiracaoInicial, dataExpiracaoFinal);
         }
-      )
+
+        if (idAluno != 0) {
+          queryConditions.push('F.id_aluno = ?');
+          queryParams.push(idAluno);
+        }
+
+        // console.log('dataExpiracaoInicial: ' + dataExpiracaoInicial);
+        // console.log('dataExpiracaoFinal: '+ dataExpiracaoFinal);
+
+        let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id  WHERE F.id_professor = ?';
+
+        if (queryConditions.length > 0) {
+            queryString += ' AND ' + queryConditions.join(' AND ');
+        }
+        // console.log(queryString);
+        // console.log(queryString);
+        db.query(
+            queryString,
+            queryParams,
+            (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            }
+        );
     });
-  }
+},
+listaAlunosFicha: function (idProfessor) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      'SELECT id, nome FROM alunos where id_professor = ? ORDER BY nome ',
+      [idProfessor],
+      (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          const formattedResults = result.map((row) => ({
+            label: row.nome,
+            year: row.id,
+          }));
+        
+          resolve(formattedResults);
+        }
+      }
+    );
+  });
+ }
+
   
 
 }

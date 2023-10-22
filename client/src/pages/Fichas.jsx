@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Tooltip, Zoom} from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Tooltip, Zoom, Stack, Slide, Modal, Typography, Button, Box} from '@mui/material';
 //import { Trash, Pencil } from 'phosphor-react';
 import { getStudentRecords } from '../services/StudentsServices';
+import { searchStudents } from '../services/StudentsServices';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useAuthUser} from 'react-auth-kit';
+import Header from '../components/Header';
+import { formatarData } from '../Util/util.js';
+import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
+import WysiwygIcon from '@mui/icons-material/Wysiwyg';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import Button from '@mui/material/Button';
+
 
 function Fichas() {
   const auth = useAuthUser();
@@ -23,59 +31,146 @@ function Fichas() {
   const [sheet, setSheet] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = React.useState(false);
+  const [openModalPrinter, setOpenModalPrinter] = React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
+  const [listStudents, setListStudents] = useState(null);
+  const [selectedDateStartPrint, setSelectedDateStartPrint] = useState(''); 
+  const [selectedDateEndPrint, setSelectedDateEndPrint] = useState(''); 
+  const [selectedIdStudent, setSelectedIdStudent] = useState('');
+  
+  const handleDateStartPrinterChange = (event) => {
+    setSelectedDateStartPrint(event.target.value);
+  };
 
+  const handleDateEndPrinterChange = (event) => {
+    setSelectedDateEndPrint(event.target.value);
+  };
+
+  const idTeacher = auth().id;
   const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
+  
+  async function fetchData() {
+    try {
+      const data = await getStudentRecords(idTeacher,0,0,0);
+      setSheet(data);
+     
+      setLoading(false);
+    } catch (error) {
+      console.error('Erro ao obter pontos turísticos', error);
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    alert(auth().id);
+   fetchData();
+    searchStudents(idTeacher)
+    .then(students => {
+      setListStudents(students);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+   
   }, []);
+
+  const handleClickOpenModalPrinter = () => {
+    setOpenModalPrinter(true);
+  };
+
+  const handleClickCloseModalPrinter = () => {
+    setOpenModalPrinter(false);
+  };
+
+  const handlePrinter = async  () => {
+    const data = await  getStudentRecords(idTeacher,selectedDateEndPrint,selectedDateStartPrint,selectedIdStudent);
+    setSheet(data);
+    setLoading(false);
+  };
+  
 
   return (
     <div>
-      <div className='flex justify-end'>
-        
-      </div>
+      <Header />
+         <Dialog open={openModalPrinter} onClose={handleClickCloseModalPrinter}>
+          <DialogTitle>Filtro - Impressão</DialogTitle>
+            <DialogContent>
+              <div className='p-4'>
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={listStudents}
+                sx={{ width: 300 }}
+                onChange={(event, newValue) => {
+                  if (newValue) {
+                    setSelectedIdStudent(newValue.year);
+                  }
+                }}
+                renderInput={(params) => <TextField {...params} label="Aluno" />}
+              />
+          </div>
+              <TextField
+                  margin="dense"
+                  id="selectedDate"
+                  label="Data de inicio - Expiração"
+                  type="date"
+                  fullWidth
+                  variant="standard"
+                   value={selectedDateStartPrint}
+                   onChange={handleDateStartPrinterChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+
+                <TextField
+                  margin="dense"
+                  id="selectedDate"
+                  label="Data Fim - Expiração"
+                  type="date"
+                  fullWidth
+                  variant="standard"
+                  value={selectedDateEndPrint}
+                  onChange={handleDateEndPrinterChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+
+            </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClickCloseModalPrinter}>Cancelar</Button>
+            <Button onClick={handlePrinter}>Imprimir</Button>
+          </DialogActions>
+      </Dialog>
+    
       <div className='w-3/5 mx-auto mt-5'>
+      <Stack spacing={2} direction="row" className='float-right mb-2'> 
+        <Button onClick={handleClickOpenModalPrinter} variant="contained"><span className='mr-1'><WysiwygIcon /> </span> Imprimir</Button>
+      </Stack>
+
       <TableContainer component={Paper}>
           <Table aria-label='pontos table'>
             <TableHead>
             <TableRow>
               <TableCell>Código</TableCell>
+              <TableCell>Nome do aluno</TableCell>
               <TableCell>Nome da ficha</TableCell>
               <TableCell>Data de criação</TableCell>
               <TableCell>Data de expiração</TableCell>
+              
             </TableRow>
             </TableHead>
                 <TableBody>
-          
                     {sheet.length > 0 ? (
                       sheet.slice(startIndex, endIndex).map((ficha) => (
                         <TableRow key={ficha.id}>
                           <TableCell>{ficha.id}</TableCell>
-                          <TableCell>{ficha.nome}</TableCell>
-                          <TableCell>{ficha.dataCriacao}</TableCell>
-                          <TableCell>{ficha.dataExpiracao}</TableCell>
-                          <TableCell>
-                          <Tooltip arrow TransitionComponent={Zoom} title="Editar">
-                            {/* <Pencil
-                              size={25}
-                              color='black'
-                              className='cursor-pointer ml-3'
-                            /> */}
-                             </Tooltip>
-                          </TableCell>
-                          <TableCell>
-                            <Tooltip arrow TransitionComponent={Zoom} title="Excluir">
-                            {/* <Trash
-                              size={25}
-                              color='red'
-                              className='cursor-pointer ml-3'
-                            /> */}
-                            </Tooltip>
-                          </TableCell>
+                          <TableCell>{ficha.nome_aluno}</TableCell>
+                          <TableCell>{ficha.nome_ficha}</TableCell>
+                          <TableCell>{formatarData(ficha.data_criacao)}</TableCell>
+                          <TableCell>{formatarData(ficha.data_final)}</TableCell>                                   
                         </TableRow>
                       ))
                     ) : loading ? (
@@ -84,7 +179,7 @@ function Fichas() {
                       </TableRow>
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7}>Nenhum ponto turístico cadastrado!</TableCell>
+                        <TableCell colSpan={7}>Nenhuma ficha foi encontrada.</TableCell>
                       </TableRow>
                     )}
     </TableBody>

@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import CloseIcon from '@mui/icons-material/Close';
+import PersonIcon from '@mui/icons-material/Person';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import ListItemButton from '@mui/material/ListItemButton';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
@@ -50,8 +51,9 @@ function DrawerLeft({ nome }){
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
         <Toolbar>
+        <PersonIcon />
           <Typography variant="h6" noWrap component="div">
-            {nome}
+          {nome} 
           </Typography> 
         </Toolbar>
       </AppBar>
