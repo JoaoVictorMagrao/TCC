@@ -1,11 +1,21 @@
 const db = require('../../config/index');
 
 const controller = {
-  listaAluno: function (idProfessor) {
+  listaAluno: function (idProfessor, situacao) {
     return new Promise((resolve, reject) => {
+      let querySituation = '';
+      let queryParameters = [idProfessor];
+      
+      if (situacao == 2) {
+        querySituation = '';
+      } else if (situacao) {
+        querySituation = ' AND A.ativo = ?';
+        queryParameters.push(situacao);
+      }
+
       db.query(
-        'SELECT id, nome, email, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos  WHERE id_professor = ?',
-        [idProfessor],
+        'SELECT A.id, A.nome, A.email, A.whatsapp, fu_formata_whatsapp(A.id, A.whatsapp) whatsapp_formatado, A.valor_mensal, A.ativo, A.data_vencimento, IFNULL(F.id, 0)  as id_ficha_ativo, IFNULL(F.ativo, 0) as fichaAtiva FROM alunos as A LEFT JOIN fichas as F on(A.id = F.id_aluno) AND F.ativo = 1 WHERE A.id_professor = ?' + querySituation,
+        queryParameters,
         (err, result) => {
           if (err) {
             reject(err);
@@ -13,7 +23,21 @@ const controller = {
             resolve(result);
           }
         }
-      )
+      );
+    });
+  },
+  treinoAtivoAluno: function (idProfessor, idAluno) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT id, nome, email, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos WHERE id_professor = ?',
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
     });
   },
   adicionarAluno: function (aluno) {
@@ -150,32 +174,26 @@ const controller = {
       throw error;
     }
   },
-  listaFichas: function (idProfessor, dataExpiracaoInicial, dataExpiracaoFinal, idAluno) {
-    //console.log(idProfessor + ' / ' + dataExpiracaoInicial + ' / ' + dataExpiracaoFinal + ' / ' + idAluno);
+  listaFichas: function (idTeacher, dataExpiracaoInicial, dataExpiracaoFinal, idStudents) {
     return new Promise((resolve, reject) => {
         let queryConditions = [];
-        let queryParams = [idProfessor];
+        let queryParams = [idTeacher];
 
         if (dataExpiracaoInicial != 0 && dataExpiracaoFinal != 0) {
             queryConditions.push('F.data_final >= ? AND F.data_final <= ?');
             queryParams.push(dataExpiracaoInicial, dataExpiracaoFinal);
         }
 
-        if (idAluno != 0) {
+        if (idStudents != 0) {
           queryConditions.push('F.id_aluno = ?');
-          queryParams.push(idAluno);
+          queryParams.push(idStudents);
         }
-
-        // console.log('dataExpiracaoInicial: ' + dataExpiracaoInicial);
-        // console.log('dataExpiracaoFinal: '+ dataExpiracaoFinal);
 
         let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id  WHERE F.id_professor = ?';
 
         if (queryConditions.length > 0) {
             queryString += ' AND ' + queryConditions.join(' AND ');
         }
-        // console.log(queryString);
-        // console.log(queryString);
         db.query(
             queryString,
             queryParams,

@@ -139,11 +139,23 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.get('/listaAlunos/:id_professor', async (req, res) => {
+router.get('/listaAlunos/:id_professor/:situacao', async (req, res) => {
   const professorId = req.params.id_professor;
+  const situacao = req.params.situacao;
   try {
-    const alunos = await alunosController.listaAluno(professorId);
+    const alunos = await alunosController.listaAluno(professorId, situacao);
     res.send(alunos);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get('/treinoAtivoAluno/:idProfessor/:idAluno', async (req, res) => {
+  const professorId = req.params.idProfessor;
+  const alunoId = req.params.idAluno;
+  try {
+    const TreinoAluno = await alunosController.treinoAtivoAluno(professorId, alunoId);
+    res.send(TreinoAluno);
   } catch (error) {
     res.status(500).send(error);
   }

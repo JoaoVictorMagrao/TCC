@@ -11,6 +11,7 @@ import { formatarData } from '../Util/util.js';
 import AdapterDateFns from '@mui/lab/AdapterDateFns'; 
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
+import fichasPDF from '../Reports/Fichas/fichas';
 
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import TextField from '@mui/material/TextField';
@@ -34,9 +35,9 @@ function Fichas() {
   const [openModalPrinter, setOpenModalPrinter] = React.useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [listStudents, setListStudents] = useState(null);
-  const [selectedDateStartPrint, setSelectedDateStartPrint] = useState(''); 
-  const [selectedDateEndPrint, setSelectedDateEndPrint] = useState(''); 
-  const [selectedIdStudent, setSelectedIdStudent] = useState('');
+  const [selectedDateStartPrint, setSelectedDateStartPrint] = useState('0'); 
+  const [selectedDateEndPrint, setSelectedDateEndPrint] = useState('0'); 
+  const [selectedIdStudent, setSelectedIdStudent] = useState('0');
   
   const handleDateStartPrinterChange = (event) => {
     setSelectedDateStartPrint(event.target.value);
@@ -84,7 +85,13 @@ function Fichas() {
   };
 
   const handlePrinter = async  () => {
-    const data = await  getStudentRecords(idTeacher,selectedDateEndPrint,selectedDateStartPrint,selectedIdStudent);
+
+    const checkDataStart = (selectedDateStartPrint == '') ? 0 : selectedDateStartPrint;
+    const checkDataEnd = (selectedDateEndPrint == '') ? 0 : selectedDateEndPrint;
+    const checkIdStudent = (selectedIdStudent == '') ? 0 : selectedIdStudent;
+
+    const data = await  getStudentRecords(idTeacher,checkDataEnd,checkDataStart,checkIdStudent);
+    fichasPDF(data);
     setSheet(data);
     setLoading(false);
   };

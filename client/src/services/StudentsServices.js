@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-export const fetchAlunos = (idTeacher, setData) => {
-  axios.get(`http://localhost:3001/listaAlunos/${idTeacher}`)
-    .then((response) => setData(response.data))
-    .catch((error) => console.log(error));
+export const fetchAlunos = (idTeacher, situation, setStudents) => {
+  axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}`)
+    .then((response) => {
+      setStudents(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+export const fetchStudentsPrinter = (idTeacher, situation) => {
+  return axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}`);
 };
 
 export const excluirAluno = async (alunoId) => {
@@ -31,6 +39,11 @@ export const getStudentRecords = async (idTeacher, StartExpirationDate, endExpir
 
 export const searchStudents = async (idTeacher) => {
   const response = await axios.get(`http://localhost:3001/listaAlunosFicha/${idTeacher}`);
+  return response.data;
+}
+
+export const searchStudentTraining = async (idToken) => {
+  const response = await axios.get(`http://localhost:3001/listaExerciciosTreino/${idToken}`);
   return response.data;
 }
 
