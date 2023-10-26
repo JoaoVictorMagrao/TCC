@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 //import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
-import { fetchAlunos, excluirAluno, fetchStudentsPrinter, searchStudentTraining, fetchGeneralInformation } from '../services/StudentsServices.js';
+import { fetchAlunos, excluirAluno, fetchStudentsPrinter, searchStudentTraining, fetchValuesStudents } from '../services/StudentsServices.js';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Stack, Button} from '@mui/material';
 import { BiEdit } from 'react-icons/bi';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
@@ -28,7 +28,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import alunosPDF from '../Reports/Alunos/alunos';
 import treinoPDF from '../Reports/Treino/treino';
-import infoGeralPDF from '../Reports/InfoGeral/infoGeral';
+import valoresPDF from '../Reports/Valores/valores';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -40,6 +40,7 @@ export let valorBotao = 'Editar Aluno';
 
 function Home() {
   const [filtroSituacao, setFiltroSituacao] = useState('2');
+  const [filtroOrdemValores, setFiltroOrdemValores] = useState('0');
   const [filtroNome, setFiltroNome] = useState('');
   const [students, setStudents] = useState([]);
   const [page, setPage] = useState(0);
@@ -49,7 +50,10 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [idTeacher, setIdTeacher] = useState('');
   const [openModalPrinter, setOpenModalPrinter] = React.useState(false);
+  const [openModalPrinterListValues, setOpenModalPrinterListValues] = React.useState(false);
   const [openModalChoosePrint, setOpenModalChoosePrint] = React.useState(false);
+  const [selectedDateStartPrint, setSelectedDateStartPrint] = useState('0'); 
+  const [selectedDateEndPrint, setSelectedDateEndPrint] = useState('0'); 
   
   const Swal = require('sweetalert2');
   // const { idTeacher } = useContext(DataLoginContext);
@@ -75,11 +79,12 @@ function Home() {
     setLoading(false);
   };
 
-  const GeneralInformationPrinter = async () => {
-    const data = await fetchGeneralInformation(idTeacher);
-    infoGeralPDF(data);
+  const handlePrinterListValues = async  () => {
+    const data = await fetchValuesStudents(idTeacher, selectedDateStartPrint, selectedDateEndPrint, filtroOrdemValores);
+    valoresPDF(data.resultado);
     setLoading(false);
-  }
+  };
+
 
   const handleButtonEditarAluno = async (alunoId) => {
       window.location.href = `/cliente?id=${alunoId}`;
@@ -125,6 +130,14 @@ function Home() {
     setLoading(false);
   };
 
+  const handleFiltroOrdemValoresChange = (event) => {
+   // fetchAlunos(idTeacher, event.target.value, filtroNome, setStudents);
+    setFiltroOrdemValores(event.target.value);
+    setLoading(false);
+  };
+
+  
+
   
   const openWhatsapp = async (number, name) => {
     try {
@@ -161,6 +174,23 @@ function Home() {
   const handleClickCloseModalChoosePrinter = () => {
     setOpenModalChoosePrint(false);
   };
+
+  const handleClickCloseModalPrinteListValues = () => {
+    setOpenModalPrinterListValues(false);
+  };
+
+  const handleClickOpenModalPrinteListValues = () => {
+    setOpenModalPrinterListValues(true);
+  };
+
+  const handleDateStartPrinterChange = (event) => {
+    setSelectedDateStartPrint(event.target.value);
+  };
+
+  const handleDateEndPrinterChange = (event) => {
+    setSelectedDateEndPrint(event.target.value);
+  };
+  
  
   return (
    //   Hello {auth().nome}
@@ -188,7 +218,7 @@ function Home() {
             </DialogContent>
 
             <DialogContent>
-              <Card sx={{ maxWidth: 345 }} onClick={GeneralInformationPrinter}>
+              <Card sx={{ maxWidth: 345 }} onClick={handleClickOpenModalPrinteListValues}>
                   <CardActionArea>
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
@@ -226,6 +256,58 @@ function Home() {
             <Button onClick={handleClickCloseModalPrinter}>Cancelar</Button>
             <Button onClick={handlePrinter}>Imprimir</Button>
           </DialogActions>
+      </Dialog>
+
+        <Dialog open={openModalPrinterListValues} onClose={handleClickCloseModalPrinteListValues}>
+          <DialogTitle>Filtro - Impressão</DialogTitle>
+          <DialogContent>
+   
+            <DialogContent>
+                    <label htmlFor="filtroSituacao"> Ordenação em valores</label>
+                    <select  id='filtroOrdemValores'
+                      name='filtroOrdemValores'
+                      className='border text-sm rounded-lg block w-full p-2.5'
+                      value={filtroOrdemValores}
+                      onChange={handleFiltroOrdemValoresChange}>
+                      <option value="0">Sem ordem</option>
+                      <option value="1">Crescente</option>
+                      <option value="2">Descrecente</option>
+                    </select>           
+            </DialogContent>
+
+            <TextField
+                  margin="dense"
+                  id="selectedDate"
+                  label="Data de inicio - Expiração"
+                  type="date"
+                  fullWidth
+                  variant="standard"
+                   value={selectedDateStartPrint}
+                   onChange={handleDateStartPrinterChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+
+                <TextField
+                  margin="dense"
+                  id="selectedDate"
+                  label="Data Fim - Expiração"
+                  type="date"
+                  fullWidth
+                  variant="standard"
+                  value={selectedDateEndPrint}
+                  onChange={handleDateEndPrinterChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+          <DialogActions>
+            <Button onClick={handleClickCloseModalPrinteListValues}>Cancelar</Button>
+            <Button onClick={handlePrinterListValues}>Imprimir</Button>
+          </DialogActions>
+          </DialogContent>
+             
       </Dialog>
      
       <div className="flex flex-col w-4/5 mx-auto overflow-x-auto lg:overflow-x-hidden mt-4">   

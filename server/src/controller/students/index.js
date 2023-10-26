@@ -35,6 +35,44 @@ const controller = {
       );
     });
   },
+  listaValoresAlunos: function (idProfessor, dataInicio, dataFim, ordem) {
+    return new Promise((resolve, reject) => {
+      let querydate = '';
+      let queryOrder = '';
+      let queryParameters = [idProfessor];
+
+      if(dataInicio == '' && dataFim == ''){
+        querydate = ''
+      }else{
+        querydate = ' AND data_cadastro >= ? AND data_cadastro <= ?';
+        queryParameters.push(dataInicio, dataFim);
+      }
+
+      if(ordem == 0){
+        queryOrder = '';
+      }else if(ordem == 1){
+        queryOrder = ' order by valor_mensal asc';
+        queryParameters.push(ordem);
+      }else if(ordem == 2){
+        queryOrder = ' order by valor_mensal desc';
+        queryParameters.push(ordem);
+      }else{
+        throw { status: 'Erro', message: 'Erro ao ordenar por ordem' };
+      }
+
+      db.query(
+        'SELECT nome, valor_mensal FROM alunos WHERE id_professor = ? ' + querydate + queryOrder,
+        queryParameters,
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({status: 'OK',resultado: result});
+          }
+        }
+      );
+    });
+  },
   treinoAtivoAluno: function (idProfessor, idAluno) {
     return new Promise((resolve, reject) => {
       db.query(
@@ -49,26 +87,17 @@ const controller = {
       );
     });
   },
-  somaValoresAlunos: function (idProfessor) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'SELECT SUM(A.valor_mensal) as soma, count(A.id) as qtd_aluno, count(F.id) as qtd_ficha FROM alunos as A LEFT JOIN fichas as F ON (A.id = F.id_aluno) WHERE A.id_professor = ? ',
-        [idProfessor],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
-  },
   adicionarAluno: function (aluno) {
     return new Promise((resolve, reject) => {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Acrescenta 1 porque janeiro é 0
+      const day = String(today.getDate()).padStart(2, '0');
+
+      const currentDate = `${year}-${month}-${day}`;
       db.query(
-        'INSERT INTO alunos (nome, senha, cpf, email, whatsapp, valor_mensal, id_professor, id_tipo_usuario, ativo, data_vencimento, img) VALUES (? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [aluno.nome, aluno.senha, aluno.cpf, aluno.email, aluno.whatsapp, aluno.valor_mensal, aluno.id_professor, aluno.id_tipo_usuario, aluno.ativo, aluno.data_vencimento, aluno.img],
+        'INSERT INTO alunos (nome, senha, cpf, email, whatsapp, valor_mensal, id_professor, id_tipo_usuario, ativo, data_vencimento, data_cadastro) VALUES (? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [aluno.nome, aluno.senha, aluno.cpf, aluno.email, aluno.whatsapp, aluno.valor_mensal, aluno.id_professor, aluno.id_tipo_usuario, aluno.ativo, aluno.data_vencimento, currentDate],
         (err, result) => {
           if (err) {
             reject(err);

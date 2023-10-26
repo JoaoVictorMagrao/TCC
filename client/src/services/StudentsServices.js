@@ -48,8 +48,8 @@ export const searchStudentTraining = async (idToken) => {
   return response.data;
 }
 
-export const fetchGeneralInformation = async (idTeacher) => {
-  const response = await axios.get(`http://localhost:3001/somaValoresAlunos/${idTeacher}`);
+export const fetchValuesStudents = async (idTeacher, startDate, endDate, order) => {
+  const response = await axios.get(`http://localhost:3001/listaValoresAlunos/${idTeacher}/${startDate}/${endDate}/${order}`);
   return response.data;
 }
 

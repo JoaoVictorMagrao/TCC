@@ -151,10 +151,13 @@ router.get('/listaAlunos/:id_professor/:situacao/:nome', async (req, res) => {
   }
 });
 
-router.get('/somaValoresAlunos/:id_professor', async (req, res) => {
+router.get('/listaValoresAlunos/:id_professor/:data_inicio/:data_fim/:ordem', async (req, res) => {
   const professorId = req.params.id_professor;
+  const dataInicio = req.params.data_inicio;
+  const dataFim = req.params.data_fim;
+  const ordem = req.params.ordem;
   try {
-    const alunos = await alunosController.somaValoresAlunos(professorId);
+    const alunos = await alunosController.listaValoresAlunos(professorId, dataInicio, dataFim, ordem);
     res.send(alunos);
   } catch (error) {
     res.status(500).send(error);
