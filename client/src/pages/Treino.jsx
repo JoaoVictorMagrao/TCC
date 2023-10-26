@@ -225,6 +225,16 @@ const fetchExercicios = async (idGrupoMuscular) => {
 
 
 const handleClickDataExercises = (tab) => {
+  const trainingDay = {
+    1: 'Treino G',
+    2: 'Treino A',
+    3: 'Treino B',
+    4: 'Treino C',
+    5: 'Treino D',
+    6: 'Treino E',
+    7: 'Treino F',
+  };
+  const trainingId = Object.keys(trainingDay).find((key) => trainingDay[key] === tab);
 
   const newCardData = {
     //[`exercicio${tab}`]: descricaoTreinoPorAba,     
@@ -234,7 +244,7 @@ const handleClickDataExercises = (tab) => {
      cargaTreinoPorAba: cargaTreinoPorAba[`cargaTreino-${tab}`],
      descansoTreinoPorAba: descansoTreinoPorAba[`descansoTreino-${tab}`],
      descricaoTreinoPorAba: descricaoTreinoPorAba[`descricaoTreino-${tab}`],
-     diaDaSemanaPorAba: diaDaSemanaTreinoPorAba[`diaSemana-${tab}`],
+     diaDaSemanaPorAba: trainingId,
      idGrupoMuscularPorAba: idGrupoMuscular,
      idExercicioPorAba: idExercicio
     //  grupoMuscularPorAba: idGrupoMuscular,
@@ -444,9 +454,9 @@ const [value, setValue] = React.useState('1');
         </Box>
         {tabs.map((tab, index) => (
           <TabPanel key={index} value={index}>
-              <div className='flex gap-10 p-5 w-4/5 mx-auto'>
+              {/* <div className='flex gap-10 p-5 w-4/5 mx-auto'> */}
                 
-                  <div>
+                  {/* <div>
                         <label
                           htmlFor='nomeAluno'
                           className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
@@ -474,7 +484,7 @@ const [value, setValue] = React.useState('1');
                         <option value="7">Sábado</option>
                       </select>
                      
-                  </div>
+                  </div> */}
                 {/* {getDayOfWeek(selectedOptions).length > 0 && (
                   <div className="diasEscolhidos bg-gray-100 p-4 rounded-md shadow-md text-center">
                     <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>""
@@ -489,7 +499,7 @@ const [value, setValue] = React.useState('1');
                     </div>
                   </div>
                 )} */}
-              </div>
+              {/* </div> */}
 
               <div className='w-4/5 p-5 mx-auto'>
                   <label

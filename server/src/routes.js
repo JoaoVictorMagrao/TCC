@@ -139,11 +139,12 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.get('/listaAlunos/:id_professor/:situacao', async (req, res) => {
+router.get('/listaAlunos/:id_professor/:situacao/:nome', async (req, res) => {
   const professorId = req.params.id_professor;
   const situacao = req.params.situacao;
+  const nome = req.params.nome;
   try {
-    const alunos = await alunosController.listaAluno(professorId, situacao);
+    const alunos = await alunosController.listaAluno(professorId, situacao, nome);
     res.send(alunos);
   } catch (error) {
     res.status(500).send(error);

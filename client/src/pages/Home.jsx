@@ -39,7 +39,7 @@ export let valorBotao = 'Editar Aluno';
 
 
 function Home() {
-  const [filtroSituacao, setFiltroSituacao] = useState('0');
+  const [filtroSituacao, setFiltroSituacao] = useState('2');
   const [filtroNome, setFiltroNome] = useState('');
   const [students, setStudents] = useState([]);
   const [page, setPage] = useState(0);
@@ -66,7 +66,7 @@ function Home() {
 
   useEffect(() => {
      setIdTeacher(auth().id);
-     fetchAlunos(auth().id, 2, setStudents);
+     fetchAlunos(auth().id, 2, filtroNome, setStudents);
   }, [])
 
   const handlePrinter = async  () => {
@@ -106,9 +106,9 @@ function Home() {
   const handleButtonExcluirAluno = async (alunoId) => {
     try {
       const response = await excluirAluno(alunoId);
-      if(response == 'OK'){
+      if(response === 'OK'){
         toast.success('Aluno excluído com sucesso!');
-        fetchAlunos(idTeacher, 2, setStudents); 
+        fetchAlunos(idTeacher, 2, filtroNome, setStudents); 
       }else{
         toast.error('Erro ao excluir aluno!');
       }
@@ -120,12 +120,30 @@ function Home() {
 
 /*---------------------- FIM EXCLUIR ALUNO ----------------------*/
   const handleFiltroSituacaoChange = (event) => {
-    fetchAlunos(idTeacher, event.target.value, setStudents);
+    fetchAlunos(idTeacher, event.target.value, filtroNome, setStudents);
     setFiltroSituacao(event.target.value);
+    setLoading(false);
+  };
+
+  
+  const openWhatsapp = async (number, name) => {
+    try {
+      let formattedNumber = number.replace(/[^\w\s]/gi, "").replace(/ /g, "");
+      let url = `https://web.whatsapp.com/send?phone=${formattedNumber}`;
+        url += `&text=${encodeURI(`Olá ${name}, estou passando para avisar que sua ficha já está pronta, entre no app para visualizar seu treino.`)}&app_absent=0`;
+  
+      // Open our newly created URL in a new tab to send the message
+        window.open(url);
+    
+    } catch (error) {
+     
+    }
   };
 
   const handleFiltroNomeChange = (event) => {
+    fetchAlunos(idTeacher,filtroSituacao, event.target.value, setStudents);
     setFiltroNome(event.target.value);
+    setLoading(false);
   };
 
   const handleClickOpenModalPrinter = () => {
@@ -268,7 +286,9 @@ function Home() {
                           <TableCell>{ficha.id}</TableCell>
                           <TableCell>{ficha.nome}</TableCell>
                           <TableCell>{ficha.email}</TableCell>
-                          <TableCell>{ficha.whatsapp_formatado}</TableCell>
+                          <Tooltip arrow TransitionComponent={Zoom} title="Enviar msg">
+                          <TableCell className='cursor-pointer' onClick={() =>openWhatsapp(ficha.whatsapp_formatado, ficha.nome)} >{ficha.whatsapp_formatado}</TableCell>
+                          </Tooltip>
                           <TableCell>{ficha.valor_mensal.toLocaleString('pt-br', {
                             style: 'currency',
                             currency: 'BRL',
@@ -296,7 +316,7 @@ function Home() {
                           <TableCell>
                           <Tooltip arrow TransitionComponent={Zoom} title="Montar Treino">
                               <div className='flex items-center justify-center'>
-                                <CgGym size={32} onClick={() => navigate(`/treino/${ficha.id}`)}/>   
+                                <CgGym size={32} onClick={() => navigate(`/treino/${ficha.id}`)} className='cursor-pointer'/>   
                               </div>
                             </Tooltip>
                           </TableCell> 

@@ -1,20 +1,29 @@
 const db = require('../../config/index');
 
 const controller = {
-  listaAluno: function (idProfessor, situacao) {
+  listaAluno: function (idTeacher, situation, name) {
+    
     return new Promise((resolve, reject) => {
       let querySituation = '';
-      let queryParameters = [idProfessor];
-      
-      if (situacao == 2) {
+      let queryLikeName = '';
+      let queryParameters = [idTeacher];
+     
+      if (situation == 2) {
         querySituation = '';
-      } else if (situacao) {
+      } else if (situation) {
         querySituation = ' AND A.ativo = ?';
-        queryParameters.push(situacao);
+        queryParameters.push(situation);
+      }
+
+      if(name == 0){
+        queryLikeName = '';
+      }else{
+        queryLikeName = ` AND A.nome LIKE ?`;
+        queryParameters.push('%'+name+'%');
       }
 
       db.query(
-        'SELECT A.id, A.nome, A.email, A.whatsapp, fu_formata_whatsapp(A.id, A.whatsapp) whatsapp_formatado, A.valor_mensal, A.ativo, A.data_vencimento, IFNULL(F.id, 0)  as id_ficha_ativo, IFNULL(F.ativo, 0) as fichaAtiva FROM alunos as A LEFT JOIN fichas as F on(A.id = F.id_aluno) AND F.ativo = 1 WHERE A.id_professor = ?' + querySituation,
+        'SELECT A.id, A.nome, A.email, A.whatsapp, fu_formata_whatsapp(A.id, A.whatsapp) whatsapp_formatado, A.valor_mensal, A.ativo, A.data_vencimento, IFNULL(F.id, 0)  as id_ficha_ativo, IFNULL(F.ativo, 0) as fichaAtiva FROM alunos as A LEFT JOIN fichas as F on(A.id = F.id_aluno) AND F.ativo = 1 WHERE A.id_professor = ?' + querySituation + queryLikeName,
         queryParameters,
         (err, result) => {
           if (err) {

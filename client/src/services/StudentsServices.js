@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-export const fetchAlunos = (idTeacher, situation, setStudents) => {
-  axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}`)
+export const fetchAlunos = (idTeacher, situation, name, setStudents) => {
+  let checkName = (name == '') ? 0 : name;
+  axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}/${checkName}`)
     .then((response) => {
       setStudents(response.data);
     })

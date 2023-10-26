@@ -149,7 +149,7 @@ const clearForm = () => {
 
   return (
     <div>
-      <Header titleHeader={url.includes('id')? 'Atualizar Cliente' : 'Cadastrar Cliente'}/>
+      <Header titleHeader={url.includes('id')? 'Editar aluno' : 'Cadastrar Aluno'}/>
       <div className='main'>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className='grid gap-6 mb-6 md:grid-cols-2 w-4/5 mx-auto mt-20'>
