@@ -40,6 +40,21 @@ const controller = {
       );
     });
   },
+  somaValoresAlunos: function (idProfessor) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT SUM(A.valor_mensal) as soma, count(A.id) as qtd_aluno, count(F.id) as qtd_ficha FROM alunos as A LEFT JOIN fichas as F ON (A.id = F.id_aluno) WHERE A.id_professor = ? ',
+        [idProfessor],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  },
   adicionarAluno: function (aluno) {
     return new Promise((resolve, reject) => {
       db.query(

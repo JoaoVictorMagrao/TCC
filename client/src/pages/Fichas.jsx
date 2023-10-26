@@ -23,6 +23,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 
+
 function Fichas() {
   const auth = useAuthUser();
   const [page, setPage] = useState(0);
@@ -90,16 +91,25 @@ function Fichas() {
     const checkDataEnd = (selectedDateEndPrint == '') ? 0 : selectedDateEndPrint;
     const checkIdStudent = (selectedIdStudent == '') ? 0 : selectedIdStudent;
 
-    const data = await  getStudentRecords(idTeacher,checkDataEnd,checkDataStart,checkIdStudent);
-    fichasPDF(data);
-    setSheet(data);
-    setLoading(false);
+    if(checkDataEnd < checkDataStart){
+      toast.warning('A data inicial não pode ser maior que a data final.');
+    }else{
+      const data = await  getStudentRecords(idTeacher,checkDataEnd,checkDataStart,checkIdStudent);
+      fichasPDF(data);
+      setSheet(data);
+      setLoading(false);
+    }
   };
   
 
   return (
     <div>
-      <Header />
+      <Header titleHeader={"Fichas"}/>
+      <ToastContainer 
+        autoClose={3000}
+        position="bottom-right"
+        theme="colored"  />
+
          <Dialog open={openModalPrinter} onClose={handleClickCloseModalPrinter}>
           <DialogTitle>Filtro - Impressão</DialogTitle>
             <DialogContent>
@@ -161,7 +171,6 @@ function Fichas() {
           <Table aria-label='pontos table'>
             <TableHead>
             <TableRow>
-              <TableCell>Código</TableCell>
               <TableCell>Nome do aluno</TableCell>
               <TableCell>Nome da ficha</TableCell>
               <TableCell>Data de criação</TableCell>
@@ -173,7 +182,6 @@ function Fichas() {
                     {sheet.length > 0 ? (
                       sheet.slice(startIndex, endIndex).map((ficha) => (
                         <TableRow key={ficha.id}>
-                          <TableCell>{ficha.id}</TableCell>
                           <TableCell>{ficha.nome_aluno}</TableCell>
                           <TableCell>{ficha.nome_ficha}</TableCell>
                           <TableCell>{formatarData(ficha.data_criacao)}</TableCell>
@@ -228,10 +236,6 @@ function Fichas() {
         </Button>
         </DialogActions>
       </Dialog>
-      <ToastContainer 
-      autoClose={3000}
-      position="bottom-right"
-      theme="colored"  />
     </div>
   );
 }

@@ -3,7 +3,8 @@ import '../styles/login.css';
 import React, { useState, useEffect } from 'react';
 //import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
-import { fetchAlunos, excluirAluno, fetchStudentsPrinter, searchStudentTraining } from '../services/StudentsServices.js';
+import { ToastContainer, toast } from 'react-toastify';
+import { fetchAlunos, excluirAluno, fetchStudentsPrinter, searchStudentTraining, fetchGeneralInformation } from '../services/StudentsServices.js';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Stack, Button} from '@mui/material';
 import { BiEdit } from 'react-icons/bi';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
@@ -27,6 +28,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import alunosPDF from '../Reports/Alunos/alunos';
 import treinoPDF from '../Reports/Treino/treino';
+import infoGeralPDF from '../Reports/InfoGeral/infoGeral';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import { CardActionArea, CardActions } from '@mui/material';
 //import Swal from 'sweetalert2';
 export let valorBotao = 'Editar Aluno';
 
@@ -40,33 +47,39 @@ function Home() {
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const [loading, setLoading] = useState(true);
+  const [idTeacher, setIdTeacher] = useState('');
   const [openModalPrinter, setOpenModalPrinter] = React.useState(false);
-
+  const [openModalChoosePrint, setOpenModalChoosePrint] = React.useState(false);
+  
   const Swal = require('sweetalert2');
   // const { idTeacher } = useContext(DataLoginContext);
   //const [cadastrarAluno, setCadastrarAluno] = useState(false);
 
-  const handlePrinter = async  () => {
+  // const handleTrainingPrinter = async  (fichaAtivo) => {
+  //   const data = await searchStudentTraining(fichaAtivo);
+  //   treinoPDF(data);
+  //   setLoading(false);
+  // };
 
-    const data = await fetchStudentsPrinter(auth().id, filtroSituacao);
+  const navigate = useNavigate()
+  const auth = useAuthUser();
+
+  useEffect(() => {
+     setIdTeacher(auth().id);
+     fetchAlunos(auth().id, 2, setStudents);
+  }, [])
+
+  const handlePrinter = async  () => {
+    const data = await fetchStudentsPrinter(idTeacher, filtroSituacao);
     alunosPDF(data.data);
     setLoading(false);
   };
 
-  const handleTrainingPrinter = async  (fichaAtivo) => {
-    const data = await searchStudentTraining(fichaAtivo);
-    treinoPDF(data);
+  const GeneralInformationPrinter = async () => {
+    const data = await fetchGeneralInformation(idTeacher);
+    infoGeralPDF(data);
     setLoading(false);
-  };
-
-  const navigate = useNavigate()
-
-  const auth = useAuthUser();
-
-  useEffect(() => {
-     fetchAlunos(auth().id, 2, setStudents);
-  }, [])
-
+  }
 
   const handleButtonEditarAluno = async (alunoId) => {
       window.location.href = `/cliente?id=${alunoId}`;
@@ -93,30 +106,21 @@ function Home() {
   const handleButtonExcluirAluno = async (alunoId) => {
     try {
       const response = await excluirAluno(alunoId);
-
-      // Exclusão bem-sucedida
-      Swal.fire({
-        icon: 'success',
-        title: 'Feito',
-        text: 'Aluno excluído com sucesso!',
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      fetchAlunos(auth().id, setStudents); 
+      if(response == 'OK'){
+        toast.success('Aluno excluído com sucesso!');
+        fetchAlunos(idTeacher, 2, setStudents); 
+      }else{
+        toast.error('Erro ao excluir aluno!');
+      }
+    
     } catch (error) {
-      // Lidar com erros de exclusão
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Ocorreu um erro ao excluir o aluno!',
-      });
+      toast.error('Ocorreu um erro ao excluir o aluno!');
     }
   };
 
 /*---------------------- FIM EXCLUIR ALUNO ----------------------*/
   const handleFiltroSituacaoChange = (event) => {
-    fetchAlunos(auth().id, event.target.value, setStudents);
+    fetchAlunos(idTeacher, event.target.value, setStudents);
     setFiltroSituacao(event.target.value);
   };
 
@@ -131,11 +135,59 @@ function Home() {
   const handleClickCloseModalPrinter = () => {
     setOpenModalPrinter(false);
   };
+
+  const handleClickOpenModalChoosePrinter = () => {
+    setOpenModalChoosePrint(true);
+  };
+
+  const handleClickCloseModalChoosePrinter = () => {
+    setOpenModalChoosePrint(false);
+  };
  
   return (
    //   Hello {auth().nome}
     <div>
         <DrawerLeft nome={auth().nome}/>
+        <ToastContainer 
+        autoClose={3000}
+        position="bottom-right"
+        theme="colored"  />
+        <Dialog open={openModalChoosePrint} onClose={handleClickCloseModalChoosePrinter}>
+          <DialogTitle>Relatórios</DialogTitle>
+            <DialogContent>
+              <Card sx={{ maxWidth: 345 }} onClick={handleClickOpenModalPrinter}>
+                  <CardActionArea>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        Situação Aluno
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                      Relatório para verificar situação dos alunos
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+              </Card>  
+            </DialogContent>
+
+            <DialogContent>
+              <Card sx={{ maxWidth: 345 }} onClick={GeneralInformationPrinter}>
+                  <CardActionArea>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        Informações Gerais
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                      Relatório para verificar informações sobre as fichas e os alunos
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+              </Card>  
+            </DialogContent>
+          {/* <DialogActions>
+            <Button onClick={handleClickCloseModalChoosePrinter}>Cancelar</Button>
+            <Button onClick={handleClickOpenModalChoosePrinter}>Imprimir</Button>
+          </DialogActions> */}
+      </Dialog>
 
         <Dialog open={openModalPrinter} onClose={handleClickCloseModalPrinter}>
           <DialogTitle>Filtro - Impressão</DialogTitle>
@@ -187,7 +239,7 @@ function Home() {
 
               <div className='flex justify-end'>
                     <Stack spacing={2} direction="row" className='float-right mb-2'> 
-                      <Button onClick={handleClickOpenModalPrinter} variant="contained"><span className='mr-1'><WysiwygIcon /> </span> Imprimir</Button>
+                      <Button onClick={handleClickOpenModalChoosePrinter} variant="contained"><span className='mr-1'><WysiwygIcon /> </span> Imprimir</Button>
                     </Stack>
                   </div>
              
@@ -205,7 +257,7 @@ function Home() {
               <TableCell>Editar</TableCell>
               <TableCell>Excluir</TableCell>
               <TableCell>Montar Treino</TableCell>
-              <TableCell>Imprimir Treino</TableCell>
+              {/* <TableCell>Imprimir Treino</TableCell> */}
               
             </TableRow>
             </TableHead>
@@ -249,13 +301,13 @@ function Home() {
                             </Tooltip>
                           </TableCell> 
 
-                          <TableCell>
+                          {/* <TableCell>
                             <Tooltip arrow TransitionComponent={Zoom} title="Imprimir Treino"> 
                                 <div className='flex items-center justify-center'>
                                   <PictureAsPdfIcon size={32} onClick={() => handleTrainingPrinter(ficha.id_ficha_ativo)} />
                                 </div>
                             </Tooltip>
-                          </TableCell> 
+                          </TableCell>  */}
                                                             
                         </TableRow>
                       ))

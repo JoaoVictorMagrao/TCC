@@ -359,7 +359,7 @@ const [value, setValue] = React.useState('1');
 
   return(
     <div>
-      <Header />
+      <Header titleHeader={"Montar Treino"}/>
       <ToastContainer 
       autoClose={3000}
       position="bottom-right"

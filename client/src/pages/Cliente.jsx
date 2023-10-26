@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 import { storage } from '../firebase'; 
 import { ref, uploadBytesResumable, getDownloadURL }  from 'firebase/storage';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { DataLoginContext } from "../context/DataLoginContext";
 import { formatCnpjCpf, formatPhoneNumber, formatCurrency, validationPost, allowAlphanumericAndSpaces } from '../Util/util.js';
 //import { updateAluno } from '../services/StudentsServices.js';
+import {useAuthUser} from 'react-auth-kit';
 const urlParams = new URLSearchParams(window.location.search);
 const idEditar = urlParams.get('id');
 
@@ -25,13 +27,17 @@ function Cliente() {
     resolver: yupResolver(validationPost),
    // defaultValues: getDadosAluno
   })
+
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setmsgError] = useState('Erro ao atualizar cliente');
-  const { idTeacher} = useContext(DataLoginContext);
+ 
   const [imgURL, setImgURL] = useState('');
   const [valueButton, setValueButton] = useState('');
-  
+  const [idTeacher, setIdTeacher] = useState('');
+  const auth = useAuthUser();
+
+  const url = window.location.href;
   async function fetchDadosAluno() {
     const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
     const data = await response.json();
@@ -47,6 +53,7 @@ function Cliente() {
     setValue('selectedImage', data.img);
   }
   useEffect(() => {
+    setIdTeacher(auth().id);
     const url = window.location.href;
     if (url.includes('id')) {
       fetchDadosAluno();
@@ -63,45 +70,6 @@ function Cliente() {
     }
   };
   
-  // const [progress, setProgress] = useState(0);
-  // const [file, setFile] = useState("");
-  // const [selectedImage, setSelectedImage] = useState(null);
-
-
-  //  reset();
-  
-// function handleUpload(event) {
-//   event.preventDefault();
-  
-//   const file = event.target.files[0];
-
-//   if (!file) {
-//     alert("Please choose a file first!");
-//     return;
-//   }
-
-//   const storageRef = ref(storage, `/files/${file.name}`);
-//   const uploadTask = uploadBytesResumable(storageRef, file);
-
-//   uploadTask.on(
-//     "state_changed",
-//     (snapshot) => {
-//       const percent = Math.round(
-//         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-//       );
-
-//       setProgress(percent);
-//     },
-//     (err) => console.log(err),
-//     () => {
-//       getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-//         setImgURL(url);
-//         setSelectedImage(URL.createObjectURL(file)); // Cria uma URL temporária para a imagem selecionada
-//       });
-//     }
-//   );
-// }
-
 const clearForm = () => {
   reset(); 
 };
@@ -117,8 +85,10 @@ const clearForm = () => {
     dataVencimentoAluno,
   }) => {
       //  event.preventDefault();
-  if(valueButton === 'Cadastrar Aluno'){
+      
+  if(!url.includes('id')){
     try {
+  
       const response = await Axios.post('http://localhost:3001/adicionarAluno', {
         nome: nomeAluno,
         senha: senhaAluno,
@@ -129,9 +99,9 @@ const clearForm = () => {
         id_professor: idTeacher,
         id_tipo_usuario: 2,
         ativo: parseInt(situacaoAluno),
-        data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
-        img: imgURL
+        data_vencimento: dataVencimentoAluno.toISOString().split('T')[0]
       });
+
 
         if (response.data.message === 'OK') {
           navigate('/home')
@@ -163,42 +133,23 @@ const clearForm = () => {
     } catch (error) {
 
       if (error.response.data.error === 'Erro') {
-        setmsgError("Erro ao atualizar cliente.");
-        setShowAlert(true)
+        toast.error("Erro ao atualizar cliente.");
+        // setmsgError("Erro ao atualizar cliente.");
+        // setShowAlert(true)
       }
     }
   }
  
   }
 
- // console.log(getValues('cpfAluno'));
  useEffect(() => {
   clearForm();
 }, []);
 
-  useEffect(() => {
-    let timerId
-    if (showAlert) {
-      timerId = setTimeout(() => {
-        setShowAlert(false)
-      }, 3000)
-    }
-    return () => {
-      clearTimeout(timerId)
-    }
-  }, [showAlert])
+
   return (
     <div>
-      <Header />
-      {/* Modal aparece quando tenta mandar os dados do cliente com um CPF ja cadastrado no banco */}
-      {showAlert && (
-        <div role='alert' className='modalAtencao w-1/5 m-auto mt-10'>
-          <div className='bg-red-500 text-white font-bold rounded-t px-4 py-2'>Atenção</div>
-          <div className='border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700'>
-            <p className='font-bold'>{ msgError }</p>
-          </div>
-        </div>
-      )}
+      <Header titleHeader={url.includes('id')? 'Atualizar Cliente' : 'Cadastrar Cliente'}/>
       <div className='main'>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className='grid gap-6 mb-6 md:grid-cols-2 w-4/5 mx-auto mt-20'>
@@ -390,7 +341,10 @@ const clearForm = () => {
           </div>
         </form>
 
-        
+        <ToastContainer 
+        autoClose={3000}
+        position="bottom-right"
+        theme="colored"  />
 
       </div>
     </div>

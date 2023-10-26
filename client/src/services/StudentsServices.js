@@ -47,4 +47,9 @@ export const searchStudentTraining = async (idToken) => {
   return response.data;
 }
 
+export const fetchGeneralInformation = async (idTeacher) => {
+  const response = await axios.get(`http://localhost:3001/somaValoresAlunos/${idTeacher}`);
+  return response.data;
+}
+
 
