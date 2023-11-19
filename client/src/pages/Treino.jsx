@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import check from '../img/check.png';
 import { useNavigate } from 'react-router-dom';
 //import SinalMais from '../img/Sinaldemais.png';
-import { singleStudentList } from '../services/StudentsServices.js';
+import { singleStudentList, fetchGrupoMuscular } from '../services/StudentsServices.js';
 import axios from 'axios';
 import {useAuthUser} from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,7 +20,7 @@ import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
-import { getDayOfWeek, fetchGrupoMuscular, getCurrentDate } from '../Util/util.js';
+import { getDayOfWeek, getCurrentDate } from '../Util/util.js';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -190,15 +190,6 @@ function Treino(){
     const handleNameSheetChange = (event) => {
       setNameSheet(event.target.value); // Atualiza o estado com o valor do input
     };
-
-   
-  
-  const handleSelectChange = (event) => {
-    const options = Array.from(event.target.selectedOptions, (option) => option.value);
-  //  console.log(options);  Value do select do dias da semana
-    setDiaDaSemana(options);
-    setSelectedOptions(options);
-  };
 
 
   useEffect(() => {
@@ -506,7 +497,7 @@ const [value, setValue] = React.useState('1');
                     htmlFor='descricaoTreino'
                     className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                   >
-                      Descrição do Treino 
+                      Descrição do Exercicío 
                   </label>
 
                   <textarea

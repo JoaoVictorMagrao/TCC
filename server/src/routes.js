@@ -53,6 +53,17 @@ router.get('/listaFichasAluno/:id_aluno', async (req, res) => {
   }
 });
 
+router.get('/perfilAluno/:id_aluno', async (req, res) => {
+  const alunoId = req.params.id_aluno;
+  
+  try {
+    const perfil = await mobileController.perfilAluno(alunoId);
+    res.send(perfil);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 router.get('/listaTreinosAluno/:id_ficha', async (req, res) => {
   const fichaId = req.params.id_ficha;
   console.log(fichaId);

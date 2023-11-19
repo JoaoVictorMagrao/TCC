@@ -60,7 +60,7 @@ function Fichas() {
      
       setLoading(false);
     } catch (error) {
-      console.error('Erro ao obter pontos turísticos', error);
+      console.error('Erro ao listar os alunos', error);
       setLoading(false);
     }
   }

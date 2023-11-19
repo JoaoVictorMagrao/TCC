@@ -21,6 +21,12 @@ export function formatCurrency(number) {
   return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+export const imageToDataUrl = async (url) => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+};
+
 export const validationPost = yup.object().shape({
   nomeAluno: yup
     .string()
@@ -48,26 +54,7 @@ export const getDayOfWeek = (selectedOptions) => {
   return selectedOptions.map((option) => daysOfWeek[parseInt(option) - 1]);
 };
 
-// export const getDadosAluno = async (idStudent, setNomeAluno, setTelefoneAluno, setMensalidadeAluno) => {
-//   console.log(idStudent);
-//   const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idStudent}`);
-//   const data = await response.json();
-//   setNomeAluno(data.nome);
-//   setTelefoneAluno(data.whatsapp);
-//   setMensalidadeAluno(data.valor_mensal);
-//   // setImgAluno(data.img);
-// };
 
-export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
-  try {
-    const response = await axios.get('http://localhost:3001/listaGrupoMuscular');
-    const listaGrupoMuscular = response.data;
-    
-    setGrupoMuscularOptions(listaGrupoMuscular);
-  } catch (error) {
-    console.error('Erro ao buscar os dados:', error);
-  }
-};
 
 export const allowAlphanumericAndSpaces = (value) => {
   const regex = /^[a-zA-Z0-9\s]*$/;

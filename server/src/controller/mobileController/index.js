@@ -68,11 +68,10 @@ const controller = {
   listaExerciciosTreino: function (idFicha) {
     return new Promise((resolve, reject) => {
       db.query(
-        'select FI.id_dia_treino, E.descricao as exercicio, FI.id from ficha_itens FI INNER JOIN exercicios E ON(FI.id_exercicio = e.id) where id_ficha = ? group by E.descricao order by FI.id_dia_treino asc',
+        'select FI.id_dia_treino, FI.descanso, FI.carga, FI.repeticoes, FI.series, E.descricao as exercicio, FI.id_exercicio, GM.descricao, FI.descricao as descricao_exercicio from ficha_itens FI INNER JOIN exercicios E ON(FI.id_exercicio = e.id) INNER JOIN grupo_muscular GM ON (GM.id = FI.id_grupo_muscular) where id_ficha = ? group by E.descricao order by FI.id_dia_treino asc',
         [idFicha],
         (err, result) => {
           if (err) {
-   
             reject(err);
           } else {
             resolve(result);
@@ -81,10 +80,25 @@ const controller = {
       )
     });
   },
+  perfilAluno: function (idAluno) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'select A.nome, A.valor_mensal, A.data_vencimento, A.data_cadastro, P.nome as nome_professor, F.nome_ficha from alunos as A INNER JOIN fichas as F ON (A.id = F.id_aluno) INNER JOIN professores as P ON (A.id_professor = P.id) where A.id = ? AND F.ativo = 1',
+        [idAluno],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({status: true,resultado: result});
+          }
+        }
+      )
+    });
+  },
   listaExercicioUnico: function (idDiaTreino,idFicha,idExercicio) {
     return new Promise((resolve, reject) => {
       db.query(
-        'select FI.* , E.descricao  from ficha_itens FI INNER JOIN exercicios E on (FI.id_exercicio = E.id) where id_ficha = ? and id_exercicio = ? and id_dia_treino = ?',
+        'select FI.id, FI.series, FI.carga, FI.descanso, E.descricao as nome_exercicio, FI.descricao from ficha_itens FI INNER JOIN exercicios E on (FI.id_exercicio = E.id) where id_ficha = ? and id_exercicio = ? and id_dia_treino = ?',
         [idFicha, idExercicio, idDiaTreino],
         (err, result) => {
           if (err) {

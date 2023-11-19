@@ -12,7 +12,7 @@ export const fetchAlunos = (idTeacher, situation, name, setStudents) => {
 };
 
 export const fetchStudentsPrinter = (idTeacher, situation) => {
-  return axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}`);
+  return axios.get(`http://localhost:3001/listaAlunos/${idTeacher}/${situation}/0`);
 };
 
 export const excluirAluno = async (alunoId) => {
@@ -53,4 +53,14 @@ export const fetchValuesStudents = async (idTeacher, startDate, endDate, order) 
   return response.data;
 }
 
+export const fetchGrupoMuscular = async (setGrupoMuscularOptions) => {
+  try {
+    const response = await axios.get('http://localhost:3001/listaGrupoMuscular');
+    const listaGrupoMuscular = response.data;
+    
+    setGrupoMuscularOptions(listaGrupoMuscular);
+  } catch (error) {
+    console.error('Erro ao buscar os dados:', error);
+  }
+};
 

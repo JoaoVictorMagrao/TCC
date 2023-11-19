@@ -27,9 +27,10 @@ export let currentPage = '';
 function DrawerLeft({ nome }){
   
   const drawerWidth = 240;
-  const signOut = useSignOut();
+  
   const navigate = useNavigate();
-
+  
+  const signOut = useSignOut();
   function logout(){
     signOut();
   }

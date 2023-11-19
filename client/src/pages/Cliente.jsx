@@ -30,7 +30,7 @@ function Cliente() {
 
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
-  const [msgError, setmsgError] = useState('Erro ao atualizar cliente');
+
  
   const [imgURL, setImgURL] = useState('');
   const [valueButton, setValueButton] = useState('');
@@ -134,8 +134,6 @@ const clearForm = () => {
 
       if (error.response.data.error === 'Erro') {
         toast.error("Erro ao atualizar cliente.");
-        // setmsgError("Erro ao atualizar cliente.");
-        // setShowAlert(true)
       }
     }
   }
@@ -255,7 +253,7 @@ const clearForm = () => {
                   htmlFor='dataVencimentoAluno'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
                 >
-                  Data Nascimento
+                  Data Vencimento
                 </label>
                 <input
                   type='date'

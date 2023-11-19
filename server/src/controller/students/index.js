@@ -41,7 +41,7 @@ const controller = {
       let queryOrder = '';
       let queryParameters = [idProfessor];
 
-      if(dataInicio == '' && dataFim == ''){
+      if(dataInicio == 0 && dataFim == 0){
         querydate = ''
       }else{
         querydate = ' AND data_cadastro >= ? AND data_cadastro <= ?';
@@ -61,11 +61,11 @@ const controller = {
       }
 
       db.query(
-        'SELECT nome, valor_mensal FROM alunos WHERE id_professor = ? ' + querydate + queryOrder,
+        'SELECT nome, valor_mensal FROM alunos WHERE id_professor = ? AND ativo = 1 ' + querydate + queryOrder,
         queryParameters,
         (err, result) => {
           if (err) {
-            reject(err);
+            reject({status: 'ERRO',resultado: err});
           } else {
             resolve({status: 'OK',resultado: result});
           }
@@ -111,7 +111,7 @@ const controller = {
   listaAlunoUnico: function (alunoId) {
     return new Promise((resolve, reject) => {
       db.query(
-        'SELECT id, nome, email, senha, cpf, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento, img FROM alunos WHERE id = ?',
+        'SELECT id, nome, email, senha, cpf, whatsapp, fu_formata_whatsapp(id, whatsapp) whatsapp_formatado, valor_mensal, ativo, data_vencimento FROM alunos WHERE id = ?',
         [alunoId],
         (err, result) => {
           if (err) {
@@ -201,7 +201,7 @@ const controller = {
           for (const exercicio of JSON.parse(dataExercise)) {
             console.log(exercicio);
             db.query(
-              'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+              'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, repeticoes, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
               [
                 exercicio.id_exercicio,
                 exercicio.id_dia_treino, 
@@ -210,6 +210,7 @@ const controller = {
                 exercicio.series, 
                 exercicio.carga, 
                 exercicio.descanso,
+                exercicio.repeticoesTreino,
                 result.insertId,
               ],
               function (err, result) {
@@ -242,7 +243,7 @@ const controller = {
           queryParams.push(idStudents);
         }
 
-        let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id  WHERE F.id_professor = ?';
+        let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id WHERE F.id_professor = ?';
 
         if (queryConditions.length > 0) {
             queryString += ' AND ' + queryConditions.join(' AND ');

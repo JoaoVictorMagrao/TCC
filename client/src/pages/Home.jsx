@@ -80,6 +80,7 @@ function Home() {
   };
 
   const handlePrinterListValues = async  () => {
+
     const data = await fetchValuesStudents(idTeacher, selectedDateStartPrint, selectedDateEndPrint, filtroOrdemValores);
     valoresPDF(data.resultado);
     setLoading(false);
@@ -222,10 +223,10 @@ function Home() {
                   <CardActionArea>
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
-                        Informações Gerais
+                        Valores
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                      Relatório para verificar informações sobre as fichas e os alunos
+                      Relatório sobre valores dos alunos
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -278,7 +279,7 @@ function Home() {
             <TextField
                   margin="dense"
                   id="selectedDate"
-                  label="Data de inicio - Expiração"
+                  label="Data de inicio - Cadastro"
                   type="date"
                   fullWidth
                   variant="standard"
@@ -292,7 +293,7 @@ function Home() {
                 <TextField
                   margin="dense"
                   id="selectedDate"
-                  label="Data Fim - Expiração"
+                  label="Data Fim - Cadastro"
                   type="date"
                   fullWidth
                   variant="standard"

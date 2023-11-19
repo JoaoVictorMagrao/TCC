@@ -1,5 +1,6 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { formatCurrency } from '../../Util/util'; 
 
 function valoresPDF(valores) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -12,19 +13,27 @@ function valoresPDF(valores) {
       margin: [15, 20, 0, 45]
     }
   ];
+
+  const sumMonthlyValueStudents = valores.reduce((total, valor) => total + valor.valor_mensal, 0);
+
  
   const dados = valores.map((valor) => {
     return [
-      {text: valor.id, fontSize: 9, margin: [0, 2, 0, 2]},
-      {text: valor.nome_aluno, fontSize: 9, margin: [0, 2, 0, 2]},
+      {text: valor.nome, fontSize: 9, margin: [0, 2, 0, 2]},
+      {text: formatCurrency(valor.valor_mensal), fontSize: 9, margin: [0, 2, 0, 2]},
     ]
   });
+
+  dados.push([
+    { text: 'Valor Total:', fontSize: 10, bold: true },
+    { text: formatCurrency(sumMonthlyValueStudents), fontSize: 10, bold: true }
+  ]);
 
   const detail = [
     {
       table:{
         headerRows: 1,
-        widths: ['*', '*', '*', '*', '*',],
+        widths: ['*', '*'],
         body: [
           [
             {text: 'Nome', style: 'tableHeader', fontSize: 10},
