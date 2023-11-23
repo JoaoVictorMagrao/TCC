@@ -5,12 +5,48 @@ import axios from 'axios';
 export const formatCnpjCpf = function (value) {
   const cnpjCpf = value.replace(/\D/g, '')
 
-  if(cnpjCpf.length === 11){
+  if (cnpjCpf.length === 11) {
     return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, '$1.$2.$3-$4')
   }
   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, '$1.$2.$3-$4')
 }
 
+export function validateCPF(cpf) {
+
+  const cpfLimpo = cpf.replace(/[^\d]/g, '');
+
+  if (cpfLimpo.length !== 11) {
+    return false;
+  }
+
+  if (/^(\d)\1{10}$/.test(cpfLimpo)) {
+    return false;
+  }
+
+  let soma = 0;
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpfLimpo.charAt(i)) * (10 - i);
+  }
+  let digito1 = 11 - (soma % 11);
+  if (digito1 > 9) {
+    digito1 = 0;
+  }
+
+  soma = 0;
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpfLimpo.charAt(i)) * (11 - i);
+  }
+  let digito2 = 11 - (soma % 11);
+  if (digito2 > 9) {
+    digito2 = 0;
+  }
+
+  if (parseInt(cpfLimpo.charAt(9)) !== digito1 || parseInt(cpfLimpo.charAt(10)) !== digito2) {
+    return false;
+  }
+
+  return true;
+}
 export function formatPhoneNumber(phoneNumber) {
   return phoneNumber
     .replace(/\D/g, '')
@@ -72,7 +108,7 @@ export const getCurrentDate = () => {
   return data_criacao;
 };
 
-export const formatarData = (data) =>{
+export const formatarData = (data) => {
   const dataObj = new Date(data);
   const dia = dataObj.getDate().toString().padStart(2, '0');
   const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // O mês é base 0, então somamos 1.
