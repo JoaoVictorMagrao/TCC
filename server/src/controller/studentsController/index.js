@@ -2,24 +2,27 @@ const db = require('../../config/index');
 
 const controller = {
   listaAluno: function (idTeacher, situation, name) {
-    
+
     return new Promise((resolve, reject) => {
       let querySituation = '';
       let queryLikeName = '';
       let queryParameters = [idTeacher];
-     
+
       if (situation == 2) {
         querySituation = '';
-      } else if (situation) {
+      } else if (situation == 1) {
+        querySituation = ' AND A.ativo = ?';
+        queryParameters.push(situation);
+      } else {
         querySituation = ' AND A.ativo = ?';
         queryParameters.push(situation);
       }
 
-      if(name == 0){
+      if (name == 0) {
         queryLikeName = '';
-      }else{
+      } else {
         queryLikeName = ` AND A.nome LIKE ?`;
-        queryParameters.push('%'+name+'%');
+        queryParameters.push('%' + name + '%');
       }
 
       db.query(
@@ -29,6 +32,7 @@ const controller = {
           if (err) {
             reject(err);
           } else {
+            console.log(result);
             resolve(result);
           }
         }
@@ -41,22 +45,22 @@ const controller = {
       let queryOrder = '';
       let queryParameters = [idProfessor];
 
-      if(dataInicio == 0 && dataFim == 0){
+      if (dataInicio == 0 && dataFim == 0) {
         querydate = ''
-      }else{
+      } else {
         querydate = ' AND data_cadastro >= ? AND data_cadastro <= ?';
         queryParameters.push(dataInicio, dataFim);
       }
 
-      if(ordem == 0){
+      if (ordem == 0) {
         queryOrder = '';
-      }else if(ordem == 1){
+      } else if (ordem == 1) {
         queryOrder = ' order by valor_mensal asc';
         queryParameters.push(ordem);
-      }else if(ordem == 2){
+      } else if (ordem == 2) {
         queryOrder = ' order by valor_mensal desc';
         queryParameters.push(ordem);
-      }else{
+      } else {
         throw { status: 'Erro', message: 'Erro ao ordenar por ordem' };
       }
 
@@ -65,9 +69,9 @@ const controller = {
         queryParameters,
         (err, result) => {
           if (err) {
-            reject({status: 'ERRO',resultado: err});
+            reject({ status: 'ERRO', resultado: err });
           } else {
-            resolve({status: 'OK',resultado: result});
+            resolve({ status: 'OK', resultado: result });
           }
         }
       );
@@ -152,137 +156,110 @@ const controller = {
         }
       );
     });
-  },
-  listaExercicios: function (idGrupoMuscular) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'SELECT id, descricao FROM exercicios where id_grupo_muscular = ? GROUP BY descricao ORDER BY descricao ',
-        [idGrupoMuscular],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
-  },
-  listaGrupoMuscular: function () {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'SELECT id, descricao FROM grupo_muscular ORDER BY descricao',
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
-   }
-  ,adicionarExercicioFichaAluno: function (cardData) {
-   //console.log(cardData);
-   const dataSheet = cardData.cardData.ficha;
-   const dataExercise = cardData.cardData.exercicio;
+  }
 
-    try {  
+
+  , adicionarExercicioFichaAluno: function (cardData) {
+    //console.log(cardDaszta);
+    const dataSheet = cardData.cardData.ficha;
+    const dataExercise = cardData.cardData.exercicio;
+
+    try {
 
       var sqlUpdate = "UPDATE fichas set ativo = 0 where id_aluno = ?";
-      db.query(sqlUpdate, [dataSheet.id_aluno], function(err, result) {
+      db.query(sqlUpdate, [dataSheet.id_aluno], function (err, result) {
         if (err) {
           console.error("Erro ao atualizar a ficha:", err);
-        }else{
+        } else {
           var sql = "INSERT INTO fichas (id_professor, id_aluno, nome_ficha, ativo, data_criacao, data_final) VALUES (?, ?, ?, ?, ?, ?)";
-          db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha,dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
+          db.query(sql, [dataSheet.id_professor, dataSheet.id_aluno, dataSheet.nome_ficha, dataSheet.ativo, dataSheet.data_criacao, dataSheet.data_final], function (err, result) {
             if (err) throw err;
-      
-          for (const exercicio of JSON.parse(dataExercise)) {
-            console.log(exercicio);
-            db.query(
-              'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, repeticoes, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-              [
-                exercicio.id_exercicio,
-                exercicio.id_dia_treino, 
-                exercicio.descricao,
-                exercicio.id_grupo_muscular, 
-                exercicio.series, 
-                exercicio.carga, 
-                exercicio.descanso,
-                exercicio.repeticoesTreino,
-                result.insertId,
-              ],
-              function (err, result) {
-                if (err) throw err;
-              //  console.log(result);
-              }
-            );
-          }
+
+            for (const exercicio of JSON.parse(dataExercise)) {
+              console.log(exercicio);
+              db.query(
+                'INSERT INTO ficha_itens (id_exercicio, id_dia_treino, descricao, id_grupo_muscular, series, carga, descanso, repeticoes, id_ficha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                  exercicio.id_exercicio,
+                  exercicio.id_dia_treino,
+                  exercicio.descricao,
+                  exercicio.id_grupo_muscular,
+                  exercicio.series,
+                  exercicio.carga,
+                  exercicio.descanso,
+                  exercicio.repeticoesTreino,
+                  result.insertId,
+                ],
+                function (err, result) {
+                  if (err) throw err;
+                  //  console.log(result);
+                }
+              );
+            }
           });
         }
       });
-    
-    
+
+
     } catch (error) {
       throw error;
     }
   },
   listaFichas: function (idTeacher, dataExpiracaoInicial, dataExpiracaoFinal, idStudents) {
     return new Promise((resolve, reject) => {
-        let queryConditions = [];
-        let queryParams = [idTeacher];
+      let queryConditions = [];
+      let queryParams = [idTeacher];
 
-        if (dataExpiracaoInicial != 0 && dataExpiracaoFinal != 0) {
-            queryConditions.push('F.data_final >= ? AND F.data_final <= ?');
-            queryParams.push(dataExpiracaoInicial, dataExpiracaoFinal);
-        }
-
-        if (idStudents != 0) {
-          queryConditions.push('F.id_aluno = ?');
-          queryParams.push(idStudents);
-        }
-
-        let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id WHERE F.id_professor = ?';
-
-        if (queryConditions.length > 0) {
-            queryString += ' AND ' + queryConditions.join(' AND ');
-        }
-        db.query(
-            queryString,
-            queryParams,
-            (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            }
-        );
-    });
-},
-listaAlunosFicha: function (idProfessor) {
-  return new Promise((resolve, reject) => {
-    db.query(
-      'SELECT id, nome FROM alunos where id_professor = ? ORDER BY nome ',
-      [idProfessor],
-      (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          const formattedResults = result.map((row) => ({
-            label: row.nome,
-            year: row.id,
-          }));
-        
-          resolve(formattedResults);
-        }
+      if (dataExpiracaoInicial != 0 && dataExpiracaoFinal != 0) {
+        queryConditions.push('F.data_final >= ? AND F.data_final <= ?');
+        queryParams.push(dataExpiracaoInicial, dataExpiracaoFinal);
       }
-    );
-  });
- }
 
-  
+      if (idStudents != 0) {
+        queryConditions.push('F.id_aluno = ?');
+        queryParams.push(idStudents);
+      }
+
+      let queryString = 'SELECT F.id, F.nome_ficha, F.data_criacao, F.data_final, A.nome as nome_aluno, A.id FROM fichas as F INNER JOIN alunos as A ON F.id_aluno = A.id WHERE F.id_professor = ?';
+
+      if (queryConditions.length > 0) {
+        queryString += ' AND ' + queryConditions.join(' AND ');
+      }
+      db.query(
+        queryString,
+        queryParams,
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  },
+  listaAlunosFicha: function (idProfessor) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        'SELECT id, nome FROM alunos where id_professor = ? ORDER BY nome ',
+        [idProfessor],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            const formattedResults = result.map((row) => ({
+              label: row.nome,
+              year: row.id,
+            }));
+
+            resolve(formattedResults);
+          }
+        }
+      );
+    });
+  }
+
+
 
 }
 

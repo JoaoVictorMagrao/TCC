@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import axios from 'axios';
+
 //import { useState } from 'react';
 
 export const formatCnpjCpf = function (value) {

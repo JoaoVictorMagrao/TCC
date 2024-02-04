@@ -1,4 +1,5 @@
 const db = require('../../config/index');
+
 const controller = {
   login: function (req, res) {
     const email = req.body.email;
@@ -18,11 +19,11 @@ const controller = {
               user: {
                 id: result[0].id,
                 nome: result[0].nome
-              } 
+              }
             };
             resolve(professor);
           } else {
-            resolve({msg: 'ERROR'});
+            resolve({ msg: 'ERROR' });
           }
         }
       )

@@ -23,18 +23,18 @@ const controller = {
                 senha: result[0].senha,
                 email: result[0].email,
                 id_ficha: result[0].id_ficha
-              } 
+              }
             };
             resolve(aluno);
           } else {
-            resolve({msg: 'ERROR'});
+            resolve({ msg: 'ERROR' });
           }
         }
       )
     });
   },
   listaFichasAluno: function (idAluno) {
- 
+
     return new Promise((resolve, reject) => {
       db.query(
         'SELECT * FROM fichas WHERE id_aluno = ? ORDER BY ativo DESC',
@@ -56,7 +56,7 @@ const controller = {
         [idFicha],
         (err, result) => {
           if (err) {
-    
+
             reject(err);
           } else {
             resolve(result);
@@ -89,13 +89,13 @@ const controller = {
           if (err) {
             reject(err);
           } else {
-            resolve({status: true,resultado: result});
+            resolve({ status: true, resultado: result });
           }
         }
       )
     });
   },
-  listaExercicioUnico: function (idDiaTreino,idFicha,idExercicio) {
+  listaExercicioUnico: function (idDiaTreino, idFicha, idExercicio) {
     return new Promise((resolve, reject) => {
       db.query(
         'select FI.id, FI.series, FI.carga, FI.descanso, E.descricao as nome_exercicio, FI.descricao from ficha_itens FI INNER JOIN exercicios E on (FI.id_exercicio = E.id) where id_ficha = ? and id_exercicio = ? and id_dia_treino = ?',

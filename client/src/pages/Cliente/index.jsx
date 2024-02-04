@@ -1,15 +1,14 @@
-import React, { useContext } from 'react';
-import Header from '../components/Header';
+import React from 'react';
+import Header from '../../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import { storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { DataLoginContext } from "../context/DataLoginContext";
-import { formatCnpjCpf, validateCPF, formatPhoneNumber, formatCurrency, validationPost, allowAlphanumericAndSpaces, } from '../Util/util.js';
+import { formatCnpjCpf, validateCPF, formatPhoneNumber, validationPost, allowAlphanumericAndSpaces, } from '../../Util/util.js';
+import { fetchDadosAluno } from './Functions/fetchDadosAluno';
+import { handleFormSubmit } from './Functions/handleFormSubmit';
 //import { updateAluno } from '../services/StudentsServices.js';
 import { useAuthUser } from 'react-auth-kit';
 const urlParams = new URLSearchParams(window.location.search);
@@ -20,7 +19,6 @@ function Cliente() {
     register,
     handleSubmit,
     setValue,
-    getValues,
     reset,
     formState: { errors },
   } = useForm({
@@ -29,34 +27,16 @@ function Cliente() {
   })
 
   const navigate = useNavigate();
-  const [showAlert, setShowAlert] = useState(false);
-
-
-  const [imgURL, setImgURL] = useState('');
-  const [valueButton, setValueButton] = useState('');
   const [idTeacher, setIdTeacher] = useState('');
   const auth = useAuthUser();
 
   const url = window.location.href;
-  async function fetchDadosAluno() {
-    const response = await fetch(`http://localhost:3001/listaAlunoUnico/${idEditar}`);
-    const data = await response.json();
 
-    setValue('nomeAluno', data.nome);
-    setValue('emailAluno', data.email);
-    setValue('cpfAluno', data.cpf);
-    setValue('telefoneAluno', data.whatsapp_formatado);
-    setValue('mensalidadeAluno', data.valor_mensal);
-    setValue('dataVencimentoAluno', (data.data_vencimento == null) ? '' : data.data_vencimento.slice(0, 10));
-    setValue('situacaoAluno', data.ativo);
-    setValue('senhaAluno', data.senha);
-    setValue('selectedImage', data.img);
-  }
   useEffect(() => {
     setIdTeacher(auth().id);
     const url = window.location.href;
     if (url.includes('id')) {
-      fetchDadosAluno();
+      fetchDadosAluno(idEditar, setValue);
     } else {
       clearForm();
     }
@@ -74,80 +54,78 @@ function Cliente() {
     reset();
   };
 
-  const handleFormSubmit = async ({
-    nomeAluno,
-    senhaAluno,
-    cpfAluno,
-    emailAluno,
-    telefoneAluno,
-    mensalidadeAluno,
-    situacaoAluno,
-    dataVencimentoAluno,
-  }) => {
-    //  event.preventDefault();
+  // const handleFormSubmit = async ({
+  //   nomeAluno,
+  //   senhaAluno,
+  //   cpfAluno,
+  //   emailAluno,
+  //   telefoneAluno,
+  //   mensalidadeAluno,
+  //   situacaoAluno,
+  //   dataVencimentoAluno,
+  // }) => {
+  //   //  event.preventDefault();
+  //   if (!url.includes('id')) {
+  //     try {
+  //       if (!validateCPF(cpfAluno)) {
+  //         toast.warning("Cpf inválido");
+  //       } else {
+  //         const response = await Axios.post('http://localhost:3001/students/adicionarAluno', {
+  //           nome: nomeAluno,
+  //           senha: senhaAluno,
+  //           cpf: cpfAluno,
+  //           email: emailAluno,
+  //           whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+  //           valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+  //           id_professor: idTeacher,
+  //           id_tipo_usuario: 2,
+  //           ativo: parseInt(situacaoAluno),
+  //           data_vencimento: dataVencimentoAluno.toISOString().split('T')[0]
+  //         });
 
 
-    if (!url.includes('id')) {
-      try {
-        if (!validateCPF(cpfAluno)) {
-          toast.warning("Cpf inválido");
-        } else {
-          const response = await Axios.post('http://localhost:3001/adicionarAluno', {
-            nome: nomeAluno,
-            senha: senhaAluno,
-            cpf: cpfAluno,
-            email: emailAluno,
-            whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-            valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-            id_professor: idTeacher,
-            id_tipo_usuario: 2,
-            ativo: parseInt(situacaoAluno),
-            data_vencimento: dataVencimentoAluno.toISOString().split('T')[0]
-          });
+  //         if (response.data.message === 'OK') {
+  //           navigate('/home')
+  //         }
+  //       }
+  //     } catch (error) {
+  //       // if (error.response.data.error === 'CPF já cadastrado') {
+  //       //   setmsgError("Erro ao cadastrar CPF");
+  //       //   setShowAlert(true)
+  //       // }
+  //     }
+  //   } else {
+  //     try {
 
+  //       if (!validateCPF(cpfAluno)) {
+  //         toast.warning("Cpf inválido");
+  //       } else {
+  //         const response = await Axios.put(`http://localhost:3001/students/updateAluno/${idEditar}`, {
+  //           nome: nomeAluno,
+  //           senha: senhaAluno,
+  //           cpf: cpfAluno,
+  //           email: emailAluno,
+  //           whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+  //           valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+  //           id_professor: idTeacher,
+  //           id_tipo_usuario: 2,
+  //           ativo: parseInt(situacaoAluno),
+  //           data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
+  //         })
 
-          if (response.data.message === 'OK') {
-            navigate('/home')
-          }
-        }
-      } catch (error) {
-        // if (error.response.data.error === 'CPF já cadastrado') {
-        //   setmsgError("Erro ao cadastrar CPF");
-        //   setShowAlert(true)
-        // }
-      }
-    } else {
-      try {
+  //         if (response.data === 'OK') {
+  //           navigate('/home')
+  //         }
+  //       }
+  //     } catch (error) {
 
-        if (!validateCPF(cpfAluno)) {
-          toast.warning("Cpf inválido");
-        } else {
-          const response = await Axios.put(`http://localhost:3001/updateAluno/${idEditar}`, {
-            nome: nomeAluno,
-            senha: senhaAluno,
-            cpf: cpfAluno,
-            email: emailAluno,
-            whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-            valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-            id_professor: idTeacher,
-            id_tipo_usuario: 2,
-            ativo: parseInt(situacaoAluno),
-            data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
-          })
+  //       if (error.response.data.error === 'Erro') {
+  //         toast.error("Erro ao atualizar cliente.");
+  //       }
+  //     }
+  //   }
 
-          if (response.data === 'OK') {
-            navigate('/home')
-          }
-        }
-      } catch (error) {
-
-        if (error.response.data.error === 'Erro') {
-          toast.error("Erro ao atualizar cliente.");
-        }
-      }
-    }
-
-  }
+  // }
 
   useEffect(() => {
     clearForm();
