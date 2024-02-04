@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatCnpjCpf, validateCPF, formatPhoneNumber, validationPost, allowAlphanumericAndSpaces, } from '../../Util/util.js';
 import { fetchDadosAluno } from './Functions/fetchDadosAluno';
-import { handleFormSubmit } from './Functions/handleFormSubmit';
+//import { handleFormSubmit } from './Functions/handleFormSubmit';
 //import { updateAluno } from '../services/StudentsServices.js';
 import { useAuthUser } from 'react-auth-kit';
 const urlParams = new URLSearchParams(window.location.search);
@@ -54,78 +54,77 @@ function Cliente() {
     reset();
   };
 
-  // const handleFormSubmit = async ({
-  //   nomeAluno,
-  //   senhaAluno,
-  //   cpfAluno,
-  //   emailAluno,
-  //   telefoneAluno,
-  //   mensalidadeAluno,
-  //   situacaoAluno,
-  //   dataVencimentoAluno,
-  // }) => {
-  //   //  event.preventDefault();
-  //   if (!url.includes('id')) {
-  //     try {
-  //       if (!validateCPF(cpfAluno)) {
-  //         toast.warning("Cpf inválido");
-  //       } else {
-  //         const response = await Axios.post('http://localhost:3001/students/adicionarAluno', {
-  //           nome: nomeAluno,
-  //           senha: senhaAluno,
-  //           cpf: cpfAluno,
-  //           email: emailAluno,
-  //           whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-  //           valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-  //           id_professor: idTeacher,
-  //           id_tipo_usuario: 2,
-  //           ativo: parseInt(situacaoAluno),
-  //           data_vencimento: dataVencimentoAluno.toISOString().split('T')[0]
-  //         });
+  const handleFormSubmit = async ({
+    nomeAluno,
+    senhaAluno,
+    cpfAluno,
+    emailAluno,
+    telefoneAluno,
+    mensalidadeAluno,
+    situacaoAluno,
+    dataVencimentoAluno,
+  }) => {
+    if (!url.includes('id')) {
+      try {
+        if (!validateCPF(cpfAluno)) {
+          toast.warning("Cpf inválido");
+        } else {
+          const response = await Axios.post('http://localhost:3001/students/adicionarAluno', {
+            nome: nomeAluno,
+            senha: senhaAluno,
+            cpf: cpfAluno,
+            email: emailAluno,
+            whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+            valor_mensal: parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+            id_professor: idTeacher,
+            id_tipo_usuario: 2,
+            ativo: parseInt(situacaoAluno),
+            data_vencimento: dataVencimentoAluno.toISOString().split('T')[0]
+          });
 
 
-  //         if (response.data.message === 'OK') {
-  //           navigate('/home')
-  //         }
-  //       }
-  //     } catch (error) {
-  //       // if (error.response.data.error === 'CPF já cadastrado') {
-  //       //   setmsgError("Erro ao cadastrar CPF");
-  //       //   setShowAlert(true)
-  //       // }
-  //     }
-  //   } else {
-  //     try {
+          if (response.data.message === 'OK') {
+            navigate('/home')
+          }
+        }
+      } catch (error) {
+        // if (error.response.data.error === 'CPF já cadastrado') {
+        //   setmsgError("Erro ao cadastrar CPF");
+        //   setShowAlert(true)
+        // }
+      }
+    } else {
+      try {
 
-  //       if (!validateCPF(cpfAluno)) {
-  //         toast.warning("Cpf inválido");
-  //       } else {
-  //         const response = await Axios.put(`http://localhost:3001/students/updateAluno/${idEditar}`, {
-  //           nome: nomeAluno,
-  //           senha: senhaAluno,
-  //           cpf: cpfAluno,
-  //           email: emailAluno,
-  //           whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
-  //           valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
-  //           id_professor: idTeacher,
-  //           id_tipo_usuario: 2,
-  //           ativo: parseInt(situacaoAluno),
-  //           data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
-  //         })
+        if (!validateCPF(cpfAluno)) {
+          toast.warning("Cpf inválido");
+        } else {
+          const response = await Axios.put(`http://localhost:3001/students/updateAluno/${idEditar}`, {
+            nome: nomeAluno,
+            senha: senhaAluno,
+            cpf: cpfAluno,
+            email: emailAluno,
+            whatsapp: telefoneAluno.replace(/[\s()-]/g, ''),
+            valor_mensal: mensalidadeAluno,//parseFloat(mensalidadeAluno.replace('R$', '').trim().replace(',', '.')),
+            id_professor: idTeacher,
+            id_tipo_usuario: 2,
+            ativo: parseInt(situacaoAluno),
+            data_vencimento: dataVencimentoAluno.toISOString().split('T')[0],
+          })
 
-  //         if (response.data === 'OK') {
-  //           navigate('/home')
-  //         }
-  //       }
-  //     } catch (error) {
+          if (response.data === 'OK') {
+            navigate('/home')
+          }
+        }
+      } catch (error) {
 
-  //       if (error.response.data.error === 'Erro') {
-  //         toast.error("Erro ao atualizar cliente.");
-  //       }
-  //     }
-  //   }
+        if (error.response.data.error === 'Erro') {
+          toast.error("Erro ao atualizar cliente.");
+        }
+      }
+    }
 
-  // }
+  }
 
   useEffect(() => {
     clearForm();
@@ -287,33 +286,6 @@ function Cliente() {
               />
               <p className='error-menssage'>{errors.senhaAluno?.message}</p>
             </div>
-
-            {/* <div className="">
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleUpload}
-                accept="image/*"
-                id="upload-button"
-              /> 
-
-              <label
-                htmlFor="upload-button"
-                className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
-              >
-                Escolha uma imagem
-              </label> 
-
-               <div className='mt-5'>
-                  {selectedImage && (
-                    <div>
-                      {console.log(selectedImage)}
-                      <img src={selectedImage} alt="Imagem Selecionada" id='imgAluno' name='imgAluno' {...register('imgAluno')} width={300} />
-                      {progress !== 100 && <progress className='text-center' value={progress} max="100" />}
-                    </div>
-                  )}
-              </div>
-            </div> */}
           </div>
 
           <div className='text-center'>
