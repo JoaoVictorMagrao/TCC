@@ -4,7 +4,7 @@ import { RequireAuth } from 'react-auth-kit'
 import Login from './pages/Login/index';
 import Home from './pages/Home/index';
 import Cliente from './pages/Cliente/index';
-import Treino from './pages/Treino';
+import Treino from './pages/Treino/index';
 import Fichas from './pages/Fichas/index';
 
 

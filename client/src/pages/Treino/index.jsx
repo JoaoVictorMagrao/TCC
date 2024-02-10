@@ -1,12 +1,17 @@
-import Header from '../components/Header';
+import Header from '../../components/Header';
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-//import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-//import 'react-tabs/style/react-tabs.css';
-import check from '../img/check.png';
+/* ------------------------ Function ----------------------*/
+import { searchExercisesMuscleGroup } from './Functions/searchExercisesMuscleGroup';
+import { removeExercise } from './Functions/removeExercise';
+import { handleFinalizeSheet } from './Functions/handleFinalizeSheet';
+import { handleClickDataExercises } from './Functions/handleClickDataExercises';
+
+
+
+import check from '../../img/check.png';
 import { useNavigate } from 'react-router-dom';
-//import SinalMais from '../img/Sinaldemais.png';
-import { singleStudentList, fetchGrupoMuscular } from '../services/StudentsServices.js';
+import { singleStudentList, fetchGrupoMuscular } from '../../services/StudentsServices.js';
 import axios from 'axios';
 import { useAuthUser } from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,7 +25,7 @@ import { VscCheckAll } from 'react-icons/vsc';
 import { BiRepost } from 'react-icons/bi';
 import { FaDumbbell } from 'react-icons/fa';
 /* ------------------------ Arquivos com funções ----------------------*/
-import { getDayOfWeek, getCurrentDate } from '../Util/util.js';
+import { getDayOfWeek, getCurrentDate } from '../../Util/util.js';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -59,7 +64,7 @@ function Treino() {
   const [grupoMuscularOptions, setGrupoMuscularOptions] = useState([]);
   const [exerciciosOptions, setExerciciosOptions] = useState([]);
   const [grupoMuscular, setGrupoMuscular] = useState('');
-  const [idGrupoMuscular, setIdGrupoMuscular] = useState('');
+  const [idMuscleGroup, setidMuscleGroup] = useState('');
   const [exercicioTreino, setExercicioTreino] = useState('');
   const [idExercicio, setIdExercicio] = useState('');
   const [seriesExercicio, setSeriesExercicio] = useState('');
@@ -82,12 +87,10 @@ function Treino() {
   const [selectedDateFinalizeSheet, setSelectedDateFinalizeSheet] = useState('');
   const navigate = useNavigate()
   /* Por aba */
-  // idGrupoMuscularPorAba: idGrupoMuscularPorAba,
-  // idExercicioPorAba: idExercicioPorAba,
-  // grupoMuscularPorAba: grupoMuscularPorAba,
+
   const [descricaoTreinoPorAba, setDescricaoPorAba] = useState('');
   const [grupoMuscularTreinoPorAba, setGrupoMuscularPorAba] = useState('');
-  const [idGrupoMuscularTreinoPorAba, setIdGrupoMuscularPorAba] = useState('');
+  const [idMuscleGroupTreinoPorAba, setidMuscleGroupPorAba] = useState('');
   const [exercicioTreinoPorAba, setExercicioTreinoPorAba] = useState('');
   const [idExercicioTreinoPorAba, setIdExercicioPorAba] = useState('');
   const [diaDaSemanaTreinoPorAba, setDiaDaSemanaTreinoPorAba] = useState('');
@@ -143,8 +146,8 @@ function Treino() {
       [campo]: valor,
     });
 
-    setIdGrupoMuscularPorAba({
-      ...idGrupoMuscularTreinoPorAba,
+    setidMuscleGroupPorAba({
+      ...idMuscleGroupTreinoPorAba,
       [campo]: valor,
     });
 
@@ -188,174 +191,102 @@ function Treino() {
   };
 
   const handleNameSheetChange = (event) => {
-    setNameSheet(event.target.value); // Atualiza o estado com o valor do input
+    setNameSheet(event.target.value);
   };
 
 
   useEffect(() => {
-    //getDadosAluno(idStudent);
     singleStudentList(idStudent, setDataSingleStudents);
     fetchGrupoMuscular(setGrupoMuscularOptions);
     setIsButtonDisabledFinalizeSheet(cardDataEnviaDados.length === 0);
-    if (idGrupoMuscular) {
+
+    if (idMuscleGroup) {
       setExercicioSelectText("Exercicíos disponiveis");
     } else {
       setExercicioSelectText("Selecione um exercício");
     }
-  }, [idGrupoMuscular, cardDataEnviaDados]);
-
-  const fetchExercicios = async (idGrupoMuscular) => {
-    try {
-      const response = await axios.get(`http://localhost:3001/exercises/listaExercicios/${idGrupoMuscular}`);
-      const listaExercicios = response.data;
-      setExerciciosOptions(listaExercicios);
-    } catch (error) {
-      console.error('Erro ao buscar os dados:', error);
-    }
-  };
+  }, [idMuscleGroup, cardDataEnviaDados]);
 
 
-  const handleClickDataExercises = (tab) => {
-    const trainingDay = {
-      1: 'Treino G',
-      2: 'Treino A',
-      3: 'Treino B',
-      4: 'Treino C',
-      5: 'Treino D',
-      6: 'Treino E',
-      7: 'Treino F',
-    };
-    const trainingId = Object.keys(trainingDay).find((key) => trainingDay[key] === tab);
+  // const handleClickDataExercises = (tab) => {
+  //   const trainingDay = {
+  //     1: 'Treino G',
+  //     2: 'Treino A',
+  //     3: 'Treino B',
+  //     4: 'Treino C',
+  //     5: 'Treino D',
+  //     6: 'Treino E',
+  //     7: 'Treino F',
+  //   };
+  //   const trainingId = Object.keys(trainingDay).find((key) => trainingDay[key] === tab);
 
-    const newCardData = {
-      //[`exercicio${tab}`]: descricaoTreinoPorAba,     
-      exercicioTreinoPorAba: exercicioTreino,
-      seriesTreinoPorAba: seriesExercicioPorAba[`seriesExercicio-${tab}`],
-      repeticoesTreinoPorAba: repeticoesTreinoPorAba[`repeticoesTreino-${tab}`],
-      cargaTreinoPorAba: cargaTreinoPorAba[`cargaTreino-${tab}`],
-      descansoTreinoPorAba: descansoTreinoPorAba[`descansoTreino-${tab}`],
-      descricaoTreinoPorAba: descricaoTreinoPorAba[`descricaoTreino-${tab}`],
-      diaDaSemanaPorAba: trainingId,
-      idGrupoMuscularPorAba: idGrupoMuscular,
-      idExercicioPorAba: idExercicio
-      //  grupoMuscularPorAba: idGrupoMuscular,
-    };
+  //   const newCardData = {
+  //     //[`exercicio${tab}`]: descricaoTreinoPorAba,     
+  //     exercicioTreinoPorAba: exercicioTreino,
+  //     seriesTreinoPorAba: seriesExercicioPorAba[`seriesExercicio-${tab}`],
+  //     repeticoesTreinoPorAba: repeticoesTreinoPorAba[`repeticoesTreino-${tab}`],
+  //     cargaTreinoPorAba: cargaTreinoPorAba[`cargaTreino-${tab}`],
+  //     descansoTreinoPorAba: descansoTreinoPorAba[`descansoTreino-${tab}`],
+  //     descricaoTreinoPorAba: descricaoTreinoPorAba[`descricaoTreino-${tab}`],
+  //     diaDaSemanaPorAba: trainingId,
+  //     idMuscleGroupPorAba: idMuscleGroup,
+  //     idExercicioPorAba: idExercicio
+  //     //  grupoMuscularPorAba: idMuscleGroup,
+  //   };
 
-    const condicaoSeries = (newCardData.seriesTreinoPorAba === '' || newCardData.seriesTreinoPorAba === undefined);
-    const condicaoCarga = (newCardData.cargaTreinoPorAba === '' || newCardData.cargaTreinoPorAba === undefined);
-    const condicaoDescanso = (newCardData.descansoTreinoPorAba === '' || newCardData.descansoTreinoPorAba === undefined);
-    const condicaoRepeticoes = (newCardData.repeticoesTreinoPorAba === '' || newCardData.repeticoesTreinoPorAba === undefined);
-    const verificaDiaSemana = newCardData.diaDaSemanaPorAba === undefined ? 1 : newCardData.diaDaSemanaPorAba;
+  //   const condicaoSeries = (newCardData.seriesTreinoPorAba === '' || newCardData.seriesTreinoPorAba === undefined);
+  //   const condicaoCarga = (newCardData.cargaTreinoPorAba === '' || newCardData.cargaTreinoPorAba === undefined);
+  //   const condicaoDescanso = (newCardData.descansoTreinoPorAba === '' || newCardData.descansoTreinoPorAba === undefined);
+  //   const condicaoRepeticoes = (newCardData.repeticoesTreinoPorAba === '' || newCardData.repeticoesTreinoPorAba === undefined);
+  //   const verificaDiaSemana = newCardData.diaDaSemanaPorAba === undefined ? 1 : newCardData.diaDaSemanaPorAba;
 
-    if (condicaoSeries || condicaoCarga || condicaoDescanso || condicaoRepeticoes) {
-      toast.warning('Preencha todos os campos obrigatórios!!!');
-    } else {
-      toast.success(`Exercicío adicionado com sucesso ao ${tab}`);
-
-
-      const transformedData = {
-        [`exercicio${tab}`]: [
-          {
-            id_exercicio: newCardData.idExercicioPorAba,
-            id_dia_treino: verificaDiaSemana,
-            descricao: newCardData.descricaoTreinoPorAba,
-            id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
-            series: newCardData.seriesTreinoPorAba,
-            carga: newCardData.cargaTreinoPorAba,
-            descanso: newCardData.descansoTreinoPorAba,
-            repeticoesTreino: newCardData.repeticoesTreinoPorAba,
-            //  id_ficha: 1,
-            // grupo_muscular: newCardData.grupoMuscularPorAba,
-            exercicioTreino: newCardData.exercicioTreinoPorAba
-          }
-        ]
-      };
-
-      const transformedDataEnviarDados = {
-        id_exercicio: newCardData.idExercicioPorAba,
-        id_dia_treino: newCardData.diaDaSemanaPorAba,
-        descricao: newCardData.descricaoTreinoPorAba,
-        id_grupo_muscular: newCardData.idGrupoMuscularPorAba,
-        series: newCardData.seriesTreinoPorAba,
-        carga: newCardData.cargaTreinoPorAba,
-        descanso: newCardData.descansoTreinoPorAba,
-        repeticoesTreino: newCardData.repeticoesTreinoPorAba,
-        exercicioTreino: newCardData.exercicioTreinoPorAba
-      };
-
-      setSeriesExercicioPorAba('');
-      setRepeticoesTreinoPorAba('');
-      setCargaTreinoPorAba('');
-      setDescansoTreinoPorAba('');
-      setDescricaoPorAba('');
-
-      setCardDataEnviaDados((prevCardData) => [...prevCardData, transformedDataEnviarDados]);
-      setCardData((prevCardData) => [...prevCardData, transformedData]);
-    }
-  };
-  function removeExercicio(tab, id_exercicio) {
-    const updatedCardData = cardData.filter((card) => {
-      if (card[`exercicio${tab}`]) {
-        return card[`exercicio${tab}`].every((exercise) => exercise.id_exercicio !== id_exercicio);
-      }
-      return true;
-    });
-
-    // Crie um novo array excluindo o exercício com base no id_exercicio em cardDataEnviaDados
-    // console.log(cardDataEnviaDados);
-    const updatedCardDataEnviaDados = cardDataEnviaDados.filter(
-      (exercise) => exercise.id_exercicio !== id_exercicio
-    );
-
-    setCardDataEnviaDados(updatedCardDataEnviaDados);
-    setCardData(updatedCardData);
-  }
-
-  const handleFinalizeSheet = async () => {
-
-    if (nameSheet === '' || selectedDateFinalizeSheet === '') {
-      toast.warning('Preencha todos os campos.');
-    } else {
-
-      const fichaData = {
-        id_professor: idTeacher,
-        id_aluno: idStudent,
-        nome_ficha: nameSheet,
-        ativo: 1,
-        data_criacao: getCurrentDate(),
-        data_final: selectedDateFinalizeSheet
-      };
+  //   if (condicaoSeries || condicaoCarga || condicaoDescanso || condicaoRepeticoes) {
+  //     toast.warning('Preencha todos os campos obrigatórios!!!');
+  //   } else {
+  //     toast.success(`Exercicío adicionado com sucesso ao ${tab}`);
 
 
-      const cardDataEnviaDadosJSON = JSON.stringify(cardDataEnviaDados);
+  //     const transformedData = {
+  //       [`exercicio${tab}`]: [
+  //         {
+  //           id_exercicio: newCardData.idExercicioPorAba,
+  //           id_dia_treino: verificaDiaSemana,
+  //           descricao: newCardData.descricaoTreinoPorAba,
+  //           id_grupo_muscular: newCardData.idMuscleGroupPorAba,
+  //           series: newCardData.seriesTreinoPorAba,
+  //           carga: newCardData.cargaTreinoPorAba,
+  //           descanso: newCardData.descansoTreinoPorAba,
+  //           repeticoesTreino: newCardData.repeticoesTreinoPorAba,
+  //           //  id_ficha: 1,
+  //           // grupo_muscular: newCardData.grupoMuscularPorAba,
+  //           exercicioTreino: newCardData.exercicioTreinoPorAba
+  //         }
+  //       ]
+  //     };
 
-      const finalizedData = {
-        ficha: fichaData,
-        exercicio: cardDataEnviaDadosJSON
-      };
+  //     const transformedDataEnviarDados = {
+  //       id_exercicio: newCardData.idExercicioPorAba,
+  //       id_dia_treino: newCardData.diaDaSemanaPorAba,
+  //       descricao: newCardData.descricaoTreinoPorAba,
+  //       id_grupo_muscular: newCardData.idMuscleGroupPorAba,
+  //       series: newCardData.seriesTreinoPorAba,
+  //       carga: newCardData.cargaTreinoPorAba,
+  //       descanso: newCardData.descansoTreinoPorAba,
+  //       repeticoesTreino: newCardData.repeticoesTreinoPorAba,
+  //       exercicioTreino: newCardData.exercicioTreinoPorAba
+  //     };
 
-      //  console.log(finalizedData);
-      try {
-        const response = await axios.post('http://localhost:3001/students/adicionarExercicioFichaAluno', {
-          cardData: finalizedData, // Enviando o array cardData no corpo da requisição
-        });
-        if (response.data.message === 'OK') {
-          toast.success('Ficha Cadastrada com sucesso!');
-          setNameSheet('');
-          setSelectedDateFinalizeSheet('');
-          handleCloseNameSheet();
-          setTimeout(() => {
-            navigate(`/home`);
-          }, 3500);
-        } else {
-          toast.error('Algo de errado aconteceu ao cadastrar a ficha, tente novamente.');
-        }
+  //     setSeriesExercicioPorAba('');
+  //     setRepeticoesTreinoPorAba('');
+  //     setCargaTreinoPorAba('');
+  //     setDescansoTreinoPorAba('');
+  //     setDescricaoPorAba('');
 
-      } catch (error) {
-        console.error('Erro ao enviar dados para o servidor:', error);
-      }
-    }
-  };
+  //     setCardDataEnviaDados((prevCardData) => [...prevCardData, transformedDataEnviarDados]);
+  //     setCardData((prevCardData) => [...prevCardData, transformedData]);
+  //   }
+  // };
+
   const [value, setValue] = React.useState('1');
 
   return (
@@ -428,8 +359,9 @@ function Treino() {
           </LocalizationProvider>
         </DialogContent>
         <DialogActions>
+
           <Button onClick={handleCloseNameSheet}>Cancelar</Button>
-          <Button onClick={handleFinalizeSheet}>Salvar Ficha</Button>
+          <Button onClick={() => handleFinalizeSheet(nameSheet, selectedDateFinalizeSheet, toast, idTeacher, idStudent, getCurrentDate, cardDataEnviaDados, axios, setNameSheet, setSelectedDateFinalizeSheet, handleCloseNameSheet, navigate)}>Salvar Ficha</Button>
         </DialogActions>
       </Dialog>
       <div className="mx-auto flex justify-center items-center mt-16 w-80 md:w-4/5 mb-10">
@@ -445,52 +377,6 @@ function Treino() {
             </Box>
             {tabs.map((tab, index) => (
               <TabPanel key={index} value={index}>
-                {/* <div className='flex gap-10 p-5 w-4/5 mx-auto'> */}
-
-                {/* <div>
-                        <label
-                          htmlFor='nomeAluno'
-                          className='block mb-2 text-sm font-medium text-gray-900 dark:text-black'
-                        >
-                          Escolha o dia que o aluno ira realizar o {tab} <span className='text-red-500 text-xl font-bold'>*</span>
-                        </label>
-                      <select 
-                       value={diaDaSemanaTreinoPorAba[`diaSemana-${tab}`] || ''}
-                       onChange={(e) => {
-                        const valorSelecionado = e.target.value;
-                        setDiaDaSemanaTreinoPorAba({
-                          ...diaDaSemanaTreinoPorAba,
-                          [`diaSemana-${tab}`]: valorSelecionado,
-                        });
-                      }}
-                    // value={selectedOptions}
-                      className="w-full block appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                        
-                        <option value="1">Domingo</option>
-                        <option value="2">Segunda-feira</option>
-                        <option value="3">Terça-feira</option>
-                        <option value="4">Quarta-feira</option>
-                        <option value="5">Quinta-feira</option>
-                        <option value="6">Sexta-feira</option>
-                        <option value="7">Sábado</option>
-                      </select>
-                     
-                  </div> */}
-                {/* {getDayOfWeek(selectedOptions).length > 0 && (
-                  <div className="diasEscolhidos bg-gray-100 p-4 rounded-md shadow-md text-center">
-                    <h1 className="text-xl font-bold mb-4">Dia escolhido</h1>""
-                    <div className="gap-2">
-                      {getDayOfWeek(selectedOptions).map((day) => (
-                       
-                        <p key={day} className="bg-blue-500 text-white py-2 px-4 rounded-md text-center">
-                        
-                          {day}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                )} */}
-                {/* </div> */}
 
                 <div className='w-4/5 p-5 mx-auto'>
                   <label
@@ -526,15 +412,15 @@ function Treino() {
                         id={`grupoMuscular-${tab}`}
                         name={`grupoMuscular-${tab}`}
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        value={idGrupoMuscularTreinoPorAba[`grupoMuscular-${tab}`] || ''}
+                        value={idMuscleGroupTreinoPorAba[`grupoMuscular-${tab}`] || ''}
                         onChange={(e) => {
                           const selectedIndex = e.target.selectedIndex;
                           const selectedOptionText = e.target.options[selectedIndex].text;
                           const selectedValue = e.target.value; // Obter o valor da opção selecionada
                           handleInputChangeValueTab(e, `grupoMuscular-${tab}`)
-                          setIdGrupoMuscular(selectedValue);
+                          setidMuscleGroup(selectedValue);
                           setGrupoMuscular(selectedOptionText);
-                          fetchExercicios(selectedValue);
+                          searchExercisesMuscleGroup(selectedValue, setExerciciosOptions, axios);
                         }}
 
                       >
@@ -571,7 +457,7 @@ function Treino() {
                           setExercicioTreino(selectedOptionText);
 
                         }}
-                        disabled={!idGrupoMuscular}
+                        disabled={!idMuscleGroup}
                       >
                         <option value='' disabled hidden>
                           {exercicioSelectText}
@@ -652,7 +538,7 @@ function Treino() {
                   {/* ------------------------------------------- FIM Linha 2 ------------------------------------------- */}
 
                   <div className='finalizarExercicio flex justify-end'>
-                    <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={() => handleClickDataExercises(tab)}>
+                    <button className='bg-lime-600 w-9 h-9 flex justify-center items-center rounded mt-3' onClick={() => handleClickDataExercises(tab, exercicioTreino, seriesExercicioPorAba, cargaTreinoPorAba, descansoTreinoPorAba, repeticoesTreinoPorAba, descricaoTreinoPorAba, idMuscleGroup, idExercicio, toast, setSeriesExercicioPorAba, setRepeticoesTreinoPorAba, setCargaTreinoPorAba, setDescansoTreinoPorAba, setDescricaoPorAba, setCardDataEnviaDados, setCardData)}>
                       <Tooltip arrow TransitionComponent={Zoom} title="Incluir exercício">
                         <img src={check} alt="Check" />
                       </ Tooltip>
@@ -690,7 +576,7 @@ function Treino() {
                               <span className='ml-2'>{exercicio.descanso} Segundos</span>
                             </div>
                           </div>
-                          <CloseIcon className='cursor-pointer' onClick={() => removeExercicio(tab, exercicio.id_exercicio)} />
+                          <CloseIcon className='cursor-pointer' onClick={() => removeExercise(tab, exercicio.id_exercicio, cardData, cardDataEnviaDados, setCardDataEnviaDados, setCardData)} />
                         </div>
                       ))}
                     </div>

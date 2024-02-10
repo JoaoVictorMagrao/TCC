@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Tooltip, Zoom, Stack, Slide, Modal, Typography, Button, Box } from '@mui/material';
-//import { Trash, Pencil } from 'phosphor-react';
-//import { getStudentRecords } from '../../services/StudentsServices';
 import { fetchDataStudens } from './Functions/fetchDataStudens';
 import { printTrainingSheets } from './Functions/printTrainingSheets';
 import { searchStudents } from '../../services/StudentsServices';
@@ -71,23 +69,6 @@ function Fichas() {
   const handleClickCloseModalPrinter = () => {
     setOpenModalPrinter(false);
   };
-
-  // const printTrainingSheets = async () => {
-
-  //   const checkDataStart = (selectedDateStartPrint == '') ? 0 : selectedDateStartPrint;
-  //   const checkDataEnd = (selectedDateEndPrint == '') ? 0 : selectedDateEndPrint;
-  //   const checkIdStudent = (selectedIdStudent == '') ? 0 : selectedIdStudent;
-
-  //   if (checkDataEnd < checkDataStart) {
-  //     toast.warning('A data inicial não pode ser maior que a data final.');
-  //   } else {
-  //     const data = await getStudentRecords(idTeacher, checkDataEnd, checkDataStart, checkIdStudent);
-  //     fichasPDF(data);
-  //     setSheet(data);
-  //     setLoading(false);
-  //   }
-  // };
-
 
   return (
     <div>
