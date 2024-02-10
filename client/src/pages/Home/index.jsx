@@ -1,36 +1,33 @@
-import '../styles/login.css';
-
+import '../../styles/login.css';
 import React, { useState, useEffect } from 'react';
-//import axios from 'axios';
 import { useAuthUser } from 'react-auth-kit';
 import { ToastContainer, toast } from 'react-toastify';
-import { fetchAlunos, excluirAluno, fetchStudentsPrinter, fetchValuesStudents } from '../services/StudentsServices.js';
+import { fetchAlunos, excluirAluno, fetchStudentsPrinter, fetchValuesStudents } from '../../services/StudentsServices.js';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Stack, Button } from '@mui/material';
 import { BiEdit } from 'react-icons/bi';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 import { AiFillDelete } from 'react-icons/ai';
-import { formatarData } from '../Util/util.js';
+import { formatarData } from '../../Util/util.js';
 import { CgGym } from 'react-icons/cg';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-// import { DataLoginContext } from "../context/DataLoginContext";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
-import DrawerLeft from '../components/DrawerLeft';
+import DrawerLeft from '../../components/DrawerLeft';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import alunosPDF from '../Reports/Alunos/alunos';
-import valoresPDF from '../Reports/Valores/valores';
+import alunosPDF from '../../Reports/Alunos/alunos';
+import valoresPDF from '../../Reports/Valores/valores';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import { openWhatsapp } from './Functions/openWhatsapp';
 
 export let valorBotao = 'Editar Aluno';
-
 
 function Home() {
   const [filtroSituacao, setFiltroSituacao] = useState('2');
@@ -50,15 +47,6 @@ function Home() {
   const [selectedDateEndPrint, setSelectedDateEndPrint] = useState('0');
 
   const Swal = require('sweetalert2');
-  // const { idTeacher } = useContext(DataLoginContext);
-  //const [cadastrarAluno, setCadastrarAluno] = useState(false);
-
-  // const handleTrainingPrinter = async  (fichaAtivo) => {
-  //   const data = await searchStudentTraining(fichaAtivo);
-  //   treinoPDF(data);
-  //   setLoading(false);
-  // };
-
   const navigate = useNavigate()
   const auth = useAuthUser();
 
@@ -74,14 +62,12 @@ function Home() {
   };
 
   const handlePrinterListValues = async () => {
-
     const data = await fetchValuesStudents(idTeacher, selectedDateStartPrint, selectedDateEndPrint, filtroOrdemValores);
     valoresPDF(data.resultado);
     setLoading(false);
   };
 
-
-  const handleButtonEditarAluno = async (alunoId) => {
+  const handleButtonEditStudent = async (alunoId) => {
     window.location.href = `/cliente?id=${alunoId}`;
   };
 
@@ -118,7 +104,6 @@ function Home() {
     }
   };
 
-  /*---------------------- FIM EXCLUIR ALUNO ----------------------*/
   const handleFiltroSituacaoChange = (event) => {
     fetchAlunos(idTeacher, event.target.value, filtroNome, setStudents);
     setFiltroSituacao(event.target.value);
@@ -126,26 +111,8 @@ function Home() {
   };
 
   const handleFiltroOrdemValoresChange = (event) => {
-    // fetchAlunos(idTeacher, event.target.value, filtroNome, setStudents);
     setFiltroOrdemValores(event.target.value);
     setLoading(false);
-  };
-
-
-
-
-  const openWhatsapp = async (number, name) => {
-    try {
-      let formattedNumber = number.replace(/[^\w\s]/gi, "").replace(/ /g, "");
-      let url = `https://web.whatsapp.com/send?phone=${formattedNumber}`;
-      url += `&text=${encodeURI(`Olá ${name}, estou passando para avisar que sua ficha já está pronta, entre no app para visualizar seu treino.`)}&app_absent=0`;
-
-      // Open our newly created URL in a new tab to send the message
-      window.open(url);
-
-    } catch (error) {
-
-    }
   };
 
   const handleFiltroNomeChange = (event) => {
@@ -188,7 +155,6 @@ function Home() {
 
 
   return (
-    //   Hello {auth().nome}
     <div>
       <DrawerLeft nome={auth().nome} />
       <ToastContainer
@@ -226,10 +192,7 @@ function Home() {
             </CardActionArea>
           </Card>
         </DialogContent>
-        {/* <DialogActions>
-            <Button onClick={handleClickCloseModalChoosePrinter}>Cancelar</Button>
-            <Button onClick={handleClickOpenModalChoosePrinter}>Imprimir</Button>
-          </DialogActions> */}
+
       </Dialog>
 
       <Dialog open={openModalPrinter} onClose={handleClickCloseModalPrinter}>
@@ -352,8 +315,6 @@ function Home() {
                   <TableCell>Editar</TableCell>
                   <TableCell>Excluir</TableCell>
                   <TableCell>Montar Treino</TableCell>
-                  {/* <TableCell>Imprimir Treino</TableCell> */}
-
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -382,7 +343,7 @@ function Home() {
                       </TableCell>
                       <TableCell>
                         <Tooltip arrow TransitionComponent={Zoom} title="Editar">
-                          <Link to={`/cliente/${ficha.id}`} onClick={() => handleButtonEditarAluno(ficha.id)}>
+                          <Link to={`/cliente/${ficha.id}`} onClick={() => handleButtonEditStudent(ficha.id)}>
                             <div className='flex items-center justify-center'>
                               <BiEdit size={32} />
                             </div>
@@ -405,14 +366,6 @@ function Home() {
                           </div>
                         </Tooltip>
                       </TableCell>
-
-                      {/* <TableCell>
-                            <Tooltip arrow TransitionComponent={Zoom} title="Imprimir Treino"> 
-                                <div className='flex items-center justify-center'>
-                                  <PictureAsPdfIcon size={32} onClick={() => handleTrainingPrinter(ficha.id_ficha_ativo)} />
-                                </div>
-                            </Tooltip>
-                          </TableCell>  */}
 
                     </TableRow>
                   ))

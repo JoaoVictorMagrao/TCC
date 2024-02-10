@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { handleLogin } from './Functions/handleLogin';
 
 function Login() {
-  const [senhaVisivel, setSenhaVisivel] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -34,7 +33,7 @@ function Login() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
               Bem-vindo! Por favor, faça login para acessar sua conta.
             </h1>
-            <form onSubmit={(event) => handleLogin(event, setIsLoginOpen, username, password, axios, toast, navigate, setColorMessage, signIn)}>
+            <form onSubmit={(event) => handleLogin(event, setIsLoginOpen, username, password, axios, toast, navigate, signIn)}>
               <div className="space-y-4 md:space-y-6">
                 <div>
                   <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
@@ -53,7 +52,7 @@ function Login() {
                   <label htmlFor="senha" className="block mb-2 text-sm font-medium text-gray-900">Senha</label>
                   <input
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    type={senhaVisivel ? 'text' : 'password'}
+                    type={'password'}
                     name='senha'
                     id='senha'
                     placeholder='Digite sua senha...'

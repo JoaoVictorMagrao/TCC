@@ -1,4 +1,4 @@
-export async function handleLogin(event, setIsLoginOpen, username, password, axios, toast, navigate, setColorMessage, setOpenSnackbar, signIn) {
+export async function handleLogin(event, setIsLoginOpen, username, password, axios, toast, navigate, signIn) {
   event?.preventDefault();
   setIsLoginOpen(true);
   try {
@@ -10,8 +10,6 @@ export async function handleLogin(event, setIsLoginOpen, username, password, axi
     if (response.data.msg === null) {
       setIsLoginOpen(false);
       toast.error("Ocorreu alguem erro ao fazer seu login, tente novamente mais tarde!");
-      setColorMessage("error")
-      setOpenSnackbar(true);
       return;
     }
 
