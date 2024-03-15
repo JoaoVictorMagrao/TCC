@@ -33,19 +33,7 @@ TCC/
 │   │   ├── context/
 │   │   ├── img/
 │   │   ├── pages/
-│   │   │   ├── Cliente/
-│   │   │   │   ├── Functions/
-│   │   │   │   ├── index.jsx
-│   │   │   ├── Fichas/
-│   │   │   │   ├── Functions/
-│   │   │   │   ├── index.jsx
-│   │   │   ├── Home/
-│   │   │   │   ├── Functions/
-│   │   │   │   ├── index.jsx
-│   │   │   ├── Login/
-│   │   │   │   ├── Functions/
-│   │   │   │   ├── index.jsx
-│   │   │   ├── Treino/
+│   │   │   ├── Nome da página/
 │   │   │   │   ├── Functions/
 │   │   │   │   ├── index.jsx
 │   │   ├── Reports/
@@ -79,17 +67,15 @@ TCC/
 ## Funcionalidades
 
 - Cadastro de alunos
-- Cadastro de treino personalizado
+- Cadastro de treinos personalizado
 - Visualização de relatório de mensalidade, fichas e alunos
 - Visualização das fichas criadas
 - Visualização do treino por um dispositimo movel
 - Visualização do treino offline(é necessário internet apenas uma vez para gravar o treino)
 - Visualizar vencimento da mensalidade do aluno. (O aluno tambem consegue ver pelo seu celular)
 
-## Capturas de Tela
-
 Aqui estão algumas capturas de tela do projeto:
-# Telas do site
+## Telas do site
 
 # Login do professor
 ![image](https://github.com/JoaoVictorMagrao/TCC/assets/88940194/9c35f940-e1cb-435d-9f43-e31fea81fba0)
@@ -106,7 +92,7 @@ Aqui estão algumas capturas de tela do projeto:
 # Visualização das Fichas
 ![image](https://github.com/JoaoVictorMagrao/TCC/assets/88940194/190e5a95-baf5-4ddb-bea5-3b48d7366410)
 
-# Telas do aplicativo
+## Telas do aplicativo
 
 # Login do Aluno
 ![image](https://github.com/JoaoVictorMagrao/TCC/assets/88940194/ae248f9d-10d0-4156-a47b-6eb0896428f8)
@@ -122,8 +108,6 @@ Aqui estão algumas capturas de tela do projeto:
 
 # Perfil
 ![image](https://github.com/JoaoVictorMagrao/TCC/assets/88940194/e2c0e6e9-a463-4841-966b-52297ec0e9d3)
-
-
 
 
 
